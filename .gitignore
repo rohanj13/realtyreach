@@ -1,8 +1,160 @@
-### DotnetCore ###
-# .NET Core build folders
-bin/
-obj/
+# General
+.DS_Store
+Thumbs.db
 
-# Common node modules locations
-/node_modules
-/wwwroot/node_modules
+# Node.js
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Dependency directories
+**/node_modules/
+**/bin/
+**/obj/
+
+# Visual Studio
+.vscode
+.vscode/*
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.cache
+*.pyc
+*.pyo
+*.pydevproject
+.venv/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.csproj.nuget.dgspec.json
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Local env files
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Mac
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+.vs
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Test coverage
+coverage
+*.lcov
+
+# Build directories
+dist
+tmp
+temp
+out-tsc
+
+# Generated files
+*.js.map
+*.d.ts
+*.tgz
+*.gz
+*.bundle.js
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# IntelliJ
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+.history/
+
+# TypeScript
+*.tsbuildinfo
+
+# React Native
+.expo/
+
+# Svelte
+.svelte-kit/
+
+# Others
+*.log
+*.dat
+*.tlog
+*.swp
+*.patch
+*.err
+*.orig
+*.rej
+*.sublime-project
+*.sublime-workspace
+*.sln
+
+# Coverage
+coverage/
+lcov-report/
+
+# Dependency directories
+node_modules/
+
+# Optional NPM cache directory
+.npm
+
+# dotenv environment variables file
+.env
+
+# Optional REPL history
+.node_repl_history
+
+# Miscellaneous
+.venv
+.pnpm-store
+.pnp
+
+# Yarn Integrity file
+.yarn-integrity
+.pnp.js
+.pnp.cjs
