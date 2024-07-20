@@ -8,31 +8,31 @@ namespace RealtyReachApi.Data
     {
         public SharedDbContext(DbContextOptions<SharedDbContext> options) : base(options) { }
 
-        public DbSet<Request> Requests { get; set; }
-        public DbSet<RequestDetail> RequestDetails { get; set; }
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<JobDetail> JobDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Request>().ToTable("Requests");
-            modelBuilder.Entity<RequestDetail>().ToTable("RequestDetails");
+            modelBuilder.Entity<Job>().ToTable("Jobs");
+            modelBuilder.Entity<JobDetail>().ToTable("JobDetails");
 
-            modelBuilder.Entity<Request>()
-                .HasKey(r => r.RequestId);
+            modelBuilder.Entity<Job>()
+                .HasKey(r => r.JobId);
 
-            modelBuilder.Entity<RequestDetail>()
-                .HasKey(rd => rd.RequestDetailId);
+            modelBuilder.Entity<JobDetail>()
+                .HasKey(rd => rd.JobDetailId);
 
-            modelBuilder.Entity<Request>()
-                .HasOne(rd => rd.RequestDetails)
-                .WithOne(rd => rd.Request)
-                .HasForeignKey<RequestDetail>(rd => rd.RequestId);
+            modelBuilder.Entity<Job>()
+                .HasOne(rd => rd.JobDetails)
+                .WithOne(rd => rd.Job)
+                .HasForeignKey<JobDetail>(rd => rd.JobId);
 
-            modelBuilder.Entity<RequestDetail>()
-                .HasOne(r => r.Request)
-                .WithOne(r => r.RequestDetails)
-                .HasForeignKey<RequestDetail>(rd => rd.RequestId)
+            modelBuilder.Entity<JobDetail>()
+                .HasOne(r => r.Job)
+                .WithOne(r => r.JobDetails)
+                .HasForeignKey<JobDetail>(rd => rd.JobId)
                 .IsRequired();
         }
     }
