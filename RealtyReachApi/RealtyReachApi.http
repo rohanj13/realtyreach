@@ -1,0 +1,6 @@
+@RealtyReachApi_HostAddress = http://localhost:5073
+
+GET {{RealtyReachApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
