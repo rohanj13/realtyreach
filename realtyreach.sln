@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealtyReachApi", "RealtyReachApi\RealtyReachApi.csproj", "{23DFE702-15F0-4D7E-B491-7115D16FF111}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RealtyReachApi", "RealtyReachApi\RealtyReachApi.csproj", "{23DFE702-15F0-4D7E-B491-7115D16FF111}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

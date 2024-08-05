@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RealtyReachApi.Data;
@@ -7,6 +8,7 @@ namespace RealtyReachApi.Controllers
 {
     [ApiController]
     [Route("api/jobs")]
+    [Authorize]
     public class JobController : ControllerBase
     {
         private readonly SharedDbContext _context;
