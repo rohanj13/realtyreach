@@ -27,6 +27,8 @@ services:
     depends_on:
       - postgres
 
+  # This currently needs to be run seperately as it doesn't wait long enough to startup
+  # and hence the postgres server is not up and ready
   # backend:
   #   image: ${DOCKER_REGISTRY-}realtyreachapi
   #   build:
