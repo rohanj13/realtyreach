@@ -3,8 +3,9 @@
 Currently the infrastructure has the following components:
 - Postgres database
 - Frontend application exposed via Nginx
+- Backend DotNet Monolithic Application
 
-Infrastructure can be deployed via docker compose  using the following command:
+Infrastructure can be deployed via docker compose  using the following command from the root of the repository:
 
 ```sh
 docker-compose up --build

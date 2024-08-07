@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: realtyreach
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d realtyreach"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  frontend:
+    build:
+      context: ./frontend/realty-reach/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - postgres
+
+  # This currently needs to be run seperately as it doesn't wait long enough to startup
+  # and hence the postgres server is not up and ready
+  # backend:
+  #   image: ${DOCKER_REGISTRY-}realtyreachapi
+  #   build:
+  #     context: .
+  #     dockerfile: RealtyReachApi/Dockerfile
+  #   ports:
+  #     - "8000:80"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   depends_on:
+  #     - postgres
+
+
+volumes:
+  postgres_data:
+
