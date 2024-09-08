@@ -13,7 +13,7 @@ public class JobDetail
     public int JobId { get; set; }
 
     [ForeignKey("JobId")]
-    public Job Job { get; set; }
+    public Job job { get; set; }
 
     [Required]
     public required string LocationOrPostCode { get; set; }  // Comma Separated Strings

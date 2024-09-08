@@ -1,23 +1,30 @@
 import React from 'react';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import UserRegistrationPage from './UserRegistrationPage';
+import { ChakraProvider } from '@chakra-ui/react';
+import ProtectedRoute from './ProtectedRoute';
+import LandingPage from './LandingPage';
+import Dashboard from './dashboard/Dashboard';
+import { AuthProvider } from './Auth';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          RealtyReach
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<UserRegistrationPage />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+            {/* Add other routes here */}
+          </Routes>
+        </AuthProvider>
+      </Router>
+    </ChakraProvider>
   );
-}
+};
 
 export default App;

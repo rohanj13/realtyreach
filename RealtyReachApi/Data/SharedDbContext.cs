@@ -27,16 +27,16 @@ namespace RealtyReachApi.Data
 
             modelBuilder.Entity<Job>()
                 .HasOne(rd => rd.JobDetails)
-                .WithOne(rd => rd.Job)
+                .WithOne(rd => rd.job)
                 .HasForeignKey<JobDetail>(rd => rd.JobId);
 
             modelBuilder.Entity<JobDetail>()
-                .HasOne(r => r.Job)
+                .HasOne(r => r.job)
                 .WithOne(r => r.JobDetails)
                 .HasForeignKey<JobDetail>(rd => rd.JobId)
                 .IsRequired();
 
-           
+
 
             // Customize the ASP.NET Identity table names
             modelBuilder.Entity<IdentityUser>(b =>

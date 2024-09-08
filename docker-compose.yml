@@ -18,14 +18,14 @@ services:
       timeout: 5s
       retries: 5
   
-  frontend:
-    build:
-      context: ./frontend/realty-reach/
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    depends_on:
-      - postgres
+  # frontend:
+  #   build:
+  #     context: ./frontend/realty-reach/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:80"
+  #   depends_on:
+  #     - postgres
 
   # This currently needs to be run seperately as it doesn't wait long enough to startup
   # and hence the postgres server is not up and ready
