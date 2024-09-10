@@ -2,10 +2,12 @@ import React from 'react';
 import { Box, VStack, Button, Text, useColorMode, Switch, Flex } from '@chakra-ui/react';
 import { FiHome, FiFileText, FiMessageSquare, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../Auth';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Sidebar: React.FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { logout, isAuthenticated } = useAuth();
+  // const { logout, isAuthenticated } = useAuth();
+  const { logout } = useAuth0();
   return (
     <Box
       w="250px"
@@ -43,7 +45,7 @@ const Sidebar: React.FC = () => {
           <Text>Dark Mode</Text>
           <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} ml={2} />
         </Flex>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiLogOut />} onClick={logout}>
+        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiLogOut />} onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
           Logout
         </Button>
       </VStack>

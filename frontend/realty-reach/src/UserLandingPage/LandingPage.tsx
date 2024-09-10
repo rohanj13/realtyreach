@@ -13,9 +13,11 @@ import {
   Container,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { loginWithRedirect, loginWithPopup } = useAuth0();
 
   return (
     <Box>
@@ -39,7 +41,7 @@ const LandingPage: React.FC = () => {
           <Button onClick={() => navigate('/aboutus')} colorScheme="white">
             About Us
           </Button>
-          <Button onClick={() => navigate('/login')} colorScheme="teal">
+          <Button onClick={() => loginWithRedirect()} colorScheme="teal">
             Login
           </Button>
         </Stack>
@@ -60,7 +62,7 @@ const LandingPage: React.FC = () => {
           <Text fontSize="lg" mb={6}>
             Get in touch with the best professionals in your area for all your property needs.
           </Text>
-          <Button colorScheme="blue" size="lg" onClick={() => navigate('/register')}>
+          <Button colorScheme="blue" size="lg" onClick={() => loginWithRedirect()}>
             Get Started Now
           </Button>
         </Box>
