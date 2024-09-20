@@ -5,12 +5,14 @@ using RealtyReachApi.Models;
 
 namespace RealtyReachApi.Data
 {
-    public class SharedDbContext : IdentityDbContext<IdentityUser>
+    public class SharedDbContext : DbContext
     {
         public SharedDbContext(DbContextOptions<SharedDbContext> options) : base(options) { }
 
         public DbSet<Job> Jobs { get; set; }
         public DbSet<JobDetail> JobDetails { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Professional> Professionals { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -18,6 +20,8 @@ namespace RealtyReachApi.Data
 
             modelBuilder.Entity<Job>().ToTable("Jobs");
             modelBuilder.Entity<JobDetail>().ToTable("JobDetails");
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Professional>().ToTable("Professionals");
 
             modelBuilder.Entity<Job>()
                 .HasKey(r => r.JobId);
@@ -36,43 +40,47 @@ namespace RealtyReachApi.Data
                 .HasForeignKey<JobDetail>(rd => rd.JobId)
                 .IsRequired();
 
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Professional)
+                .WithOne(p => p.User)
+                .HasForeignKey<Professional>(p => p.UserId);
 
 
             // Customize the ASP.NET Identity table names
-            modelBuilder.Entity<IdentityUser>(b =>
-            {
-                b.ToTable("Users"); // Change the default table name to "Users"
-            });
+            // modelBuilder.Entity<IdentityUser>(b =>
+            // {
+            //     b.ToTable("Users"); // Change the default table name to "Users"
+            // });
 
-            modelBuilder.Entity<IdentityRole>(b =>
-            {
-                b.ToTable("Roles"); // Change the default table name to "Roles"
-            });
+            // modelBuilder.Entity<IdentityRole>(b =>
+            // {
+            //     b.ToTable("Roles"); // Change the default table name to "Roles"
+            // });
 
-            modelBuilder.Entity<IdentityUserRole<string>>(b =>
-            {
-                b.ToTable("UserRoles"); // Change the default table name to "UserRoles"
-            });
+            // modelBuilder.Entity<IdentityUserRole<string>>(b =>
+            // {
+            //     b.ToTable("UserRoles"); // Change the default table name to "UserRoles"
+            // });
 
-            modelBuilder.Entity<IdentityUserClaim<string>>(b =>
-            {
-                b.ToTable("UserClaims"); // Change the default table name to "UserClaims"
-            });
+            // modelBuilder.Entity<IdentityUserClaim<string>>(b =>
+            // {
+            //     b.ToTable("UserClaims"); // Change the default table name to "UserClaims"
+            // });
 
-            modelBuilder.Entity<IdentityUserLogin<string>>(b =>
-            {
-                b.ToTable("UserLogins"); // Change the default table name to "UserLogins"
-            });
+            // modelBuilder.Entity<IdentityUserLogin<string>>(b =>
+            // {
+            //     b.ToTable("UserLogins"); // Change the default table name to "UserLogins"
+            // });
 
-            modelBuilder.Entity<IdentityRoleClaim<string>>(b =>
-            {
-                b.ToTable("RoleClaims"); // Change the default table name to "RoleClaims"
-            });
+            // modelBuilder.Entity<IdentityRoleClaim<string>>(b =>
+            // {
+            //     b.ToTable("RoleClaims"); // Change the default table name to "RoleClaims"
+            // });
 
-            modelBuilder.Entity<IdentityUserToken<string>>(b =>
-            {
-                b.ToTable("UserTokens"); // Change the default table name to "UserTokens"
-            });
+            // modelBuilder.Entity<IdentityUserToken<string>>(b =>
+            // {
+            //     b.ToTable("UserTokens"); // Change the default table name to "UserTokens"
+            // });
 
         }
     }

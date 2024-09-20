@@ -24,7 +24,9 @@ import {
 import { useState, useEffect } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import Sidebar from "../SharedComponents/Sidebar"; // Import the Sidebar component
+import Sidebar from "../../SharedComponents/Sidebar"; // Import the Sidebar component
+import JobModal from "./CreateJobForm";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface Job {
   id: number;
@@ -42,10 +44,12 @@ const Dashboard = () => {
   const [newJobDetails, setNewJobDetails] = useState("");
   const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const { user } = useAuth0();
+  
 
   // Fetch jobs for the user
   useEffect(() => {
-    const userId = 1; // Replace with actual userId
+    const userId = user?.sub;
     axios
       .get(`/api/jobs?userId=${userId}`)
       .then((response) => {
@@ -68,14 +72,9 @@ const Dashboard = () => {
   };
 
   // Handle job creation
-  const handleCreateJob = () => {
-    const newJob = {
-      title: newJobTitle,
-      details: newJobDetails,
-    };
-
+  const handleCreateJob = (jobDetails: any) => {
     axios
-      .post(`/api/jobs`, newJob)
+      .post(`/api/jobs`, jobDetails)
       .then((response) => {
         setJobs([...jobs, response.data]);
         toast({
@@ -169,38 +168,7 @@ const Dashboard = () => {
           </Box>
         </Flex>
       </Flex>
-
-      {/* Modal to Create New Job */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create New Job</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              placeholder="Job Title"
-              value={newJobTitle}
-              onChange={(e) => setNewJobTitle(e.target.value)}
-              mb={3}
-            />
-            <Input
-              placeholder="Job Details"
-              value={newJobDetails}
-              onChange={(e) => setNewJobDetails(e.target.value)}
-              mb={3}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreateJob}>
-              Submit
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <JobModal isOpen={isOpen} onClose={onClose} onSubmit={handleCreateJob} />
     </Flex>
   );
 };

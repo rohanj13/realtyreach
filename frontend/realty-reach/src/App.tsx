@@ -4,8 +4,8 @@ import LoginPage from './LoginPage';
 import UserRegistrationPage from './UserRegistrationPage';
 import { ChakraProvider } from '@chakra-ui/react';
 import ProtectedRoute from './ProtectedRoute';
-import LandingPage from './UserLandingPage/LandingPage';
-import Dashboard from './dashboard/Dashboard';
+import LandingPage from './SharedComponents/UserLandingPage/LandingPage';
+import Dashboard from './Users/dashboard/Dashboard';
 import { AuthProvider } from './Auth';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 
