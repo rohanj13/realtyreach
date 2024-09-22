@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { FaFacebook, FaGoogle, FaLinkedin } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from './Auth';
+import { useAuth } from '../../Context/Auth';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');

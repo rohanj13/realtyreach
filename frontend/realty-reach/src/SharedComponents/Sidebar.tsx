@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, VStack, Button, Text, useColorMode, Switch, Flex } from '@chakra-ui/react';
 import { FiHome, FiFileText, FiMessageSquare, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
-import { useAuth } from '../Auth';
+import { useAuth } from '../Context/Auth';
 
 const Sidebar: React.FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();

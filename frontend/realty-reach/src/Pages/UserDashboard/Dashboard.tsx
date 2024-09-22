@@ -24,7 +24,7 @@ import {
 import { useState, useEffect } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import axios from "axios";
-import Sidebar from "../SharedComponents/Sidebar"; // Import the Sidebar component
+import Sidebar from "../../SharedComponents/Sidebar"; // Import the Sidebar component
 
 interface Job {
   id: number;

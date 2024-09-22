@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import UserRegistrationPage from './UserRegistrationPage';
+import LoginPage from './Pages/LoginPage/LoginPage';
+import UserRegistrationPage from './Pages/RegisterPage/UserRegistrationPage';
 import { ChakraProvider } from '@chakra-ui/react';
-import ProtectedRoute from './ProtectedRoute';
-import LandingPage from './UserLandingPage/LandingPage';
-import Dashboard from './dashboard/Dashboard';
-import { AuthProvider } from './Auth';
+import ProtectedRoute from './Routes/ProtectedRoute';
+import LandingPage from './Pages/LandingPage/LandingPage';
+import Dashboard from './Pages/UserDashboard/Dashboard';
+import { AuthProvider } from './Context/Auth';
 
 const App: React.FC = () => {
   return (
