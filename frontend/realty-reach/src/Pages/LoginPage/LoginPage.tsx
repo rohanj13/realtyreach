@@ -1,145 +1,111 @@
-import React, { useState } from 'react';
+import React from "react";
+import * as Yup from "yup";
+import { useAuth } from "../../Context/useAuth";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
-  Flex,
-  Text,
-  Stack,
-  FormControl,
-  FormLabel,
-  Input,
   Button,
-  Checkbox,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
   Link,
-  IconButton,
-} from '@chakra-ui/react';
-import { FaFacebook, FaGoogle, FaLinkedin } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../Context/Auth';
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const { login, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+import { Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ChakraLink, LinkProps } from '@chakra-ui/react'
 
-  const from = (location.state as any)?.from?.pathname || '/dashboard';
+type Props = {};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login(email, password);
-      if (isAuthenticated) {
-        navigate(from, { replace: true });
-      } else {
-        setError('Login failed. Please check your credentials.');
-      }
-    } catch (error) {
-      setError('An error occurred during login.');
-    }
+type LoginFormsInputs = {
+  email: string;
+  password: string;
+};
+
+const validation = Yup.object().shape({
+  email: Yup.string().required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
+
+const LoginPage = (props: Props) => {
+  const { loginUser } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
+
+  const handleLogin = (form: LoginFormsInputs) => {
+    loginUser(form.email, form.password);
   };
 
   return (
-    <Flex height="100vh" alignItems="center" justifyContent="center">
+    <Container maxW="md" py={12} px={6}>
       <Box
-        width="50%"
-        height="100vh"
-        backgroundImage="url('https://example.com/background-image.jpg')"
-        backgroundSize="cover"
-        backgroundPosition="center"
-        display={{ base: 'none', md: 'block' }}
+        bg="white"
+        boxShadow="lg"
+        p={8}
+        rounded="lg"
+        borderWidth={1}
+        borderColor="gray.200"
       >
-        <Box p={8} color="white">
-          <Text fontSize="4xl" fontWeight="bold">
-            RealtyReach
-          </Text>
-          <Text mt={4}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum
-            suscipit gravida dictumst eget. 
-          </Text>
-        </Box>
-      </Box>
+        <Heading as="h1" mb={6} fontSize="2xl" textAlign="center">
+          Sign in to your account
+        </Heading>
+        <form onSubmit={handleSubmit(handleLogin)}>
+          <Stack spacing={4}>
+            <FormControl id="userName" isInvalid={!!errors.email}>
+              <FormLabel>Username</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your username"
+                {...register("email")}
+              />
+              <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+            </FormControl>
 
-      <Box width={{ base: '100%', md: '50%' }} p={8}>
-        <Box mb={8}>
-          <Text fontSize="2xl" fontWeight="bold">
-            Welcome
-          </Text>
-          <Text>Login to continue</Text>
-        </Box>
+            <FormControl id="password" isInvalid={!!errors.password}>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                placeholder="Enter your password"
+                {...register("password")}
+              />
+              <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+            </FormControl>
 
-        <Stack spacing={4} as="form" onSubmit={handleSubmit}>
-          <FormControl id="email">
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormControl>
+            <Stack direction="row" justify="space-between" align="center">
+              <Link color="blue.500" fontSize="sm">
+                Forgot password?
+              </Link>
+            </Stack>
 
-          <FormControl id="password">
-            <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              placeholder="Your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormControl>
+            <Button
+              colorScheme="teal"
+              type="submit"
+              size="lg"
+              fontSize="md"
+              width="full"
+            >
+              Sign In
+            </Button>
+          </Stack>
+        </form>
 
-          <Flex justifyContent="space-between">
-            <Checkbox>Remember Me</Checkbox>
-            <Link color="blue.500">Forgot Password?</Link>
-          </Flex>
-
-          {error && (
-            <Text color="red.500" textAlign="center">
-              {error}
-            </Text>
-          )}
-
-          <Button colorScheme="blue" type="submit" size="lg">
-            Login
-          </Button>
-
-          <Text textAlign="center" mt={4}>
-            or continue with
-          </Text>
-
-          <Flex justifyContent="center" mt={4}>
-            <IconButton
-              aria-label="Login with Facebook"
-              icon={<FaFacebook />}
-              isRound
-              mx={2}
-            />
-            <IconButton
-              aria-label="Login with Google"
-              icon={<FaGoogle />}
-              isRound
-              mx={2}
-            />
-            <IconButton
-              aria-label="Login with LinkedIn"
-              icon={<FaLinkedin />}
-              isRound
-              mx={2}
-            />
-          </Flex>
-        </Stack>
-
-        <Text textAlign="center" mt={8}>
-          Don't have an account?{' '}
-          <Link color="blue.500" onClick={() => navigate('/register')}>
-            Signup
-          </Link>
+        <Text mt={6} textAlign="center" fontSize="sm">
+          Don’t have an account yet?{" "}
+          <ChakraLink color="teal.500" as={ReactRouterLink} to="/register">
+            Sign up
+          </ChakraLink>
         </Text>
       </Box>
-    </Flex>
+    </Container>
   );
 };
 
-export default Login;
+export default LoginPage;

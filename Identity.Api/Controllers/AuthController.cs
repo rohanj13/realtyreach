@@ -11,18 +11,30 @@ namespace Identity.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration)
-        : ControllerBase
+    public class AuthController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
+
+        public AuthController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
+            _configuration = configuration;
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var user = new ApplicationUser { UserName = request.Email, Email = request.Email };
-            var result = await userManager.CreateAsync(user, request.Password);
+            var result = await _userManager.CreateAsync(user, request.Password);
 
             if (result.Succeeded)
             {
@@ -30,19 +42,20 @@ namespace Identity.Api.Controllers
                 if (!string.IsNullOrEmpty(request.Role))
                 {
                     // Check if the role exists
-                    if (await roleManager.RoleExistsAsync(request.Role))
+                    if (await _roleManager.RoleExistsAsync(request.Role))
                     {
-                        await userManager.AddToRoleAsync(user, request.Role);
+                        await _userManager.AddToRoleAsync(user, request.Role);
                     }
                     else
                     {
-                        await userManager.DeleteAsync(user);
+                        await _userManager.DeleteAsync(user);
                         return BadRequest(new { result = $"Role '{request.Role}' does not exist." });
-                        
                     }
                 }
 
-                return Ok(new { result = "User registered successfully" });
+                // Generate token after successful registration
+                var token = await GenerateJwtTokenAsync(user);
+                return Ok(new { Token = token });
             }
 
             return BadRequest(result.Errors);
@@ -51,37 +64,43 @@ namespace Identity.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var result = await signInManager.PasswordSignInAsync(request.Email, request.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(request.Email, request.Password, false, false);
             if (result.Succeeded)
             {
-                var user = await userManager.FindByEmailAsync(request.Email);
-                var token = GenerateJwtToken(user);
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                var token = await GenerateJwtTokenAsync(user);
                 return Ok(new { Token = token });
             }
 
             return Unauthorized();
         }
 
-        private string GenerateJwtToken(ApplicationUser user)
+        private async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]);
+            var key = Encoding.UTF8.GetBytes("YourSuperSecretKeyMustBeChangedInTheFuture");
+            var roles = await _userManager.GetRolesAsync(user);
+
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Email, user.Email),
-                new("userid", user.Id.ToString())
+                new("userid", user.Id.ToString()),
             };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(configuration.GetValue<int>("JwtSettings:ExpirationInMinutes")),
-                Issuer = configuration["JwtSettings:Issuer"],
-                Audience = configuration["JwtSettings:Audience"],
-                SigningCredentials =
-                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
+                Expires = DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("JwtSettings:ExpirationInMinutes")),
+                Issuer = _configuration["JwtSettings:Issuer"],
+                Audience = _configuration["JwtSettings:Audience"],
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

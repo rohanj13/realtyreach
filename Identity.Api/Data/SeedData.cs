@@ -8,7 +8,7 @@ public static class SeedData
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
         // Ensure roles are created
-        string[] roleNames = { "Admin", "Proffessional", "Customer" }; // Add any other roles you need
+        string[] roleNames = { "Admin", "Professional", "Customer" }; // Add any other roles you need
         foreach (var roleName in roleNames)
         {
             var roleExist = await roleManager.RoleExistsAsync(roleName);

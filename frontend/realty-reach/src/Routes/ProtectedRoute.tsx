@@ -1,21 +1,17 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from './Auth';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../Context/useAuth";
 
-interface ProtectedRouteProps {
-    children: React.ReactElement;
-}
+type Props = { children: React.ReactNode };
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { isAuthenticated } = useAuth();
-    const location = useLocation();
-
-    if (!isAuthenticated) {
-        // Redirect them to the login page, but save the current location they were trying to go to
-        return <Navigate to="/login" state={{ from: location }} replace />;
-    }
-
-    return children;
+const ProtectedRoute = ({ children }: Props) => {
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn() ? (
+    <>{children}</>
+  ) : (
+    <Navigate to="/login" state={{ from: location }} replace />
+  );
 };
 
 export default ProtectedRoute;

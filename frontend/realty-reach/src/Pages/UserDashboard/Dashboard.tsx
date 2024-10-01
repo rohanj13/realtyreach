@@ -25,6 +25,7 @@ import { useState, useEffect } from "react";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import Sidebar from "../../SharedComponents/Sidebar"; // Import the Sidebar component
+import jwtDecode from "jwt-decode";
 
 interface Job {
   id: number;
@@ -41,7 +42,17 @@ const Dashboard = () => {
   const [newJobTitle, setNewJobTitle] = useState("");
   const [newJobDetails, setNewJobDetails] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null); // State to store the logged-in user's email
   const toast = useToast();
+
+  // Fetch the logged-in user's email from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUserEmail(user.email); // Set the email from the stored user object
+    }
+  }, []);
 
   // Fetch jobs for the user
   useEffect(() => {
@@ -106,6 +117,18 @@ const Dashboard = () => {
     <Flex direction="row" h="100vh">
       <Sidebar /> {/* Render the sidebar */}
       <Flex direction="column" p={5} bg="gray.100" flex="1">
+        {/* Show logged-in user's email at the top */}
+        <Flex justify="space-between" align="center">
+          {/* <Heading size="md">My Dashboard</Heading> */}
+          {userEmail && (
+            <Text fontSize="md" color="black.600">
+              Logged in as: {userEmail}
+            </Text>
+          )}
+        </Flex>
+
+        <Divider my={4} />
+
         <Flex justify="space-between" align="center">
           <Heading size="md">My Jobs</Heading>
           <Button colorScheme="blue" onClick={onOpen}>

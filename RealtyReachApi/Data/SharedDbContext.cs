@@ -5,12 +5,16 @@ using RealtyReachApi.Models;
 
 namespace RealtyReachApi.Data
 {
-    public class SharedDbContext : IdentityDbContext<IdentityUser>
+    public class SharedDbContext : DbContext
     {
         public SharedDbContext(DbContextOptions<SharedDbContext> options) : base(options) { }
 
         public DbSet<Job> Jobs { get; set; }
         public DbSet<JobDetail> JobDetails { get; set; }
+        public DbSet<Admin> Admins { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Professional> Professionals { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,44 +39,6 @@ namespace RealtyReachApi.Data
                 .WithOne(r => r.JobDetails)
                 .HasForeignKey<JobDetail>(rd => rd.JobId)
                 .IsRequired();
-
-
-
-            // Customize the ASP.NET Identity table names
-            modelBuilder.Entity<IdentityUser>(b =>
-            {
-                b.ToTable("Users"); // Change the default table name to "Users"
-            });
-
-            modelBuilder.Entity<IdentityRole>(b =>
-            {
-                b.ToTable("Roles"); // Change the default table name to "Roles"
-            });
-
-            modelBuilder.Entity<IdentityUserRole<string>>(b =>
-            {
-                b.ToTable("UserRoles"); // Change the default table name to "UserRoles"
-            });
-
-            modelBuilder.Entity<IdentityUserClaim<string>>(b =>
-            {
-                b.ToTable("UserClaims"); // Change the default table name to "UserClaims"
-            });
-
-            modelBuilder.Entity<IdentityUserLogin<string>>(b =>
-            {
-                b.ToTable("UserLogins"); // Change the default table name to "UserLogins"
-            });
-
-            modelBuilder.Entity<IdentityRoleClaim<string>>(b =>
-            {
-                b.ToTable("RoleClaims"); // Change the default table name to "RoleClaims"
-            });
-
-            modelBuilder.Entity<IdentityUserToken<string>>(b =>
-            {
-                b.ToTable("UserTokens"); // Change the default table name to "UserTokens"
-            });
 
         }
     }

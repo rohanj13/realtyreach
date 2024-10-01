@@ -1,27 +1,44 @@
-import axios from 'axios';
+import axios from "axios";
+import { handleError } from "../Helpers/ErrorHandler";
+import { UserProfileToken } from "../Models/User";
 
-const API_BASE_URL = 'http://localhost:5073'; // Replace with your actual backend URL
+const identityAPI = "http://localhost:5209/api/Auth/";
+const backendAPI = "http://localhost:5073/api/";
 
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-}
-
-export const login = async (data: LoginData): Promise<void> => {
-  const response = await axios.post(`${API_BASE_URL}/login`, data);
-  localStorage.setItem('authToken', response.data.token); // Assuming the response includes a token
+export const loginAPI = async (email: string, password: string) => {
+  try {
+    const data = await axios.post<UserProfileToken>(identityAPI + "login", {
+      email: email,
+      password: password,
+    });
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
 };
 
-export const register = async (data: RegisterData): Promise<void> => {
-  await axios.post(`${API_BASE_URL}/register`, data);
+export const registerAPI = async (
+  email: string,
+  password: string,
+  role: string
+) => {
+  try {
+    const data = await axios.post<UserProfileToken>(identityAPI + "register", {
+      email: email,
+      password: password,
+      role: role,
+    });
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
 };
 
-export const logout = (): void => {
-  localStorage.removeItem('authToken');
-  window.location.href = '/login';
+export const backendRegisterAPI = async () => {
+  try {
+    const data = await axios.post(backendAPI + "User");
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
 };
