@@ -2,6 +2,7 @@ import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
 import { UserProfileToken } from "../Models/User";
 
+//Template this out, pull it from env variable file
 const identityAPI = "http://localhost:5209/api/Auth/";
 const backendAPI = "http://localhost:5073/api/";
 

@@ -58,11 +58,11 @@ export const UserProvider = ({ children }: Props) => {
           setToken(res?.data.token!);
           axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
         toast({
-            title: "Registered Successfully",
+            title: "Frontend Registered Successfully",
             status: "success",
             isClosable: true,
           });
-          navigate("/dashboard");
+        //   navigate("/dashboard");
         }
       })
       .catch((e) => toast({
@@ -75,11 +75,11 @@ export const UserProvider = ({ children }: Props) => {
       .then((res) => {
         if (res?.status === 200) {
             toast({
-                title: "Registration Successful",
+                title: "Backend Registration Successful",
                 status: "success",
                 isClosable: true,
               });
-              navigate("/dashboard");
+              navigate("/login");
         }
         else {
             toast({
@@ -131,6 +131,7 @@ export const UserProvider = ({ children }: Props) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    //remove from axios header
     setUser(null);
     setToken("");
     navigate("/");

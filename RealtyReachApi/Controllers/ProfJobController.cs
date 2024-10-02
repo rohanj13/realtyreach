@@ -10,7 +10,7 @@ namespace RealtyReachApi.Controllers
 {
     [ApiController]
     [Route("api/professionals")]
-    [Authorize]
+    [Authorize(Roles = "Professional")]
     public class ProfJobController : ControllerBase
     {
         private readonly IProfJobService _profJobService;

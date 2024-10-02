@@ -10,7 +10,7 @@ namespace RealtyReachApi.Controllers
 {
     [ApiController]
     [Route("api/jobs")]
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class UserJobController : ControllerBase
     {
         private readonly IUserJobService _userJobService;
