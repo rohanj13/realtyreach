@@ -9,6 +9,8 @@ import Dashboard from './Pages/UserDashboard/Dashboard';
 import { UserProvider } from './Context/useAuth';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CustomerDashboard from './Pages/UserDashboard/CustomerDashboard';
+import ProfessionalDashboard from './Pages/UserDashboard/ProfessionalDashboard';
+import ProfLandingPage from './Pages/LandingPage/ProfLandingPage';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +23,8 @@ const App: React.FC = () => {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/customerdashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+            <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
+            <Route path="/professionals" element={<ProfLandingPage />} />
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             {/* Add other routes here */}
           </Routes>
