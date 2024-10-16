@@ -1,9 +1,11 @@
 // JobController.cs
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace RealtyReachApi.Controllers
@@ -22,7 +24,7 @@ namespace RealtyReachApi.Controllers
 
         // GET: api/jobs/user/{userId}
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<List<JobDto>>> GetAllJobsForUser(int userId)
+        public async Task<ActionResult<List<JobDto>>> GetAllJobsForUser(string userId)
         {
             var jobs = await _userJobService.GetAllJobsForUser(userId);
 
@@ -51,8 +53,9 @@ namespace RealtyReachApi.Controllers
         [HttpPost]
         public async Task<ActionResult<JobDto>> CreateJob(CreateJobDto createJobDto)
         {
-            var jobDto = await _userJobService.CreateJob(createJobDto);
-            return CreatedAtAction(nameof(GetJobById), new { JobId = jobDto.JobId }, jobDto);
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var jobDto = await _userJobService.CreateJob(createJobDto, id);
+            return Ok();
         }
 
         // PUT: api/Jobs/{JobId}

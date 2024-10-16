@@ -17,33 +17,25 @@ namespace RealtyReachApi.Services
             _context = context;
         }
 
-        public async Task<List<JobDto>> GetAllJobsForUser(int userId)
+        public async Task<List<JobDto>> GetAllJobsForUser(string userId)
         {
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Where(r => r.UserId == userId)
                 .Select(r => new JobDto
                 {
-                    JobId = r.JobId,
-                    UserId = r.UserId,
                     JobType = r.JobType,
                     AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    JobDetail = new JobDetailDto
-                    {
-                        JobDetailId = r.JobDetails.JobDetailId,
-                        JobId = r.JobId,
-                        LocationOrPostCode = r.JobDetails.LocationOrPostCode,
-                        PurchaseType = r.JobDetails.PurchaseType,
-                        PropertyType = r.JobDetails.PropertyType,
-                        JourneyProgress = r.JobDetails.JourneyProgress,
-                        BudgetMin = r.JobDetails.BudgetMin,
-                        BudgetMax = r.JobDetails.BudgetMax,
-                        ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
-                    }
+                    Status = r.Status.ToString(),
+                    Postcode = r.JobDetails.Postcode,
+                    PurchaseType = r.JobDetails.PurchaseType,
+                    PropertyType = r.JobDetails.PropertyType,
+                    JourneyProgress = r.JobDetails.JourneyProgress,
+                    BudgetMin = r.JobDetails.BudgetMin,
+                    BudgetMax = r.JobDetails.BudgetMax,
+                    ContactEmail = r.JobDetails.ContactEmail,
+                    ContactPhone = r.JobDetails.ContactPhone
+
                 })
                 .ToListAsync();
         }
@@ -55,79 +47,55 @@ namespace RealtyReachApi.Services
                 .Where(r => r.JobId == JobId)
                 .Select(r => new JobDto
                 {
-                    JobId = r.JobId,
-                    UserId = r.UserId,
                     JobType = r.JobType,
                     AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    JobDetail = new JobDetailDto
-                    {
-                        JobDetailId = r.JobDetails.JobDetailId,
-                        JobId = r.JobId,
-                        LocationOrPostCode = r.JobDetails.LocationOrPostCode,
-                        PurchaseType = r.JobDetails.PurchaseType,
-                        PropertyType = r.JobDetails.PropertyType,
-                        JourneyProgress = r.JobDetails.JourneyProgress,
-                        BudgetMin = r.JobDetails.BudgetMin,
-                        BudgetMax = r.JobDetails.BudgetMax,
-                        ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
-                    }
+                    Status = r.Status.ToString(),
+                    Postcode = r.JobDetails.Postcode,
+                    PurchaseType = r.JobDetails.PurchaseType,
+                    PropertyType = r.JobDetails.PropertyType,
+                    JourneyProgress = r.JobDetails.JourneyProgress,
+                    BudgetMin = r.JobDetails.BudgetMin,
+                    BudgetMax = r.JobDetails.BudgetMax,
+                    ContactEmail = r.JobDetails.ContactEmail,
+                    ContactPhone = r.JobDetails.ContactPhone
+
                 })
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<JobDto> CreateJob(CreateJobDto createJobDto)
+        public async Task<bool> CreateJob(CreateJobDto createJobDto, string id)
         {
             var Job = new Job
             {
-                UserId = createJobDto.UserId,
+                UserId = id,
                 JobType = createJobDto.JobType,
                 AdditionalDetails = createJobDto.AdditionalDetails,
-                Status = createJobDto.Status,
+                Status = JobStatus.Open,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 JobDetails = new JobDetail
                 {
-                    LocationOrPostCode = createJobDto.JobDetail.LocationOrPostCode,
-                    PurchaseType = createJobDto.JobDetail.PurchaseType,
-                    PropertyType = createJobDto.JobDetail.PropertyType,
-                    JourneyProgress = createJobDto.JobDetail.JourneyProgress,
-                    BudgetMin = createJobDto.JobDetail.BudgetMin,
-                    BudgetMax = createJobDto.JobDetail.BudgetMax,
-                    ContactEmail = createJobDto.JobDetail.ContactEmail,
-                    ContactPhone = createJobDto.JobDetail.ContactPhone
+                    Postcode = createJobDto.Postcode,
+                    PurchaseType = createJobDto.PurchaseType,
+                    PropertyType = createJobDto.PropertyType,
+                    JourneyProgress = createJobDto.JourneyProgress,
+                    BudgetMin = createJobDto.BudgetMin,
+                    BudgetMax = createJobDto.BudgetMax,
+                    ContactEmail = createJobDto.ContactEmail,
+                    ContactPhone = createJobDto.ContactPhone
                 }
             };
 
             _context.Jobs.Add(Job);
-            await _context.SaveChangesAsync();
-
-            return new JobDto
+            try
             {
-                JobId = Job.JobId,
-                UserId = Job.UserId,
-                JobType = Job.JobType,
-                AdditionalDetails = Job.AdditionalDetails,
-                Status = Job.Status,
-                CreatedAt = Job.CreatedAt,
-                UpdatedAt = Job.UpdatedAt,
-                JobDetail = new JobDetailDto
-                {
-                    JobDetailId = Job.JobDetails.JobDetailId,
-                    JobId = Job.JobId,
-                    LocationOrPostCode = Job.JobDetails.LocationOrPostCode,
-                    PurchaseType = Job.JobDetails.PurchaseType,
-                    PropertyType = Job.JobDetails.PropertyType,
-                    JourneyProgress = Job.JobDetails.JourneyProgress,
-                    BudgetMin = Job.JobDetails.BudgetMin,
-                    BudgetMax = Job.JobDetails.BudgetMax,
-                    ContactEmail = Job.JobDetails.ContactEmail,
-                    ContactPhone = Job.JobDetails.ContactPhone
-                }
-            };
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> UpdateJob(int JobId, UpdateJobDto updateJobDto)
@@ -140,7 +108,6 @@ namespace RealtyReachApi.Services
 
             Job.JobType = updateJobDto.JobType;
             Job.AdditionalDetails = updateJobDto.AdditionalDetails;
-            Job.Status = updateJobDto.Status;
             Job.UpdatedAt = DateTime.UtcNow;
 
             if (Job.JobDetails != null)
@@ -151,7 +118,7 @@ namespace RealtyReachApi.Services
             Job.JobDetails = new JobDetail
             {
                 JobId = JobId,
-                LocationOrPostCode = updateJobDto.JobDetail.LocationOrPostCode,
+                Postcode = updateJobDto.JobDetail.Postcode,
                 PurchaseType = updateJobDto.JobDetail.PurchaseType,
                 PropertyType = updateJobDto.JobDetail.PropertyType,
                 JourneyProgress = updateJobDto.JobDetail.JourneyProgress,

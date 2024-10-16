@@ -8,6 +8,7 @@ import LandingPage from './Pages/LandingPage/LandingPage';
 import Dashboard from './Pages/UserDashboard/Dashboard';
 import { UserProvider } from './Context/useAuth';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
+import CustomerDashboard from './Pages/UserDashboard/CustomerDashboard';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/customerdashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             {/* Add other routes here */}
           </Routes>

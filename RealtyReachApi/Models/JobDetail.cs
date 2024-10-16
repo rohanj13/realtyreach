@@ -16,7 +16,7 @@ public class JobDetail
     public Job job { get; set; }
 
     [Required]
-    public required string LocationOrPostCode { get; set; }  // Comma Separated Strings
+    public required string Postcode { get; set; }  // Comma Separated Strings
 
     [Required]
     public required string PurchaseType { get; set; }  // First Home/Investment Property
