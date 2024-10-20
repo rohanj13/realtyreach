@@ -13,6 +13,8 @@ namespace RealtyReachApi.Models
         [Required]
         public required string UserId { get; set; }
 
+        public required string JobTitle { get; set; }
+
         [Required]
         [StringLength(10)]
         public required string JobType { get; set; }  // "Buy" or "Sell"

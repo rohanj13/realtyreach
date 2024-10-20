@@ -43,3 +43,22 @@ export const backendRegisterAPI = async () => {
     handleError(error);
   }
 };
+
+export const getUser = async () => {
+  try {
+    const data = await axios.get(backendAPI + "User");
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateUser = async (updatedUser: any) => {
+  try {
+    const data = await axios.put(backendAPI + "User", updatedUser);
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+

@@ -23,6 +23,8 @@ import {
   Divider,
   InputGroup,
   InputLeftElement,
+  CheckboxGroup,
+  Checkbox,
 } from '@chakra-ui/react';
 import { PhoneIcon, MailIcon } from 'lucide-react';
 import { createJob } from '../services/UserJobService';
@@ -30,16 +32,26 @@ import { CreateJobDto } from '../Models/Job';
 
 interface FormData {
   jobType: 'Buy' | 'Sell';
+  jobTitle: string;
   Postcode: string;
   purchaseType: string;
   propertyType: string;
   budgetMin: number;
   budgetMax: number;
   journeyProgress: string;
+  selectedProfessionals: string[];
   additionalDetails: string;
   contactEmail: string;
   contactPhone: string;
 }
+
+type BuyingStages = 'Just Started' | 'Pre-Approval' | 'Post Purchase';
+
+const buyingStages: Record<BuyingStages, string[]> = {
+  "Just Started": ["Buyer's Advocate", "Mortgage Broker"],
+  "Pre-Approval": ["Buyer's Advocate", "Conveyancer", "Building & Pest Inspector"],
+  "Post Purchase": ["Conveyancer", "Building & Pest Inspector"],
+};
 
 interface JobFormProps {
   onClose: () => void; // Accept onClose prop
@@ -52,16 +64,35 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
   const [userId, setUserId] = useState<string>("");
   const [formData, setFormData] = useState<FormData>({
     jobType: 'Buy',
+    jobTitle: '',
     Postcode: '',
     purchaseType: '',
     propertyType: '',
     budgetMin: 0,
     budgetMax: 0,
     journeyProgress: '',
+    selectedProfessionals: [],
     additionalDetails: '',
     contactEmail: '',
     contactPhone: '',
   });
+
+    // Update the selected professionals when the journey progress changes
+    const handleJourneyProgressChange = (e: ChangeEvent<HTMLSelectElement>) => {
+      const journeyProgress = e.target.value as BuyingStages; // Type assertion to match keys
+      setFormData(prev => ({
+        ...prev,
+        journeyProgress,
+        professionals: buyingStages[journeyProgress] || []
+      }));
+    };
+
+  const handleProfessionalSelection = (selected: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedProfessionals: selected,
+    }));
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -81,12 +112,14 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
 
     const createJobDto: CreateJobDto = {
       JobType: formData.jobType,
+      JobTitle: formData.jobTitle,
       Postcode: formData.Postcode,
       PurchaseType: formData.purchaseType,
       PropertyType: formData.propertyType,
       BudgetMin: formData.budgetMin,
       BudgetMax: formData.budgetMax,
       JourneyProgress: formData.journeyProgress,
+      SelectedProfessionals: formData.selectedProfessionals,
       AdditionalDetails: formData.additionalDetails,
       ContactEmail: formData.contactEmail,
       ContactPhone: formData.contactPhone,
@@ -132,9 +165,19 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
                 <RadioGroup value={formData.jobType} onChange={handleRadioChange}>
                   <HStack spacing={4}>
                     <Radio value="Buy" colorScheme="blue">Buy</Radio>
-                    <Radio value="Sell" colorScheme="blue">Sell</Radio>
+                    {/* <Radio value="Sell" colorScheme="blue">Sell</Radio> */}
                   </HStack>
                 </RadioGroup>
+              </FormControl>
+              <FormControl>
+                <FormLabel>Job Title</FormLabel>
+                <Textarea
+                  name="jobTitle"
+                  value={formData.jobTitle}
+                  onChange={handleChange}
+                  placeholder="E.g. Buying a house in Melbourne"
+                  rows={1}
+                />
               </FormControl>
               <FormControl isRequired>
                 <FormLabel>Job Location (Postcode)</FormLabel>
@@ -210,27 +253,53 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
                   </NumberInput>
                 </HStack>
               </FormControl>
-              <FormControl isRequired>
-                <FormLabel>Journey Progress</FormLabel>
-                <Select
-                  name="journeyProgress"
-                  value={formData.journeyProgress}
-                  onChange={handleChange}
-                  placeholder="Select journey progress"
-                >
-                  <option value="justStarted">Just Started</option>
-                  <option value="preApproval">Pre-approval</option>
-                  <option value="postPurchase">Post Purchase</option>
-                </Select>
-              </FormControl>
             </>
           )}
 
           {step === 3 && (
             <>
-              <Text fontSize="xl" fontWeight="bold" color="blue.600">Step 3: Additional Information</Text>
+              <Text fontSize="xl" fontWeight="bold" color="blue.600">
+                Step 3: Journey Progress
+              </Text>
+              <FormControl isRequired>
+                <FormLabel>Where are you in your home buying journey?</FormLabel>
+                <Select
+                  name="journeyProgress"
+                  value={formData.journeyProgress}
+                  onChange={handleJourneyProgressChange}
+                  placeholder="Select journey progress"
+                >
+                  <option value="Just Started">Just Started</option>
+                  <option value="Pre-Approval">Pre-Approval</option>
+                  <option value="Post Purchase">Post Purchase</option>
+                </Select>
+              </FormControl>
+
+              {formData.journeyProgress && (
+                <FormControl>
+                  <FormLabel>Select professionals to notify:</FormLabel>
+                  <CheckboxGroup
+                    value={formData.selectedProfessionals}
+                    onChange={handleProfessionalSelection}
+                  >
+                    <VStack align="start">
+                      {buyingStages[formData.journeyProgress as BuyingStages].map(professional => (
+                        <Checkbox key={professional} value={professional}>
+                          {professional}
+                        </Checkbox>
+                      ))}
+                    </VStack>
+                  </CheckboxGroup>
+                </FormControl>
+              )}
+            </>
+          )}
+
+          {step === 4 && (
+            <>
+              <Text fontSize="xl" fontWeight="bold" color="blue.600">Step 4: Additional Information</Text>
               <FormControl>
-                <FormLabel>Additional Details</FormLabel>
+                <FormLabel>Any additional details</FormLabel>
                 <Textarea
                   name="additionalDetails"
                   value={formData.additionalDetails}

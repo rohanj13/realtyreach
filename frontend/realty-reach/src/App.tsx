@@ -11,6 +11,7 @@ import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CustomerDashboard from './Pages/UserDashboard/CustomerDashboard';
 import ProfessionalDashboard from './Pages/UserDashboard/ProfessionalDashboard';
 import ProfLandingPage from './Pages/LandingPage/ProfLandingPage';
+import UserProfileCompletionPage from './Pages/RegisterPage/UserProfileCompletion';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
             <Route path="/customerdashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
             <Route path="/professionaldashboard" element={<ProfessionalDashboard />} />
             <Route path="/professionals" element={<ProfLandingPage />} />
+            <Route path="/customerregistration" element={<ProtectedRoute><UserProfileCompletionPage /></ProtectedRoute>} />
             {/* <Route path="/dashboard" element={<Dashboard />} /> */}
             {/* Add other routes here */}
           </Routes>

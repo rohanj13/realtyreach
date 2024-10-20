@@ -4,6 +4,7 @@ using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace RealtyReachApi.Controllers
@@ -109,33 +110,33 @@ namespace RealtyReachApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateUser([FromBody] object userDto)
+        public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDto customer)
         {
-            var role = GetUserRoleFromToken();
+            // var role = GetUserRoleFromToken();
             var userId = Guid.Parse(GetUserIdFromToken());
 
-            if (role == "Admin")
-            {
-                var admin = userDto as Admin;
-                await _adminService.UpdateAdminAsync(userId, admin);
-                return Ok("Admin updated successfully.");
-            }
-            else if (role == "Customer")
-            {
-                var customer = userDto as Customer;
-                await _customerService.UpdateCustomerAsync(userId, customer);
-                return Ok("Customer updated successfully.");
-            }
-            else if (role == "Professional")
-            {
-                var professional = userDto as Professional;
-                await _professionalService.UpdateProfessionalAsync(userId, professional);
-                return Ok("Professional updated successfully.");
-            }
-            else
-            {
-                return BadRequest("Invalid role.");
-            }
+            // if (role == "Admin")
+            // {
+            //     var admin = userDto as Admin;
+            //     await _adminService.UpdateAdminAsync(userId, admin);
+            //     return Ok("Admin updated successfully.");
+            // }
+            // if (role == "Customer")
+            // {
+            // var customer = userDto as Customer;
+            await _customerService.UpdateCustomerAsync(userId, customer);
+            return Ok("Customer updated successfully.");
+            // }
+            // else if (role == "Professional")
+            // {
+            //     var professional = userDto as Professional;
+            //     await _professionalService.UpdateProfessionalAsync(userId, professional);
+            //     return Ok("Professional updated successfully.");
+            // }
+            // else
+            // {
+            //     return BadRequest("Invalid role.");
+            // }
         }
 
         [HttpDelete]

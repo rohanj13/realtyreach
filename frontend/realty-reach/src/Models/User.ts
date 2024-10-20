@@ -3,6 +3,8 @@ export type UserProfileToken = {
   };
   
   export type UserProfile = {
-    email: string;
-    userId: string;
+    Id: string;
+    Email: string;
+    FirstName: string;
+    LastName: string;
   };

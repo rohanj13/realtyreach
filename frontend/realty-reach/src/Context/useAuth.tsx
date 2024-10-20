@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { UserProfile } from "../Models/User";
 import { useNavigate } from "react-router-dom";
-import { backendRegisterAPI, loginAPI, registerAPI } from "../services/AuthService";
+import { backendRegisterAPI, getUser, loginAPI, registerAPI } from "../services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
 import axios from "axios";
@@ -41,16 +41,16 @@ export const UserProvider = ({ children }: Props) => {
     await registerAPI(email, password, role)
       .then((res) => {
         if (res) {
-          localStorage.setItem("token", res?.data.token);
-          const decodedToken: { email: string; userId: string } = jwtDecode(res?.data.token);
-          const userObj = {
-            email: decodedToken.email,
-            userId: decodedToken.userId,
-          };
-          localStorage.setItem("user", JSON.stringify(userObj));
-          setUser(userObj);
+          // localStorage.setItem("token", res?.data.token);
+          // const decodedToken: { email: string; userId: string } = jwtDecode(res?.data.token);
+          // const userObj = {
+          //   email: decodedToken.email,
+          //   userId: decodedToken.userId,
+          // };
+          // localStorage.setItem("user", JSON.stringify(userObj));
+          // setUser(userObj);
 
-          setToken(res?.data.token);
+          // setToken(res?.data.token);
           axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
           toast({
             title: "Frontend Registered Successfully",
@@ -101,20 +101,60 @@ export const UserProvider = ({ children }: Props) => {
           setToken(res?.data.token);
           axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
 
-          const decodedToken: { email: string; userId: string } = jwtDecode(res?.data.token);
-          const userObj = {
-            email: decodedToken.email,
-            userId: decodedToken.userId,
-          };
-          localStorage.setItem("user", JSON.stringify(userObj));
-          setUser(userObj);
+          // const decodedToken: { email: string; userId: string } = jwtDecode(res?.data.token);
+          // const userObj = {
+          //   email: decodedToken.email,
+          //   userId: decodedToken.userId,
+          // };
+          // localStorage.setItem("user", JSON.stringify(userObj));
+          // setUser(userObj);
 
           toast({
             title: "Login Successful",
             status: "success",
             isClosable: true,
           });
-          navigate("/customerdashboard");
+        }
+      })
+      .catch(() =>
+        toast({
+          title: "Error Logging In",
+          status: "error",
+          isClosable: true,
+        })
+      );
+
+      await getUser()
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res.data.firstName || res.data.lastName) {
+            const userObj = {
+              Id: res.data.userId,
+              Email: res.data.email,
+              FirstName: res.data.firstName,
+              LastName: res.data.lastName,
+            };
+            localStorage.setItem("user", JSON.stringify(userObj));
+            setUser(userObj);
+            navigate("/customerdashboard");
+          }
+          else {
+            const userObj = {
+              Id: res.data.userId,
+              Email: res.data.email,
+              FirstName: "",
+              LastName: "",
+            };
+            localStorage.setItem("user", JSON.stringify(userObj));
+            setUser(userObj);
+            navigate("/customerregistration");
+          }
+        } else {
+          toast({
+            title: "Error Logging In",
+            status: "error",
+            isClosable: true,
+          });
         }
       })
       .catch(() =>

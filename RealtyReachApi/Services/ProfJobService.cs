@@ -25,12 +25,14 @@ namespace RealtyReachApi.Services
                 .Select(r => new JobDto
                 {
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
                     Status = r.Status.ToString(),
                     Postcode = r.JobDetails.Postcode,
                     PurchaseType = r.JobDetails.PurchaseType,
                     PropertyType = r.JobDetails.PropertyType,
                     JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
                     BudgetMin = r.JobDetails.BudgetMin,
                     BudgetMax = r.JobDetails.BudgetMax,
                     ContactEmail = r.JobDetails.ContactEmail,

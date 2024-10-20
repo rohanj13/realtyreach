@@ -25,12 +25,14 @@ namespace RealtyReachApi.Services
                 .Select(r => new JobDto
                 {
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
                     Status = r.Status.ToString(),
                     Postcode = r.JobDetails.Postcode,
                     PurchaseType = r.JobDetails.PurchaseType,
                     PropertyType = r.JobDetails.PropertyType,
                     JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
                     BudgetMin = r.JobDetails.BudgetMin,
                     BudgetMax = r.JobDetails.BudgetMax,
                     ContactEmail = r.JobDetails.ContactEmail,
@@ -48,12 +50,14 @@ namespace RealtyReachApi.Services
                 .Select(r => new JobDto
                 {
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
                     Status = r.Status.ToString(),
                     Postcode = r.JobDetails.Postcode,
                     PurchaseType = r.JobDetails.PurchaseType,
                     PropertyType = r.JobDetails.PropertyType,
                     JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
                     BudgetMin = r.JobDetails.BudgetMin,
                     BudgetMax = r.JobDetails.BudgetMax,
                     ContactEmail = r.JobDetails.ContactEmail,
@@ -69,6 +73,7 @@ namespace RealtyReachApi.Services
             {
                 UserId = id,
                 JobType = createJobDto.JobType,
+                JobTitle = createJobDto.JobTitle,
                 AdditionalDetails = createJobDto.AdditionalDetails,
                 Status = JobStatus.Open,
                 CreatedAt = DateTime.UtcNow,
@@ -79,6 +84,7 @@ namespace RealtyReachApi.Services
                     PurchaseType = createJobDto.PurchaseType,
                     PropertyType = createJobDto.PropertyType,
                     JourneyProgress = createJobDto.JourneyProgress,
+                    SelectedProfessionals = createJobDto.SelectedProfessionals,
                     BudgetMin = createJobDto.BudgetMin,
                     BudgetMax = createJobDto.BudgetMax,
                     ContactEmail = createJobDto.ContactEmail,
@@ -122,6 +128,7 @@ namespace RealtyReachApi.Services
                 PurchaseType = updateJobDto.JobDetail.PurchaseType,
                 PropertyType = updateJobDto.JobDetail.PropertyType,
                 JourneyProgress = updateJobDto.JobDetail.JourneyProgress,
+                SelectedProfessionals = updateJobDto.JobDetail.SelectedProfessionals,
                 BudgetMin = updateJobDto.JobDetail.BudgetMin,
                 BudgetMax = updateJobDto.JobDetail.BudgetMax,
                 ContactEmail = updateJobDto.JobDetail.ContactEmail,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -43,9 +43,19 @@ import {
 } from 'lucide-react';
 import CreateJobForm from '../../Components/CreateJobForm';
 import Sidebar from "../../SharedComponents/Sidebar";
+import { UserProfile } from '../../Models/User';
 
 const CustomerDashboard = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [firstName, setFirstName] = useState<string>('');
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userObj: UserProfile = JSON.parse(storedUser);
+      setFirstName(userObj.FirstName);
+    }
+  }, []);
   return (
     <Flex direction="row" h="100vh">
         {/* <Sidebar /> */}
@@ -53,7 +63,7 @@ const CustomerDashboard = () => {
       <Flex direction="column" gap={6}>
         {/* Header */}
         <Flex justify="space-between" align="center">
-          <Heading size="lg">Welcome back, Sarah!</Heading>
+          <Heading size="lg">Welcome back, {firstName}!</Heading>
           <Button colorScheme="blue" leftIcon={<Home />} onClick={onOpen}>Create New Job</Button>
         </Flex>
 
