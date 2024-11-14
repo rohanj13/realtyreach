@@ -42,7 +42,10 @@ namespace RealtyReachApi.Services
                         BudgetMin = r.JobDetails.BudgetMin,
                         BudgetMax = r.JobDetails.BudgetMax,
                         ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
+                        ContactPhone = r.JobDetails.ContactPhone,
+                        JobDetailProfessionalTypeIds = r.JobDetails.JobDetailProfessionalTypes
+                            .Select(jdpt => jdpt.ProfessionalTypeId)
+                            .ToList()
                     }
                 })
                 .ToListAsync();

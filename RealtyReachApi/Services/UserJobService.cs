@@ -42,7 +42,10 @@ namespace RealtyReachApi.Services
                         BudgetMin = r.JobDetails.BudgetMin,
                         BudgetMax = r.JobDetails.BudgetMax,
                         ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
+                        ContactPhone = r.JobDetails.ContactPhone,
+                        JobDetailProfessionalTypeIds = r.JobDetails.JobDetailProfessionalTypes
+                            .Select(jdpt => jdpt.ProfessionalTypeId)
+                            .ToList()
                     }
                 })
                 .ToListAsync();
@@ -73,10 +76,13 @@ namespace RealtyReachApi.Services
                         BudgetMin = r.JobDetails.BudgetMin,
                         BudgetMax = r.JobDetails.BudgetMax,
                         ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
+                        ContactPhone = r.JobDetails.ContactPhone,
+                        JobDetailProfessionalTypeIds = r.JobDetails.JobDetailProfessionalTypes
+                            .Select(jdpt => jdpt.ProfessionalTypeId)
+                            .ToList()
                     }
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
         public async Task<JobDto> CreateJob(CreateJobDto createJobDto)
@@ -99,7 +105,8 @@ namespace RealtyReachApi.Services
                     BudgetMax = createJobDto.JobDetail.BudgetMax,
                     ContactEmail = createJobDto.JobDetail.ContactEmail,
                     ContactPhone = createJobDto.JobDetail.ContactPhone
-                }
+                },
+                IsMatched = false
             };
 
             _context.Jobs.Add(Job);
@@ -125,7 +132,10 @@ namespace RealtyReachApi.Services
                     BudgetMin = Job.JobDetails.BudgetMin,
                     BudgetMax = Job.JobDetails.BudgetMax,
                     ContactEmail = Job.JobDetails.ContactEmail,
-                    ContactPhone = Job.JobDetails.ContactPhone
+                    ContactPhone = Job.JobDetails.ContactPhone,
+                    JobDetailProfessionalTypeIds = Job.JobDetails.JobDetailProfessionalTypes
+                        .Select(jdpt => jdpt.ProfessionalTypeId)
+                        .ToList()
                 }
             };
         }

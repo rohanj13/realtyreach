@@ -30,5 +30,8 @@ namespace RealtyReachApi.Models
 
         // Navigation property
         public required JobDetail JobDetails { get; set; }
+        
+        // Validate if a job has been matched to a maximum number of professionals
+        public Boolean IsMatched { get; set; }
     }
 }

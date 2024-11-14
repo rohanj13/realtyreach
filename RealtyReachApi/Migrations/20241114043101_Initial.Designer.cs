@@ -12,8 +12,8 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    [Migration("20241001015913_removeuserid")]
-    partial class removeuserid
+    [Migration("20241114043101_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,6 +79,9 @@ namespace RealtyReachApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsMatched")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("JobType")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -97,7 +100,7 @@ namespace RealtyReachApi.Migrations
 
                     b.HasKey("JobId");
 
-                    b.ToTable("Jobs", (string)null);
+                    b.ToTable("Jobs");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
@@ -146,7 +149,22 @@ namespace RealtyReachApi.Migrations
                     b.HasIndex("JobId")
                         .IsUnique();
 
-                    b.ToTable("JobDetails", (string)null);
+                    b.ToTable("JobDetails");
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.JobDetailProfessionalType", b =>
+                {
+                    b.Property<int>("JobDetailId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProfessionalTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("JobDetailId", "ProfessionalTypeId");
+
+                    b.HasIndex("ProfessionalTypeId");
+
+                    b.ToTable("JobDetailProfessionalType");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
@@ -156,39 +174,51 @@ namespace RealtyReachApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ABN")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CompanyName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LicenseNumber")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("ProfessionalTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("VerificationStatus")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("userId")
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfessionalTypeId");
+
+                    b.ToTable("Professionals");
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.ProfessionalType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TypeName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Professionals");
+                    b.ToTable("ProfessionalTypes");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
@@ -202,10 +232,52 @@ namespace RealtyReachApi.Migrations
                     b.Navigation("job");
                 });
 
+            modelBuilder.Entity("RealtyReachApi.Models.JobDetailProfessionalType", b =>
+                {
+                    b.HasOne("RealtyReachApi.Models.JobDetail", "JobDetail")
+                        .WithMany("JobDetailProfessionalTypes")
+                        .HasForeignKey("JobDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealtyReachApi.Models.ProfessionalType", "ProfessionalType")
+                        .WithMany("JobDetailProfessionalTypes")
+                        .HasForeignKey("ProfessionalTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobDetail");
+
+                    b.Navigation("ProfessionalType");
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
+                {
+                    b.HasOne("RealtyReachApi.Models.ProfessionalType", "ProfessionalType")
+                        .WithMany("Professionals")
+                        .HasForeignKey("ProfessionalTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProfessionalType");
+                });
+
             modelBuilder.Entity("RealtyReachApi.Models.Job", b =>
                 {
                     b.Navigation("JobDetails")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
+                {
+                    b.Navigation("JobDetailProfessionalTypes");
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.ProfessionalType", b =>
+                {
+                    b.Navigation("JobDetailProfessionalTypes");
+
+                    b.Navigation("Professionals");
                 });
 #pragma warning restore 612, 618
         }

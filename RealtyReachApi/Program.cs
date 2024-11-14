@@ -98,7 +98,7 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<SharedDbContext>();
-        // dbContext.Database.Migrate();
+        dbContext.Database.Migrate();
     }
 }
 

@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RealtyReachApi.Models;
 public class Professional
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
     public string? Email { get; set; }
     public string? FirstName { get; set; }
@@ -13,4 +15,7 @@ public class Professional
     public string? LicenseNumber { get; set; }
     public bool VerificationStatus { get; set; } // True if verified, false otherwise
     public string? CompanyName { get; set; }
+    // Foreign key to ProfessionalType
+    public int ProfessionalTypeId { get; set; }
+    public ProfessionalType ProfessionalType { get; set; }
 }

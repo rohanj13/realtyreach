@@ -40,4 +40,6 @@ public class JobDetail
     [Required]
     [Phone]
     public required string ContactPhone { get; set; }
+    
+    public List<JobDetailProfessionalType> JobDetailProfessionalTypes { get; set; } = new List<JobDetailProfessionalType>();
 }

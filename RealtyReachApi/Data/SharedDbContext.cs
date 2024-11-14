@@ -14,32 +14,23 @@ namespace RealtyReachApi.Data
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Professional> Professionals { get; set; }
+        public DbSet<ProfessionalType> ProfessionalTypes { get; set; }
+        public DbSet<JobDetailProfessionalType> JobProfessionalTypes { get; set; }
+        public DbSet<JobDetailProfessionalType> JobDetailProfessionalTypes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Job>().ToTable("Jobs");
-            modelBuilder.Entity<JobDetail>().ToTable("JobDetails");
-
-            modelBuilder.Entity<Job>()
-                .HasKey(r => r.JobId);
-
-            modelBuilder.Entity<JobDetail>()
-                .HasKey(rd => rd.JobDetailId);
-
-            modelBuilder.Entity<Job>()
-                .HasOne(rd => rd.JobDetails)
-                .WithOne(rd => rd.job)
-                .HasForeignKey<JobDetail>(rd => rd.JobId);
-
-            modelBuilder.Entity<JobDetail>()
-                .HasOne(r => r.job)
-                .WithOne(r => r.JobDetails)
-                .HasForeignKey<JobDetail>(rd => rd.JobId)
-                .IsRequired();
-
+            modelBuilder.Entity<JobDetailProfessionalType>()
+                .HasKey(jdpt => new { jdpt.JobDetailId, jdpt.ProfessionalTypeId });
+            modelBuilder.Entity<JobDetailProfessionalType>()
+                .HasOne(jdpt => jdpt.JobDetail)
+                .WithMany(jd => jd.JobDetailProfessionalTypes)
+                .HasForeignKey(jdpt => jdpt.JobDetailId);
+            modelBuilder.Entity<JobDetailProfessionalType>()
+                .HasOne(jdpt => jdpt.ProfessionalType)
+                .WithMany(pt => pt.JobDetailProfessionalTypes)
+                .HasForeignKey(jdpt => jdpt.ProfessionalTypeId);
         }
     }
 }
