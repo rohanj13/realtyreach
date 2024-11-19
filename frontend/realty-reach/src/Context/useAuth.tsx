@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { UserProfile } from "../Models/User";
+import { CustomerProfile, ProfessionalProfile, UserProfile } from "../Models/User";
 import { useNavigate } from "react-router-dom";
 import { backendRegisterAPI, getUser, loginAPI, registerAPI } from "../services/AuthService";
 import { toast } from "react-toastify";
@@ -15,6 +15,7 @@ type UserContextType = {
   loginUser: (username: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
+  getUserRole: () => string | null;
 };
 
 type Props = { children: React.ReactNode };
@@ -97,64 +98,23 @@ export const UserProvider = ({ children }: Props) => {
     await loginAPI(username, password)
       .then((res) => {
         if (res) {
-          localStorage.setItem("token", res?.data.token);
-          setToken(res?.data.token);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-
-          // const decodedToken: { email: string; userId: string } = jwtDecode(res?.data.token);
-          // const userObj = {
-          //   email: decodedToken.email,
-          //   userId: decodedToken.userId,
-          // };
-          // localStorage.setItem("user", JSON.stringify(userObj));
-          // setUser(userObj);
-
+          const token = res?.data.token;
+          localStorage.setItem("token", token);
+          setToken(token);
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  
+          
+          const role  = getUserRole();
           toast({
             title: "Login Successful",
             status: "success",
             isClosable: true,
           });
-        }
-      })
-      .catch(() =>
-        toast({
-          title: "Error Logging In",
-          status: "error",
-          isClosable: true,
-        })
-      );
-
-      await getUser()
-      .then((res) => {
-        if (res?.status === 200) {
-          if (res.data.firstName || res.data.lastName) {
-            const userObj = {
-              Id: res.data.userId,
-              Email: res.data.email,
-              FirstName: res.data.firstName,
-              LastName: res.data.lastName,
-            };
-            localStorage.setItem("user", JSON.stringify(userObj));
-            setUser(userObj);
-            navigate("/customerdashboard");
+          if (role === "admin") {
+            navigate("/admindashboard");
+          } else {
+            getUserDataBasedOnRole(role);
           }
-          else {
-            const userObj = {
-              Id: res.data.userId,
-              Email: res.data.email,
-              FirstName: "",
-              LastName: "",
-            };
-            localStorage.setItem("user", JSON.stringify(userObj));
-            setUser(userObj);
-            navigate("/customerregistration");
-          }
-        } else {
-          toast({
-            title: "Error Logging In",
-            status: "error",
-            isClosable: true,
-          });
         }
       })
       .catch(() =>
@@ -165,9 +125,82 @@ export const UserProvider = ({ children }: Props) => {
         })
       );
   };
+  
+  const getUserDataBasedOnRole = async (role: string) => {
+    await getUser()
+      .then((res) => {
+        if (res?.status === 200) {
+          let userObj: UserProfile | CustomerProfile | ProfessionalProfile;
+  
+          if (role === "Customer") {
+            userObj = {
+              Id: res.data.userId,
+              Email: res.data.email,
+              FirstName: res.data.firstName || "",
+              LastName: res.data.lastName || "",
+            } as CustomerProfile;
+  
+            localStorage.setItem("user", JSON.stringify(userObj));
+            setUser(userObj);
+  
+            if (userObj.FirstName) {
+              navigate("/customerdashboard");
+            } else {
+              navigate("/customerregistration");
+            }
+          } else if (role === "Professional") {
+            userObj = {
+              Id: res.data.userId,
+              Email: res.data.email,
+              FirstName: res.data.firstName || "",
+              LastName: res.data.lastName || "",
+              ABN: res.data.ABN || "",
+              LicenseNumber: res.data.LicenseNumber || "",
+              VerificationStatus: res.data.VerificationStatus || "",
+              CompanyName: res.data.CompanyName || "",
+            } as ProfessionalProfile;
+  
+            localStorage.setItem("user", JSON.stringify(userObj));
+            setUser(userObj);
+  
+            if (res.data.professionalDetails) {
+              navigate("/professionaldashboard");
+            } else {
+              navigate("/professionalregistration");
+            }
+          }
+        } else {
+          toast({
+            title: "Error Retrieving User Data",
+            status: "error",
+            isClosable: true,
+          });
+        }
+      })
+      .catch(() =>
+        toast({
+          title: "Error Retrieving User Data",
+          status: "error",
+          isClosable: true,
+        })
+      );
+  };
 
   const isLoggedIn = () => {
-    return !!token;
+    if (!token) return false; // No token means the user is not logged in
+  
+    try {
+      const decodedToken: any = jwtDecode(token);
+      const isExpired = decodedToken.exp * 1000 < Date.now(); // Convert exp to milliseconds
+      if (isExpired) {
+        logout(); // Automatically log out if the token is expired
+        return false;
+      }
+      return true; // Valid and non-expired token
+    } catch (error) {
+      logout(); // Invalid token
+      return false;
+    }
   };
 
   const logout = () => {
@@ -178,9 +211,15 @@ export const UserProvider = ({ children }: Props) => {
     navigate("/");
   };
 
+  const getUserRole = () => {
+    if (!token) return null;
+    const decodedToken: any = jwtDecode(token);
+    return decodedToken?.role;
+  };
+
   return (
     <UserContext.Provider
-      value={{ loginUser, user, token, logout, isLoggedIn, registerUser }}
+      value={{ loginUser, user, token, logout, isLoggedIn, registerUser, getUserRole }}
     >
       {isReady ? children : null}
     </UserContext.Provider>

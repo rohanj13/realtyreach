@@ -59,11 +59,11 @@ const LoginPage = (props: Props) => {
         </Heading>
         <form onSubmit={handleSubmit(handleLogin)}>
           <Stack spacing={4}>
-            <FormControl id="userName" isInvalid={!!errors.email}>
-              <FormLabel>Username</FormLabel>
+            <FormControl id="email" isInvalid={!!errors.email}>
+              <FormLabel>Email</FormLabel>
               <Input
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
                 {...register("email")}
               />
               <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
