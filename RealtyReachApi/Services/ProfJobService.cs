@@ -24,26 +24,19 @@ namespace RealtyReachApi.Services
                 .Include(r => r.JobDetails)
                 .Select(r => new JobDto
                 {
-                    JobId = r.JobId,
-                    UserId = r.UserId,
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    JobDetail = new JobDetailDto
-                    {
-                        JobDetailId = r.JobDetails.JobDetailId,
-                        JobId = r.JobId,
-                        LocationOrPostCode = r.JobDetails.LocationOrPostCode,
-                        PurchaseType = r.JobDetails.PurchaseType,
-                        PropertyType = r.JobDetails.PropertyType,
-                        JourneyProgress = r.JobDetails.JourneyProgress,
-                        BudgetMin = r.JobDetails.BudgetMin,
-                        BudgetMax = r.JobDetails.BudgetMax,
-                        ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone
-                    }
+                    Status = r.Status.ToString(),
+                    Postcode = r.JobDetails.Postcode,
+                    PurchaseType = r.JobDetails.PurchaseType,
+                    PropertyType = r.JobDetails.PropertyType,
+                    JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
+                    BudgetMin = r.JobDetails.BudgetMin,
+                    BudgetMax = r.JobDetails.BudgetMax,
+                    ContactEmail = r.JobDetails.ContactEmail,
+                    ContactPhone = r.JobDetails.ContactPhone
                 })
                 .ToListAsync();
         }

@@ -12,8 +12,8 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    [Migration("20241001015913_removeuserid")]
-    partial class removeuserid
+    [Migration("20241120080951_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,21 +79,24 @@ namespace RealtyReachApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("JobType")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("JobId");
 
@@ -129,7 +132,7 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LocationOrPostCode")
+                    b.Property<string>("Postcode")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -140,6 +143,10 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("PurchaseType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string[]>("SelectedProfessionals")
+                        .IsRequired()
+                        .HasColumnType("text[]");
 
                     b.HasKey("JobDetailId");
 
@@ -156,35 +163,25 @@ namespace RealtyReachApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("ABN")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CompanyName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("LicenseNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("VerificationStatus")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("userId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

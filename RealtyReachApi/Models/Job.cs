@@ -11,7 +11,9 @@ namespace RealtyReachApi.Models
         public int JobId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public required string UserId { get; set; }
+
+        public required string JobTitle { get; set; }
 
         [Required]
         [StringLength(10)]
@@ -20,8 +22,7 @@ namespace RealtyReachApi.Models
         public required string AdditionalDetails { get; set; }
 
         [Required]
-        [StringLength(10)]
-        public required string Status { get; set; }  // e.g., Open, Closed
+        public required JobStatus Status { get; set; }  // e.g., Open, Closed
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

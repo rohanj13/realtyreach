@@ -76,21 +76,24 @@ namespace RealtyReachApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("JobType")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("JobId");
 
@@ -126,7 +129,7 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LocationOrPostCode")
+                    b.Property<string>("Postcode")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -137,6 +140,10 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("PurchaseType")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string[]>("SelectedProfessionals")
+                        .IsRequired()
+                        .HasColumnType("text[]");
 
                     b.HasKey("JobDetailId");
 
