@@ -4,7 +4,7 @@ using RealtyReachApi.Models;
 
 namespace RealtyReachApi.Repositories;
 
-public class ProfessionalTypeRepository : IProfessionalTypeReposiotry
+public class ProfessionalTypeRepository : IProfessionalTypeRepository
 {
     private readonly SharedDbContext _context;
 
@@ -15,5 +15,12 @@ public class ProfessionalTypeRepository : IProfessionalTypeReposiotry
     public async Task<ProfessionalType> GetProfessionalTypeByNameAsync(string typeName)
     {
         throw new NotImplementedException();
+    }
+    public async Task<List<ProfessionalType>> GetProfessionalTypeByNamesAsync(List<string> typeNames)
+    {
+        return await _context.ProfessionalTypes
+            .Where(pt => typeNames.Contains(pt.TypeName))
+            .ToListAsync();
+
     }
 }

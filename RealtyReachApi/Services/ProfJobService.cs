@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using RealtyReachApi.Dtos;
 
 namespace RealtyReachApi.Services
 {

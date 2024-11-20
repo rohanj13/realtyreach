@@ -2,8 +2,18 @@ namespace RealtyReachApi.Models;
 
 public class ProfessionalType
 {
+    public enum ProfessionalTypeEnum
+    {
+        Advocate = 1,
+        Broker = 2,
+        BuildAndPest = 3
+    }
+    // Primary Key, should align with the enum values
     public int Id { get; set; }
+    
+    // Name of the professional type (e.g., "Advocate")
     public string TypeName { get; set; }
-    public List<JobDetailProfessionalType> JobDetailProfessionalTypes { get; set; } = new List<JobDetailProfessionalType>();
-    public List<Professional> Professionals { get; set; } = new List<Professional>();  // One-to-many relationship with Professional
+    
+    // Optional: Description of the professional type
+    public string? Description { get; set; }
 }

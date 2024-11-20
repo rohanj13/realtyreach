@@ -5,24 +5,28 @@ using RealtyReachApi.Models;
 
 namespace RealtyReachApi.Repositories;
 
-public class ProfessionalRepository : IProfessionalRepository
+public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepository
 {
-    private readonly SharedDbContext _context;
-
-    public ProfessionalRepository(SharedDbContext context)
+    public async Task AddAsync(CreateProfessionalDto professional)
     {
-        _context = context;
+        Professional prof = new Professional
+        {
+            Id = professional.Id,
+            Email = professional.Email,
+            ProfessionalTypeId = (int)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum),professional.Type)
+        };
+        context.Professionals.Add(prof);
+        await context.SaveChangesAsync();
     }
 
-    public async Task AddAsync(Professional professional)
+    public Task CreateProfessionalAsync(CreateProfessionalDto professional)
     {
-        _context.Professionals.Add(professional);
-        await _context.SaveChangesAsync();
+        throw new NotImplementedException();
     }
 
     public async Task<List<ProfessionalDto>> GetProfessionalsByProfessionalTypeIdsAsync(List<int> professionalTypeIds)
     {
-        return await _context.Professionals
+        return await context.Professionals
             .Where(p => professionalTypeIds.Contains(p.ProfessionalTypeId))
             .Select(p => new ProfessionalDto
             {
@@ -38,5 +42,20 @@ public class ProfessionalRepository : IProfessionalRepository
                 ProfessionalType = p.ProfessionalType.TypeName
             })
             .ToListAsync();
+    }
+
+    public Task<IEnumerable<Professional>> GetProfessionalsByTypeAsync(int professionalTypeId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Professional> GetProfessionalByIdAsync(int professionalId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteProfessionalAsync(ProfessionalDto professional)
+    {
+        throw new NotImplementedException();
     }
 }

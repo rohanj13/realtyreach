@@ -1,16 +1,32 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Dtos;
 using RealtyReachApi.Models;
+using RealtyReachApi.Repositories;
+
+namespace RealtyReachApi.Services;
 
 public class ProfessionalService : IProfessionalService
 {
     private readonly SharedDbContext _context;
+    private readonly IProfessionalRepository _repository;
 
-    public ProfessionalService(SharedDbContext context)
+    public ProfessionalService(SharedDbContext context, IProfessionalRepository professionalRepository)
     {
         _context = context;
+        _repository = professionalRepository;
     }
 
-    public async Task CreateProfessionalAsync(Professional professional)
+    public async Task CreateProfessionalAsync(CreateProfessionalDto professional)
+    {
+        await _repository.AddAsync(professional);
+    }
+
+    public Task<Professional> GetProfessionalByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task CreateProfessionalNoRepoAsync(Professional professional)
     {
         _context.Professionals.Add(professional);
         await _context.SaveChangesAsync();
@@ -43,5 +59,11 @@ public class ProfessionalService : IProfessionalService
 
         _context.Professionals.Remove(professional);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId)
+    {
+        var professionals = await _repository.GetProfessionalsByTypeAsync(professionalTypeId);
+        return new List<ProfessionalDto>();
     }
 }

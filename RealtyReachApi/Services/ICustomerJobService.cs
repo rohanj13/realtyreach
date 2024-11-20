@@ -2,14 +2,15 @@
 using RealtyReachApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RealtyReachApi.Dtos;
 
 namespace RealtyReachApi.Services
 {
-    public interface IUserJobService
+    public interface ICustomerJobService
     {
-        Task<List<JobDto>> GetAllJobsForUser(int userId);
+        Task<List<JobDto>> GetAllJobsForCustomer(Guid userId);
         Task<JobDto> GetJobById(int JobId);
-        Task<JobDto> CreateJob(CreateJobDto createJobDto);
+        Task<JobDto> CreateJobAsync(CreateJobDto createJobDto);
         Task<bool> UpdateJob(int JobId, UpdateJobDto updateJobDto);
         Task<bool> DeleteJob(int JobId);
     }

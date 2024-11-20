@@ -25,7 +25,7 @@ public class CreateJobDetailDto
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }
     public required string ContactPhone { get; set; }
-    public required List<int> JobDetailProfessionalTypeIds;
+    public required List<int> JobDetailProfessionalTypeIds { get; set; }
 }
 
 public class UpdateJobDetailDto

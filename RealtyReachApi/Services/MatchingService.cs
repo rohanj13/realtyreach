@@ -4,7 +4,7 @@ using RealtyReachApi.Repositories;
 
 namespace RealtyReachApi.Services;
 
-public class MatchingService
+public class MatchingService : IMatchingService
 {
     private readonly IJobRepository _jobRepository;
     private readonly IProfessionalRepository _professionalRepository;

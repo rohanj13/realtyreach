@@ -10,4 +10,6 @@ public class Customer
     public string? Email { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
+
+    public ICollection<Job> Jobs { get; } = new List<Job>();
 }

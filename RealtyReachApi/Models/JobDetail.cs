@@ -9,11 +9,11 @@ public class JobDetail
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int JobDetailId { get; set; }
 
-    [Required]
-    public int JobId { get; set; }
-
-    [ForeignKey("JobId")]
-    public Job job { get; set; }
+    // Foreign Key to Job
+    public int JobId { get; set; } // Required foreign key property
+    public Job AssociatedJob { get; set; } = null!; // Required reference navigation to principal
+    
+    public ICollection<ProfessionalType> ProfessionalTypes { get; set; } = new List<ProfessionalType>();
 
     [Required]
     public required string LocationOrPostCode { get; set; }  // Comma Separated Strings
@@ -41,5 +41,4 @@ public class JobDetail
     [Phone]
     public required string ContactPhone { get; set; }
     
-    public List<JobDetailProfessionalType> JobDetailProfessionalTypes { get; set; } = new List<JobDetailProfessionalType>();
 }
