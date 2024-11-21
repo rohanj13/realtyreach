@@ -1,5 +1,7 @@
 using RealtyReachApi.Models;
 
+namespace RealtyReachApi.Interfaces;
+
 public interface IAdminService
 {
     Task CreateAdminAsync(Admin admin);

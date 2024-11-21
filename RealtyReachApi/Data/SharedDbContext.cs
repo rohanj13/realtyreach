@@ -19,9 +19,32 @@ namespace RealtyReachApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
+            modelBuilder.Entity<Job>()
+                .HasOne(j => j.Customer)
+                .WithMany(c => c.Jobs)
+                .HasForeignKey(j => j.CustomerId);
+            
+            modelBuilder.Entity<Job>()
+                .HasOne(j => j.JobDetails)
+                .WithOne(d => d.Job)
+                .HasForeignKey<JobDetail>(d => d.JobId);
+            
             modelBuilder.Entity<Job>().ToTable("Jobs");
             modelBuilder.Entity<JobDetail>().ToTable("JobDetails");
+            
+            modelBuilder.Entity<JobProfessionalLink>()
+                .HasKey(jp => new { jp.JobDetailId, jp.ProfessionalId });
+            
+            modelBuilder.Entity<JobProfessionalLink>()
+                .HasOne(jp => jp.JobDetail)
+                .WithMany(d => d.JobProfessionalLinks)
+                .HasForeignKey(jp => jp.JobDetailId);
+            
+            modelBuilder.Entity<JobProfessionalLink>()
+                .HasOne(jp => jp.Professional)
+                .WithMany(p => p.JobProfessionalLinks)
+                .HasForeignKey(jp => jp.ProfessionalId);
 
             modelBuilder.Entity<Job>()
                 .HasKey(r => r.JobId);
@@ -31,14 +54,32 @@ namespace RealtyReachApi.Data
 
             modelBuilder.Entity<Job>()
                 .HasOne(rd => rd.JobDetails)
-                .WithOne(rd => rd.job)
+                .WithOne(rd => rd.Job)
                 .HasForeignKey<JobDetail>(rd => rd.JobId);
 
             modelBuilder.Entity<JobDetail>()
-                .HasOne(r => r.job)
+                .HasOne(r => r.Job)
                 .WithOne(r => r.JobDetails)
                 .HasForeignKey<JobDetail>(rd => rd.JobId)
                 .IsRequired();
+
+            modelBuilder.Entity<ProfessionalType>().HasData(
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Advocate, TypeName = "Advocate",
+                    Description = "Legal professionals"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Broker, TypeName = "Broker",
+                    Description = "Real estate brokers"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.BuildAndPest,
+                    TypeName = "Build and Pest", Description = "Building and pest inspectors"
+                }
+            );
 
         }
     }

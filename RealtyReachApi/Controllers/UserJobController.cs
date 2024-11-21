@@ -26,7 +26,7 @@ namespace RealtyReachApi.Controllers
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<List<JobDto>>> GetAllJobsForUser(string userId)
         {
-            var jobs = await _userJobService.GetAllJobsForUser(userId);
+            var jobs = await _userJobService.GetAllJobsForUser(new Guid(userId));
 
             if (jobs.Count > 0)
             {
@@ -54,7 +54,7 @@ namespace RealtyReachApi.Controllers
         public async Task<ActionResult<JobDto>> CreateJob(CreateJobDto createJobDto)
         {
             var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var jobDto = await _userJobService.CreateJob(createJobDto, id);
+            var jobDto = await _userJobService.CreateJob(createJobDto, new Guid(id));
             return Ok();
         }
 

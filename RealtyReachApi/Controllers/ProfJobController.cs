@@ -5,6 +5,7 @@ using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RealtyReachApi.Interfaces;
 
 namespace RealtyReachApi.Controllers
 {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using RealtyReachApi.Interfaces;
 
 namespace RealtyReachApi.Controllers
 {

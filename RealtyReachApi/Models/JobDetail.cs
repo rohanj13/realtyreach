@@ -8,13 +8,11 @@ public class JobDetail
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int JobDetailId { get; set; }
-
-    [Required]
-    public int JobId { get; set; }
-
-    [ForeignKey("JobId")]
-    public Job job { get; set; }
-
+    public int JobId { get; set; } // Required foreign key property
+    public Job Job { get; set; } = null!; // Required reference navigation to principal
+    public ICollection<JobProfessionalLink> JobProfessionalLinks { get; set; } = new List<JobProfessionalLink>();
+    public ICollection<ProfessionalType> ProfessionalTypes { get; set; } = new List<ProfessionalType>();
+    
     [Required]
     public required string Postcode { get; set; }  // Comma Separated Strings
 

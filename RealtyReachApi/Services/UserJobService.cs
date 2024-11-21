@@ -17,11 +17,11 @@ namespace RealtyReachApi.Services
             _context = context;
         }
 
-        public async Task<List<JobDto>> GetAllJobsForUser(string userId)
+        public async Task<List<JobDto>> GetAllJobsForUser(Guid userId)
         {
             return await _context.Jobs
                 .Include(r => r.JobDetails)
-                .Where(r => r.UserId == userId)
+                .Where(r => r.CustomerId == userId)
                 .Select(r => new JobDto
                 {
                     JobType = r.JobType,
@@ -67,11 +67,11 @@ namespace RealtyReachApi.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> CreateJob(CreateJobDto createJobDto, string id)
+        public async Task<bool> CreateJob(CreateJobDto createJobDto, Guid customerId)
         {
             var Job = new Job
             {
-                UserId = id,
+                CustomerId = customerId,
                 JobType = createJobDto.JobType,
                 JobTitle = createJobDto.JobTitle,
                 AdditionalDetails = createJobDto.AdditionalDetails,

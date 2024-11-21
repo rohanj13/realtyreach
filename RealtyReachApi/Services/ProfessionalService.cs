@@ -1,4 +1,5 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Interfaces;
 using RealtyReachApi.Models;
 
 public class ProfessionalService : IProfessionalService

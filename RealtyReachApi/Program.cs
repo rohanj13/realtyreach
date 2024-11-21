@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RealtyReachApi.Data;
+using RealtyReachApi.Interfaces;
 using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 
@@ -98,7 +99,7 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<SharedDbContext>();
-        // dbContext.Database.Migrate();
+        dbContext.Database.Migrate();
     }
 }
 
@@ -116,7 +117,6 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<IdentityUser>();
 app.MapControllers();
 
 app.Run();
