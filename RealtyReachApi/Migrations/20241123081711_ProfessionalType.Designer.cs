@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RealtyReachApi.Data;
@@ -11,9 +12,11 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    partial class SharedDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241123081711_ProfessionalType")]
+    partial class ProfessionalType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,6 @@ namespace RealtyReachApi.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
-
-                    b.Property<bool>("FirstLogin")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
@@ -205,9 +205,6 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
-                    b.Property<bool?>("FirstLogin")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
@@ -217,7 +214,7 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("LicenseNumber")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ProfessionalTypeId")
+                    b.Property<int>("ProfessionalTypeId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("VerificationStatus")
@@ -254,8 +251,8 @@ namespace RealtyReachApi.Migrations
                         new
                         {
                             ProfessionalTypeId = 1,
-                            Description = "Real Estate Professional representing a buyer",
-                            TypeName = "Buyer's Advocate"
+                            Description = "Legal professionals",
+                            TypeName = "Advocate"
                         },
                         new
                         {
@@ -266,12 +263,6 @@ namespace RealtyReachApi.Migrations
                         new
                         {
                             ProfessionalTypeId = 3,
-                            Description = "Legal Professional",
-                            TypeName = "Conveyancer"
-                        },
-                        new
-                        {
-                            ProfessionalTypeId = 4,
                             Description = "Building and pest inspectors",
                             TypeName = "Build and Pest"
                         });
@@ -335,9 +326,13 @@ namespace RealtyReachApi.Migrations
 
             modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
                 {
-                    b.HasOne("RealtyReachApi.Models.ProfessionalType", null)
+                    b.HasOne("RealtyReachApi.Models.ProfessionalType", "ProfessionalType")
                         .WithMany("Professionals")
-                        .HasForeignKey("ProfessionalTypeId");
+                        .HasForeignKey("ProfessionalTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProfessionalType");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Customer", b =>

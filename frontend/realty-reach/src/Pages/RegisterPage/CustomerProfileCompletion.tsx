@@ -17,7 +17,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { updateUser } from "../../services/AuthService";
+import { updateCustomer } from "../../services/AuthService";
+import { CustomerProfile } from "../../Models/User";
 
 // Define the types for form inputs
 type ProfileCompletionInputs = {
@@ -31,7 +32,7 @@ const validation = Yup.object().shape({
   lastName: Yup.string().required("Last Name is required"),
 });
 
-const UserProfileCompletionPage = () => {
+const CustomerProfileCompletionPage = () => {
   const navigate = useNavigate();
 
   // Use react-hook-form with Yup validation
@@ -49,20 +50,21 @@ const UserProfileCompletionPage = () => {
       // Retrieve the user object from localStorage
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        const userObj = JSON.parse(storedUser);
+        const userObj:CustomerProfile = JSON.parse(storedUser);
 
-        // Update the user object with new first and last name
+        // Update the user object with first and last name
         const updatedUser = {
           ...userObj,
-          firstName: form.firstName,
-          lastName: form.lastName,
-        };
+          FirstName: form.firstName,
+          LastName: form.lastName,
+          FirstLogin: false,
+        } as CustomerProfile;
+
+        // Call the backend API to update the user in the database
+        await updateCustomer(updatedUser);
 
         // Update localStorage with the updated user object
         localStorage.setItem("user", JSON.stringify(updatedUser));
-
-        // Call the backend API to update the user in the database
-        await updateUser(updatedUser);
 
         // Navigate to dashboard or other page after success
         navigate("/customerdashboard");
@@ -144,4 +146,4 @@ const UserProfileCompletionPage = () => {
   );
 };
 
-export default UserProfileCompletionPage;
+export default CustomerProfileCompletionPage;

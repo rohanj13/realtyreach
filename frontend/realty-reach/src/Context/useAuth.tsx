@@ -138,15 +138,16 @@ export const UserProvider = ({ children }: Props) => {
               Email: res.data.email,
               FirstName: res.data.firstName || "",
               LastName: res.data.lastName || "",
+              FirstLogin: res.data.firstLogin || "",
             } as CustomerProfile;
   
             localStorage.setItem("user", JSON.stringify(userObj));
             setUser(userObj);
   
-            if (userObj.FirstName) {
-              navigate("/customerdashboard");
-            } else {
+            if (userObj.FirstLogin) {
               navigate("/customerregistration");
+            } else {
+              navigate("/customerdashboard");
             }
           } else if (role === "Professional") {
             userObj = {
@@ -154,19 +155,19 @@ export const UserProvider = ({ children }: Props) => {
               Email: res.data.email,
               FirstName: res.data.firstName || "",
               LastName: res.data.lastName || "",
+              FirstLogin: res.data.firstLogin || "",
               ABN: res.data.ABN || "",
               LicenseNumber: res.data.LicenseNumber || "",
-              VerificationStatus: res.data.VerificationStatus || "",
               CompanyName: res.data.CompanyName || "",
             } as ProfessionalProfile;
   
             localStorage.setItem("user", JSON.stringify(userObj));
             setUser(userObj);
   
-            if (res.data.professionalDetails) {
-              navigate("/professionaldashboard");
-            } else {
+            if (userObj.FirstLogin) {
               navigate("/professionalregistration");
+            } else {
+              navigate("/professionaldashboard");
             }
           }
         } else {

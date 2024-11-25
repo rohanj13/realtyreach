@@ -1,5 +1,7 @@
 using RealtyReachApi.Models;
 
+namespace RealtyReachApi.Interfaces;
+
 public interface ICustomerService
 {
     Task CreateCustomerAsync(Customer customer);

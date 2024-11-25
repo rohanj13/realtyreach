@@ -1,4 +1,5 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Interfaces;
 using RealtyReachApi.Models;
 
 public class ProfessionalService : IProfessionalService
@@ -29,10 +30,11 @@ public class ProfessionalService : IProfessionalService
         professional.Email = updatedProfessional.Email;
         professional.FirstName = updatedProfessional.FirstName;
         professional.LastName = updatedProfessional.LastName;
+        professional.ProfessionalTypeId = updatedProfessional.ProfessionalTypeId;
         professional.ABN = updatedProfessional.ABN;
         professional.LicenseNumber = updatedProfessional.LicenseNumber;
         professional.CompanyName = updatedProfessional.CompanyName;
-        professional.VerificationStatus = updatedProfessional.VerificationStatus;
+        professional.FirstLogin = updatedProfessional.FirstLogin;
         await _context.SaveChangesAsync();
     }
 

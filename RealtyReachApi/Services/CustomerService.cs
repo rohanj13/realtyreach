@@ -1,4 +1,5 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Interfaces;
 using RealtyReachApi.Models;
 
 public class CustomerService : ICustomerService
@@ -31,6 +32,7 @@ public class CustomerService : ICustomerService
         customer.Email = updatedCustomer.Email;
         customer.FirstName = updatedCustomer.FirstName;
         customer.LastName = updatedCustomer.LastName;
+        customer.FirstLogin = updatedCustomer.FirstLogin;
         await _context.SaveChangesAsync();
     }
 

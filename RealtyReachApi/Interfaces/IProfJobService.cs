@@ -1,8 +1,4 @@
-using RealtyReachApi.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace RealtyReachApi.Services
+namespace RealtyReachApi.Interfaces
 {
     public interface IProfJobService
     {
