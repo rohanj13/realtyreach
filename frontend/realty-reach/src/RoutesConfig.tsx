@@ -9,7 +9,7 @@ import Dashboard from "./Pages/UserDashboard/Dashboard";
 import CustomerDashboard from "./Pages/UserDashboard/CustomerDashboard";
 import ProfessionalDashboard from "./Pages/UserDashboard/ProfessionalDashboard";
 import ProfLandingPage from "./Pages/LandingPage/ProfLandingPage";
-import UserProfileCompletionPage from "./Pages/RegisterPage/UserProfileCompletion";
+import CustomerProfileCompletionPage from "./Pages/RegisterPage/CustomerProfileCompletion";
 import ProfProfileCompletionPage from "./Pages/RegisterPage/ProfProfileCompletion";
 import UnauthorizedPage from "./Pages/ErrorPages/UnauthorizedPage";
 
@@ -44,7 +44,7 @@ const RoutesConfig: React.FC = () => {
         path="/customerregistration"
         element={
           <ProtectedRoute allowedRoles={["Customer"]}>
-            <UserProfileCompletionPage />
+            <CustomerProfileCompletionPage />
           </ProtectedRoute>
         }
       />

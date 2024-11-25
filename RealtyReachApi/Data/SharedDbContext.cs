@@ -66,13 +66,18 @@ namespace RealtyReachApi.Data
             modelBuilder.Entity<ProfessionalType>().HasData(
                 new ProfessionalType
                 {
-                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Advocate, TypeName = "Advocate",
-                    Description = "Legal professionals"
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Advocate, TypeName = "Buyer's Advocate",
+                    Description = "Real Estate Professional representing a buyer"
                 },
                 new ProfessionalType
                 {
                     ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Broker, TypeName = "Broker",
                     Description = "Real estate brokers"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Conveyancer,
+                    TypeName = "Conveyancer", Description = "Legal Professional"
                 },
                 new ProfessionalType
                 {

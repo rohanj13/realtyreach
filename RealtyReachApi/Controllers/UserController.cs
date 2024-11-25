@@ -60,17 +60,13 @@ namespace RealtyReachApi.Controllers
             }
             else if (role == "Customer")
             {
-                var customer = new Customer();
-                customer.Id = userId;
-                customer.Email = email;
+                var customer = new Customer(userId, email);
                 await _customerService.CreateCustomerAsync(customer);
                 return Ok("Success");
             }
             else if (role == "Professional")
             {
-                var professional = new Professional();
-                professional.Id = userId;
-                professional.Email = email;
+                var professional = new Professional(userId, email);
                 await _professionalService.CreateProfessionalAsync(professional);
                 return Ok("Success");
             }
@@ -113,9 +109,9 @@ namespace RealtyReachApi.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDto customer)
         {
-            // var role = GetUserRoleFromToken();
+            var role = GetUserRoleFromToken();
             var userId = Guid.Parse(GetUserIdFromToken());
-
+            
             // if (role == "Admin")
             // {
             //     var admin = userDto as Admin;

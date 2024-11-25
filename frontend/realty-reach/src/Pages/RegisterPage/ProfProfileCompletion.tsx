@@ -11,13 +11,16 @@ import {
   FormLabel,
   Heading,
   Input,
+  Select,
   Stack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { updateUser } from "../../services/AuthService";
+import { updateProfessional } from "../../services/AuthService";
+import { ProfessionalProfile, ProfessionalTypeEnum } from "../../Models/User";
 
 // Define the types for form inputs
 type ProfileCompletionInputs = {
+  professionalType: string;
   firstName: string;
   lastName: string;
   ABN: string;
@@ -27,6 +30,7 @@ type ProfileCompletionInputs = {
 
 // Define validation schema using Yup
 const validation = Yup.object().shape({
+  professionalType: Yup.string().required("Please select a professional type"),
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),
   ABN: Yup.string().required("ABN is required"),
@@ -46,29 +50,38 @@ const ProfProfileCompletionPage = () => {
     resolver: yupResolver(validation),
   });
 
+  const professionalTypeMapping: Record<string, number> = {
+    buyersAdvocate: ProfessionalTypeEnum.Advocate,
+    mortgageBroker: ProfessionalTypeEnum.Broker,
+    conveyancer: ProfessionalTypeEnum.Conveyancer,
+    buildingInspector: ProfessionalTypeEnum.BuildAndPest,
+  };
+
+
   // Handle form submission
   const handleProfileCompletion = async (form: ProfileCompletionInputs) => {
     try {
       // Retrieve the user object from localStorage
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        const userObj = JSON.parse(storedUser);
-
+        const userObj:ProfessionalProfile = JSON.parse(storedUser);
+        const ProfessionalTypeId = professionalTypeMapping[form.professionalType];
         // Update the user object with new form details
-        const updatedUser = {
+        const updatedProfessional = {
           ...userObj,
-          firstName: form.firstName,
-          lastName: form.lastName,
+          ProfessionalTypeId: ProfessionalTypeId,
+          FirstName: form.firstName,
+          LastName: form.lastName,
           ABN: form.ABN,
           LicenseNumber: form.LicenseNumber,
           CompanyName: form.CompanyName,
-        };
-
-        // Update localStorage with the updated user object
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+          FirstLogin: false,
+        } as ProfessionalProfile;
 
         // Call the backend API to update the user in the database
-        await updateUser(updatedUser);
+        await updateProfessional(updatedProfessional);
+        // Update localStorage with the updated user object
+        localStorage.setItem("user", JSON.stringify(updatedProfessional));
 
         // Navigate to dashboard or other page after success
         navigate("/professionaldashboard");
@@ -93,6 +106,16 @@ const ProfProfileCompletionPage = () => {
         </Heading>
         <form onSubmit={handleSubmit(handleProfileCompletion)}>
           <Stack spacing={4}>
+          <FormControl id="professionalType" isInvalid={!!errors.professionalType}>
+              <FormLabel>Professional Type</FormLabel>
+              <Select placeholder="Select your profession" {...register("professionalType")}>
+                <option value="buyersAdvocate">Buyers Advocate</option>
+                <option value="mortgageBroker">Mortgage Broker</option>
+                <option value="conveyancer">Conveyancer</option>
+                <option value="buildingInspector">Building and Pest Inspector</option>
+              </Select>
+              <FormErrorMessage>{errors.professionalType?.message}</FormErrorMessage>
+            </FormControl>
             {/* First Name Field */}
             <FormControl id="firstName" isInvalid={!!errors.firstName}>
               <FormLabel>First Name</FormLabel>

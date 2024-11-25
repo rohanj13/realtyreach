@@ -1,4 +1,7 @@
+using TypeGen.Core.TypeAnnotations;
+
 namespace RealtyReachApi.Models;
+
 
 public class ProfessionalType
 {
@@ -6,7 +9,8 @@ public class ProfessionalType
     {
         Advocate = 1,
         Broker = 2,
-        BuildAndPest = 3
+        Conveyancer = 3,
+        BuildAndPest = 4
     }
     public int ProfessionalTypeId { get; set; } // Primary Key
     public string TypeName { get; set; }
