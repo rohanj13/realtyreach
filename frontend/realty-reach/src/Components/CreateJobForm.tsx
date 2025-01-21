@@ -29,6 +29,7 @@ import {
 import { PhoneIcon, MailIcon } from 'lucide-react';
 import { createJob } from '../services/UserJobService';
 import { CreateJobDto } from '../Models/Job';
+import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '../Models/User';
 
 interface FormData {
   jobType: 'Buy' | 'Sell';
@@ -39,7 +40,7 @@ interface FormData {
   budgetMin: number;
   budgetMax: number;
   journeyProgress: string;
-  selectedProfessionals: string[];
+  selectedProfessionals: ProfessionalTypeEnum[];
   additionalDetails: string;
   contactEmail: string;
   contactPhone: string;
@@ -47,10 +48,17 @@ interface FormData {
 
 type BuyingStages = 'Just Started' | 'Pre-Approval' | 'Post Purchase';
 
-const buyingStages: Record<BuyingStages, string[]> = {
-  "Just Started": ["Buyer's Advocate", "Mortgage Broker"],
-  "Pre-Approval": ["Buyer's Advocate", "Conveyancer", "Building & Pest Inspector"],
-  "Post Purchase": ["Conveyancer", "Building & Pest Inspector"],
+const buyingStages: Record<BuyingStages, ProfessionalTypeEnum[]> = {
+  "Just Started": [ProfessionalTypeEnum.Advocate, ProfessionalTypeEnum.Broker],
+  "Pre-Approval": [
+    ProfessionalTypeEnum.Advocate,
+    ProfessionalTypeEnum.Conveyancer,
+    ProfessionalTypeEnum.BuildAndPest,
+  ],
+  "Post Purchase": [
+    ProfessionalTypeEnum.Conveyancer,
+    ProfessionalTypeEnum.BuildAndPest,
+  ],
 };
 
 interface JobFormProps {
@@ -87,13 +95,12 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
       }));
     };
 
-  const handleProfessionalSelection = (selected: string[]) => {
-    setFormData(prev => ({
-      ...prev,
-      selectedProfessionals: selected,
-    }));
-  };
-
+    const handleProfessionalSelection = (selected: ProfessionalTypeEnum[]) => {
+      setFormData(prev => ({
+        ...prev,
+        selectedProfessionals: selected, // Directly store enum values
+      }));
+    };
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -119,7 +126,7 @@ const JobCreationForm: React.FC<JobFormProps> = ({ onClose }) => {
       BudgetMin: formData.budgetMin,
       BudgetMax: formData.budgetMax,
       JourneyProgress: formData.journeyProgress,
-      SelectedProfessionals: formData.selectedProfessionals,
+      SelectedProfessionals: formData.selectedProfessionals.map(Number),
       AdditionalDetails: formData.additionalDetails,
       ContactEmail: formData.contactEmail,
       ContactPhone: formData.contactPhone,

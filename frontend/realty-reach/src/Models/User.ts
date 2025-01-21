@@ -35,3 +35,10 @@ export enum ProfessionalTypeEnum {
   Conveyancer,
   BuildAndPest,
 };
+
+export const ProfessionalTypeEnumMapping: Record<string, ProfessionalTypeEnum> = {
+  "Buyer's Advocate": ProfessionalTypeEnum.Advocate,
+  "Mortgage Broker": ProfessionalTypeEnum.Broker,
+  "Conveyancer": ProfessionalTypeEnum.Conveyancer,
+  "Building & Pest Inspector": ProfessionalTypeEnum.BuildAndPest,
+};
