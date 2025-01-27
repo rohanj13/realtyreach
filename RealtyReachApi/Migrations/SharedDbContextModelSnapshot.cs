@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RealtyReachApi.Data;
@@ -12,11 +11,9 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    [Migration("20241114043101_Initial")]
-    partial class Initial
+    partial class SharedDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +21,21 @@ namespace RealtyReachApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("JobDetailProfessionalType", b =>
+                {
+                    b.Property<int>("JobDetailsJobDetailId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProfessionalTypesProfessionalTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("JobDetailsJobDetailId", "ProfessionalTypesProfessionalTypeId");
+
+                    b.HasIndex("ProfessionalTypesProfessionalTypeId");
+
+                    b.ToTable("JobDetailProfessionalType");
+                });
 
             modelBuilder.Entity("RealtyReachApi.Models.Admin", b =>
                 {
@@ -53,6 +65,9 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<bool>("FirstLogin")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
@@ -79,28 +94,29 @@ namespace RealtyReachApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsMatched")
-                        .HasColumnType("boolean");
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("JobType")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("JobId");
 
-                    b.ToTable("Jobs");
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
@@ -132,7 +148,7 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LocationOrPostCode")
+                    b.Property<string>("Postcode")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -144,27 +160,37 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string[]>("SelectedProfessionals")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.HasKey("JobDetailId");
 
                     b.HasIndex("JobId")
                         .IsUnique();
 
-                    b.ToTable("JobDetails");
+                    b.ToTable("JobDetails", (string)null);
                 });
 
-            modelBuilder.Entity("RealtyReachApi.Models.JobDetailProfessionalType", b =>
+            modelBuilder.Entity("RealtyReachApi.Models.JobProfessionalLink", b =>
                 {
                     b.Property<int>("JobDetailId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProfessionalTypeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ProfessionalId")
+                        .HasColumnType("uuid");
 
-                    b.HasKey("JobDetailId", "ProfessionalTypeId");
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.HasIndex("ProfessionalTypeId");
+                    b.Property<DateTime>("SelectionDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.ToTable("JobDetailProfessionalType");
+                    b.HasKey("JobDetailId", "ProfessionalId");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.ToTable("JobProfessionalLink");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
@@ -181,6 +207,9 @@ namespace RealtyReachApi.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
+
+                    b.Property<bool?>("FirstLogin")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
@@ -206,77 +235,138 @@ namespace RealtyReachApi.Migrations
 
             modelBuilder.Entity("RealtyReachApi.Models.ProfessionalType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ProfessionalTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProfessionalTypeId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("TypeName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.HasKey("ProfessionalTypeId");
 
                     b.ToTable("ProfessionalTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ProfessionalTypeId = 1,
+                            Description = "Real Estate Professional representing a buyer",
+                            TypeName = "Buyer's Advocate"
+                        },
+                        new
+                        {
+                            ProfessionalTypeId = 2,
+                            Description = "Real estate brokers",
+                            TypeName = "Broker"
+                        },
+                        new
+                        {
+                            ProfessionalTypeId = 3,
+                            Description = "Legal Professional",
+                            TypeName = "Conveyancer"
+                        },
+                        new
+                        {
+                            ProfessionalTypeId = 4,
+                            Description = "Building and pest inspectors",
+                            TypeName = "Build and Pest"
+                        });
+                });
+
+            modelBuilder.Entity("JobDetailProfessionalType", b =>
+                {
+                    b.HasOne("RealtyReachApi.Models.JobDetail", null)
+                        .WithMany()
+                        .HasForeignKey("JobDetailsJobDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RealtyReachApi.Models.ProfessionalType", null)
+                        .WithMany()
+                        .HasForeignKey("ProfessionalTypesProfessionalTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.Job", b =>
+                {
+                    b.HasOne("RealtyReachApi.Models.Customer", "Customer")
+                        .WithMany("Jobs")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
                 {
-                    b.HasOne("RealtyReachApi.Models.Job", "job")
+                    b.HasOne("RealtyReachApi.Models.Job", "Job")
                         .WithOne("JobDetails")
                         .HasForeignKey("RealtyReachApi.Models.JobDetail", "JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("job");
+                    b.Navigation("Job");
                 });
 
-            modelBuilder.Entity("RealtyReachApi.Models.JobDetailProfessionalType", b =>
+            modelBuilder.Entity("RealtyReachApi.Models.JobProfessionalLink", b =>
                 {
                     b.HasOne("RealtyReachApi.Models.JobDetail", "JobDetail")
-                        .WithMany("JobDetailProfessionalTypes")
+                        .WithMany("JobProfessionalLinks")
                         .HasForeignKey("JobDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RealtyReachApi.Models.ProfessionalType", "ProfessionalType")
-                        .WithMany("JobDetailProfessionalTypes")
-                        .HasForeignKey("ProfessionalTypeId")
+                    b.HasOne("RealtyReachApi.Models.Professional", "Professional")
+                        .WithMany("JobProfessionalLinks")
+                        .HasForeignKey("ProfessionalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("JobDetail");
 
-                    b.Navigation("ProfessionalType");
+                    b.Navigation("Professional");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
                 {
-                    b.HasOne("RealtyReachApi.Models.ProfessionalType", "ProfessionalType")
+                    b.HasOne("RealtyReachApi.Models.ProfessionalType", null)
                         .WithMany("Professionals")
                         .HasForeignKey("ProfessionalTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.Navigation("ProfessionalType");
+            modelBuilder.Entity("RealtyReachApi.Models.Customer", b =>
+                {
+                    b.Navigation("Jobs");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Job", b =>
                 {
-                    b.Navigation("JobDetails")
-                        .IsRequired();
+                    b.Navigation("JobDetails");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
                 {
-                    b.Navigation("JobDetailProfessionalTypes");
+                    b.Navigation("JobProfessionalLinks");
+                });
+
+            modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
+                {
+                    b.Navigation("JobProfessionalLinks");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.ProfessionalType", b =>
                 {
-                    b.Navigation("JobDetailProfessionalTypes");
-
                     b.Navigation("Professionals");
                 });
 #pragma warning restore 612, 618

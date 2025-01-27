@@ -1,4 +1,7 @@
+using TypeGen.Core.TypeAnnotations;
+
 namespace RealtyReachApi.Models;
+
 
 public class ProfessionalType
 {
@@ -6,14 +9,15 @@ public class ProfessionalType
     {
         Advocate = 1,
         Broker = 2,
-        BuildAndPest = 3
+        Conveyancer = 3,
+        BuildAndPest = 4
     }
-    // Primary Key, should align with the enum values
-    public int Id { get; set; }
-    
-    // Name of the professional type (e.g., "Advocate")
+    public int ProfessionalTypeId { get; set; } // Primary Key
     public string TypeName { get; set; }
     
-    // Optional: Description of the professional type
-    public string? Description { get; set; }
+    public string Description { get; set; }
+
+    // Navigation properties
+    public ICollection<JobDetail> JobDetails { get; set; } = new List<JobDetail>();
+    public ICollection<Professional> Professionals { get; set; } = new List<Professional>();
 }

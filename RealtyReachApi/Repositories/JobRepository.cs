@@ -17,7 +17,7 @@ public class JobRepository : IJobRepository
     public async Task<Job?> GetJobByIdAsync(int jobId)
     {
         return await _context.Jobs.Include(j => j!.JobDetails)
-            .ThenInclude(jd => jd.ProfessionalType)
+            .ThenInclude(jd => jd.ProfessionalTypes)
             .FirstOrDefaultAsync(j => j!.JobId == jobId);
     }
 

@@ -7,27 +7,20 @@ namespace RealtyReachApi.Repositories;
 
 public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepository
 {
-    public async Task AddAsync(CreateProfessionalDto professional)
+    public async Task CreateProfessionalAsync(CreateProfessionalDto professional)
     {
-        Professional prof = new Professional
-        {
-            Id = professional.Id,
-            Email = professional.Email,
-            ProfessionalTypeId = (int)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum),professional.Type)
-        };
+        Professional? prof = new Professional();
+        prof.Id = professional.Id;
+        prof.Email = professional.Email;
+        prof.ProfessionalTypeId = (int)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum), professional.Type);
         context.Professionals.Add(prof);
         await context.SaveChangesAsync();
-    }
-
-    public Task CreateProfessionalAsync(CreateProfessionalDto professional)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<List<ProfessionalDto>> GetProfessionalsByProfessionalTypeIdsAsync(List<int> professionalTypeIds)
     {
         return await context.Professionals
-            .Where(p => professionalTypeIds.Contains(p.ProfessionalTypeId))
+            .Where(p => professionalTypeIds.Contains((int)p.ProfessionalTypeId))
             .Select(p => new ProfessionalDto
             {
                 Id = p.Id,
@@ -39,7 +32,7 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
                 VerificationStatus = p.VerificationStatus,
                 CompanyName = p.CompanyName,
                 ProfessionalTypeId = p.ProfessionalTypeId,
-                ProfessionalType = p.ProfessionalType.TypeName
+                ProfessionalType = ((ProfessionalType.ProfessionalTypeEnum)p.ProfessionalTypeId).ToString()
             })
             .ToListAsync();
     }
@@ -49,9 +42,27 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
         throw new NotImplementedException();
     }
 
-    public Task<Professional> GetProfessionalByIdAsync(int professionalId)
+    public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid professionalId)
     {
-        throw new NotImplementedException();
+        Professional? professional = await context.Professionals.FindAsync(professionalId);
+        ProfessionalDto professionalDto = new ProfessionalDto();
+        if (professional != null)
+        {
+            professionalDto.Id = professional.Id;
+            professionalDto.Email = professional.Email;
+            professionalDto.FirstName = professional.FirstName;
+            professionalDto.LastName = professional.LastName;
+            professionalDto.ABN = professional.ABN;
+            professionalDto.LicenseNumber = professional.LicenseNumber;
+            professionalDto.VerificationStatus = professional.VerificationStatus;
+            professionalDto.CompanyName = professional.CompanyName;
+            professionalDto.FirstLogin = professional.FirstLogin;
+            professionalDto.ProfessionalType =
+                ((ProfessionalType.ProfessionalTypeEnum)professional.ProfessionalTypeId).ToString();
+            return professionalDto;
+        }
+
+        return professionalDto;
     }
 
     public Task<bool> DeleteProfessionalAsync(ProfessionalDto professional)

@@ -18,15 +18,16 @@ public class ProfessionalService : IProfessionalService
 
     public async Task CreateProfessionalAsync(CreateProfessionalDto professional)
     {
-        await _repository.AddAsync(professional);
+        await _repository.CreateProfessionalAsync(professional);
     }
 
-    public Task<Professional> GetProfessionalByIdAsync(Guid id)
+    public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        ProfessionalDto professional = await _repository.GetProfessionalByIdAsync(id);
+        return professional;
     }
 
-    public async Task CreateProfessionalNoRepoAsync(Professional professional)
+    public async Task CreateProfessionalNoRepoAsync(Professional? professional)
     {
         _context.Professionals.Add(professional);
         await _context.SaveChangesAsync();
@@ -45,10 +46,11 @@ public class ProfessionalService : IProfessionalService
         professional.Email = updatedProfessional.Email;
         professional.FirstName = updatedProfessional.FirstName;
         professional.LastName = updatedProfessional.LastName;
+        professional.ProfessionalTypeId = updatedProfessional.ProfessionalTypeId;
         professional.ABN = updatedProfessional.ABN;
         professional.LicenseNumber = updatedProfessional.LicenseNumber;
         professional.CompanyName = updatedProfessional.CompanyName;
-        professional.VerificationStatus = updatedProfessional.VerificationStatus;
+        professional.FirstLogin = updatedProfessional.FirstLogin;
         await _context.SaveChangesAsync();
     }
 

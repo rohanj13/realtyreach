@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,34 +15,36 @@ import {
   Input,
   Stack,
   Text,
-  RadioGroup,
-  Radio,
-  HStack,
   Link,
 } from "@chakra-ui/react";
-
-type Props = {};
 
 type RegisterFormsInputs = {
   email: string;
   password: string;
   confirmPassword: string;
-  role: string;
 };
 
 const validation = Yup.object().shape({
   email: Yup.string().required("Email is required").email("Invalid email"),
   password: Yup.string().required("Password is required")
-  .min(8, 'Password must be at least 8 characters'),
+    .min(8, 'Password must be at least 8 characters'),
   confirmPassword: Yup.string()
     .required('Confirm Password is required')
     .oneOf([Yup.ref('password')], 'Passwords must match'),
-  role: Yup.string().required("Role is required"),
 });
 
-const RegisterPage = (props: Props) => {
+const RegisterPage = () => {
   const { registerUser } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<string>("customer");
+
+  // Set the role based on the location state when the component mounts
+  useEffect(() => {
+    if (location.state && location.state.role) {
+      setSelectedRole(location.state.role);
+    }
+  }, [location.state]);
 
   const {
     register,
@@ -49,11 +52,15 @@ const RegisterPage = (props: Props) => {
     formState: { errors },
   } = useForm<RegisterFormsInputs>({
     resolver: yupResolver(validation),
-    defaultValues: { role: selectedRole },
   });
 
   const handleRegister = (form: RegisterFormsInputs) => {
     registerUser(form.email, form.password, selectedRole);
+  };
+
+  const switchRole = () => {
+    // Toggle between customer and professional
+    setSelectedRole(prevRole => prevRole === 'customer' ? 'professional' : 'customer');
   };
 
   return (
@@ -67,26 +74,10 @@ const RegisterPage = (props: Props) => {
         boxShadow="lg"
       >
         <Heading as="h1" mb={6} fontSize="2xl" textAlign="center">
-          Create your account
+          Create your account as a {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
         </Heading>
         <form onSubmit={handleSubmit(handleRegister)}>
           <Stack spacing={4}>
-            {/* Role Selection */}
-            <FormControl id="role" isInvalid={!!errors.role}>
-              <FormLabel>Select your role</FormLabel>
-              <RadioGroup
-                value={selectedRole}
-                onChange={setSelectedRole}
-                defaultValue="customer"
-              >
-                <HStack spacing={4}>
-                  <Radio value="customer">Customer</Radio>
-                  <Radio value="professional">Professional</Radio>
-                </HStack>
-              </RadioGroup>
-              <FormErrorMessage>{errors.role?.message}</FormErrorMessage>
-            </FormControl>
-
             {/* Email Field */}
             <FormControl id="email" isInvalid={!!errors.email}>
               <FormLabel>Email</FormLabel>
@@ -127,7 +118,30 @@ const RegisterPage = (props: Props) => {
               fontSize="md"
               width="full"
             >
-              Sign up
+              Sign up as a {selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}
+            </Button>
+
+            {/* Switch Role Button */}
+            <Button
+              variant="outline"
+              size="lg"
+              fontSize="md"
+              width="full"
+              onClick={switchRole}
+              mt={4}
+            >
+              Sign up as a {selectedRole === 'customer' ? 'Professional' : 'Customer'} instead
+            </Button>
+
+            {/* Go Back Button */}
+            <Button
+              variant="link"
+              size="md"
+              colorScheme="teal"
+              onClick={() => navigate(-1)}
+              mt={2}
+            >
+              Go Back
             </Button>
           </Stack>
         </form>

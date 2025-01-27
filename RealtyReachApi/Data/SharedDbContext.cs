@@ -13,26 +13,79 @@ namespace RealtyReachApi.Data
         public DbSet<JobDetail> JobDetails { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Professional> Professionals { get; set; }
+        public DbSet<Professional?> Professionals { get; set; }
         public DbSet<ProfessionalType> ProfessionalTypes { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure the relationship between Job and JobDetail (one-to-one)
+            base.OnModelCreating(modelBuilder);
+            
+            modelBuilder.Entity<Job>()
+                .HasOne(j => j.Customer)
+                .WithMany(c => c.Jobs)
+                .HasForeignKey(j => j.CustomerId);
+            
             modelBuilder.Entity<Job>()
                 .HasOne(j => j.JobDetails)
-                .WithOne(jd => jd.AssociatedJob)
-                .HasForeignKey<JobDetail>(jd => jd.JobId);
+                .WithOne(d => d.Job)
+                .HasForeignKey<JobDetail>(d => d.JobId);
             
-            // Configure the many-to-many relationship between Job and Professional via JobProfessionalLink
+            modelBuilder.Entity<Job>().ToTable("Jobs");
+            modelBuilder.Entity<JobDetail>().ToTable("JobDetails");
+            
             modelBuilder.Entity<JobProfessionalLink>()
-                .HasKey(jp => new { jp.JobId, jp.ProfessionalId });
+                .HasKey(jp => new { jp.JobDetailId, jp.ProfessionalId });
             
+            modelBuilder.Entity<JobProfessionalLink>()
+                .HasOne(jp => jp.JobDetail)
+                .WithMany(d => d.JobProfessionalLinks)
+                .HasForeignKey(jp => jp.JobDetailId);
+            
+            modelBuilder.Entity<JobProfessionalLink>()
+                .HasOne(jp => jp.Professional)
+                .WithMany(p => p.JobProfessionalLinks)
+                .HasForeignKey(jp => jp.ProfessionalId);
+
+            modelBuilder.Entity<Job>()
+                .HasKey(r => r.JobId);
+
+            modelBuilder.Entity<JobDetail>()
+                .HasKey(rd => rd.JobDetailId);
+
+            modelBuilder.Entity<Job>()
+                .HasOne(rd => rd.JobDetails)
+                .WithOne(rd => rd.Job)
+                .HasForeignKey<JobDetail>(rd => rd.JobId);
+
+            modelBuilder.Entity<JobDetail>()
+                .HasOne(r => r.Job)
+                .WithOne(r => r.JobDetails)
+                .HasForeignKey<JobDetail>(rd => rd.JobId)
+                .IsRequired();
+
             modelBuilder.Entity<ProfessionalType>().HasData(
-                new ProfessionalType { Id = (int)ProfessionalType.ProfessionalTypeEnum.Advocate, TypeName = "Advocate", Description = "Legal professionals" },
-                new ProfessionalType { Id = (int)ProfessionalType.ProfessionalTypeEnum.Broker, TypeName = "Broker", Description = "Real estate brokers" },
-                new ProfessionalType { Id = (int)ProfessionalType.ProfessionalTypeEnum.BuildAndPest, TypeName = "Build and Pest", Description = "Building and pest inspectors" }
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Advocate, TypeName = "Buyer's Advocate",
+                    Description = "Real Estate Professional representing a buyer"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Broker, TypeName = "Broker",
+                    Description = "Real estate brokers"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.Conveyancer,
+                    TypeName = "Conveyancer", Description = "Legal Professional"
+                },
+                new ProfessionalType
+                {
+                    ProfessionalTypeId = (int)ProfessionalType.ProfessionalTypeEnum.BuildAndPest,
+                    TypeName = "Build and Pest", Description = "Building and pest inspectors"
+                }
             );
+
         }
     }
 }

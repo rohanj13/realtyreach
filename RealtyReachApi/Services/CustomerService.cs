@@ -24,7 +24,7 @@ public class CustomerService : ICustomerService
         return await _context.Customers.FindAsync(id);
     }
 
-    public async Task UpdateCustomerAsync(Guid id, Customer updatedCustomer)
+    public async Task UpdateCustomerAsync(Guid id, CustomerDto updatedCustomer)
     {
         var customer = await _context.Customers.FindAsync(id);
         if (customer == null) return;
@@ -32,6 +32,7 @@ public class CustomerService : ICustomerService
         customer.Email = updatedCustomer.Email;
         customer.FirstName = updatedCustomer.FirstName;
         customer.LastName = updatedCustomer.LastName;
+        customer.FirstLogin = updatedCustomer.FirstLogin;
         await _context.SaveChangesAsync();
     }
 

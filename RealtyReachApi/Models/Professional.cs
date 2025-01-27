@@ -1,17 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TypeGen.Core.TypeAnnotations;
 
 namespace RealtyReachApi.Models;
+[ExportTsClass]
 public class Professional
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
+    public int ProfessionalTypeId { get; set; } // Foreign Key
     
-    // Foreign key to ProfessionalType
-    public int ProfessionalTypeId { get; set; }
-    public ProfessionalType ProfessionalType { get; set; } = null !;
+    // Navigation properties
+    //public ProfessionalType? ProfessionalType { get; set; }
+    public ICollection<JobProfessionalLink>? JobProfessionalLinks { get; set; } = new List<JobProfessionalLink>();
     
     public string? Email { get; set; }
     public string? FirstName { get; set; }
@@ -20,8 +21,5 @@ public class Professional
     public string? LicenseNumber { get; set; }
     public bool VerificationStatus { get; set; } // True if verified, false otherwise
     public string? CompanyName { get; set; }
-    
-    
-    // Professional to Job Link
-    public List<JobProfessionalLink> JobProfessionalLinks { get; set; }
+    public bool? FirstLogin { get; set; }
 }

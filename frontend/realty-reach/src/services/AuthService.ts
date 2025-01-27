@@ -1,6 +1,6 @@
 import axios from "axios";
 import { handleError } from "../Helpers/ErrorHandler";
-import { UserProfileToken } from "../Models/User";
+import {CustomerProfile, ProfessionalProfile, UserProfileToken } from "../Models/User";
 
 //Template this out, pull it from env variable file
 const identityAPI = "http://localhost:5209/api/Auth/";
@@ -43,3 +43,31 @@ export const backendRegisterAPI = async () => {
     handleError(error);
   }
 };
+
+export const getUser = async () => {
+  try {
+    const data = await axios.get(backendAPI + "User");
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateCustomer = async (updatedUser: CustomerProfile) => {
+  try {
+    const data = await axios.put(backendAPI + "User", updatedUser);
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateProfessional = async (updatedUser: ProfessionalProfile) => {
+  try {
+    const data = await axios.put(backendAPI + "Professional", updatedUser);
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+

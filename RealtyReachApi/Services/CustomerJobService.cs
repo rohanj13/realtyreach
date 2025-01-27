@@ -23,6 +23,7 @@ namespace RealtyReachApi.Services
 
         public async Task<List<JobDto>> GetAllJobsForCustomer(Guid userId)
         {
+            // Get from repository
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Where(r => r.CustomerId == userId)
@@ -31,125 +32,89 @@ namespace RealtyReachApi.Services
                     JobId = r.JobId,
                     UserId = r.CustomerId,
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    JobDetail = new JobDetailDto
-                    {
-                        JobDetailId = r.JobDetails.JobDetailId,
-                        JobId = r.JobId,
-                        LocationOrPostCode = r.JobDetails.LocationOrPostCode,
-                        PurchaseType = r.JobDetails.PurchaseType,
-                        PropertyType = r.JobDetails.PropertyType,
-                        JourneyProgress = r.JobDetails.JourneyProgress,
-                        BudgetMin = r.JobDetails.BudgetMin,
-                        BudgetMax = r.JobDetails.BudgetMax,
-                        ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone,
-                        JobDetailProfessionalTypeIds = r.JobDetails.ProfessionalTypes
-                            .Select(jdpt => jdpt.Id)
-                            .ToList()
-                    }
+                    Status = r.Status.ToString(),
+                    Postcode = r.JobDetails.Postcode,
+                    PurchaseType = r.JobDetails.PurchaseType,
+                    PropertyType = r.JobDetails.PropertyType,
+                    JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
+                    BudgetMin = r.JobDetails.BudgetMin,
+                    BudgetMax = r.JobDetails.BudgetMax,
+                    ContactEmail = r.JobDetails.ContactEmail,
+                    ContactPhone = r.JobDetails.ContactPhone
+
                 })
                 .ToListAsync();
         }
 
         public async Task<JobDto> GetJobById(int JobId)
         {
+            // Get from repository
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Where(r => r.JobId == JobId)
                 .Select(r => new JobDto
                 {
-                    JobId = r.JobId,
-                    UserId = r.CustomerId,
                     JobType = r.JobType,
+                    JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    JobDetail = new JobDetailDto
-                    {
-                        JobDetailId = r.JobDetails.JobDetailId,
-                        JobId = r.JobId,
-                        LocationOrPostCode = r.JobDetails.LocationOrPostCode,
-                        PurchaseType = r.JobDetails.PurchaseType,
-                        PropertyType = r.JobDetails.PropertyType,
-                        JourneyProgress = r.JobDetails.JourneyProgress,
-                        BudgetMin = r.JobDetails.BudgetMin,
-                        BudgetMax = r.JobDetails.BudgetMax,
-                        ContactEmail = r.JobDetails.ContactEmail,
-                        ContactPhone = r.JobDetails.ContactPhone,
-                        JobDetailProfessionalTypeIds = r.JobDetails.ProfessionalTypes
-                            .Select(jdpt => jdpt.Id)
-                            .ToList()
-                    }
+                    Status = r.Status.ToString(),
+                    Postcode = r.JobDetails.Postcode,
+                    PurchaseType = r.JobDetails.PurchaseType,
+                    PropertyType = r.JobDetails.PropertyType,
+                    JourneyProgress = r.JobDetails.JourneyProgress,
+                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
+                    BudgetMin = r.JobDetails.BudgetMin,
+                    BudgetMax = r.JobDetails.BudgetMax,
+                    ContactEmail = r.JobDetails.ContactEmail,
+                    ContactPhone = r.JobDetails.ContactPhone
+
                 })
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
-        public async Task<JobDto> CreateJobAsync(CreateJobDto createJobDto)
+        public async Task<bool> CreateJobAsync(CreateJobDto createJobDto)
         {
-            // Map JourneyProgress to appropriate ProfessionalTypes
-            var professionalTypes = await DetermineProfessionalTypesAsync(createJobDto.JobDetail.JourneyProgress);
-
-            var job = new Job
+            var Job = new Job
             {
                 CustomerId = createJobDto.UserId,
                 JobType = createJobDto.JobType,
+                JobTitle = createJobDto.JobTitle,
                 AdditionalDetails = createJobDto.AdditionalDetails,
-                Status = createJobDto.Status,
+                Status = JobStatus.Open,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 JobDetails = new JobDetail
                 {
-                    LocationOrPostCode = createJobDto.JobDetail.LocationOrPostCode,
-                    PurchaseType = createJobDto.JobDetail.PurchaseType,
-                    PropertyType = createJobDto.JobDetail.PropertyType,
-                    JourneyProgress = createJobDto.JobDetail.JourneyProgress,
-                    BudgetMin = createJobDto.JobDetail.BudgetMin,
-                    BudgetMax = createJobDto.JobDetail.BudgetMax,
-                    ContactEmail = createJobDto.JobDetail.ContactEmail,
-                    ContactPhone = createJobDto.JobDetail.ContactPhone
-                },
-                IsMatched = false
-            };
-
-            _context.Jobs.Add(job);
-            await _context.SaveChangesAsync();
-
-            return new JobDto
-            {
-                JobId = job.JobId,
-                UserId = job.CustomerId,
-                JobType = job.JobType,
-                AdditionalDetails = job.AdditionalDetails,
-                Status = job.Status,
-                CreatedAt = job.CreatedAt,
-                UpdatedAt = job.UpdatedAt,
-                JobDetail = new JobDetailDto
-                {
-                    JobDetailId = job.JobDetails.JobDetailId,
-                    JobId = job.JobId,
-                    LocationOrPostCode = job.JobDetails.LocationOrPostCode,
-                    PurchaseType = job.JobDetails.PurchaseType,
-                    PropertyType = job.JobDetails.PropertyType,
-                    JourneyProgress = job.JobDetails.JourneyProgress,
-                    BudgetMin = job.JobDetails.BudgetMin,
-                    BudgetMax = job.JobDetails.BudgetMax,
-                    ContactEmail = job.JobDetails.ContactEmail,
-                    ContactPhone = job.JobDetails.ContactPhone,
-                    JobDetailProfessionalTypeIds = job.JobDetails.ProfessionalTypes
-                        .Select(jdpt => jdpt.Id)
-                        .ToList()
+                    Postcode = createJobDto.Postcode,
+                    PurchaseType = createJobDto.PurchaseType,
+                    PropertyType = createJobDto.PropertyType,
+                    JourneyProgress = createJobDto.JourneyProgress,
+                    SelectedProfessionals = createJobDto.SelectedProfessionals,
+                    BudgetMin = createJobDto.BudgetMin,
+                    BudgetMax = createJobDto.BudgetMax,
+                    ContactEmail = createJobDto.ContactEmail,
+                    ContactPhone = createJobDto.ContactPhone
                 }
             };
+
+            _context.Jobs.Add(Job);
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
-        public async Task<bool> UpdateJob(int JobId, UpdateJobDto updateJobDto)
+        public async Task<bool> UpdateJob(UpdateJobDto updateJobDto)
         {
-            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == JobId);
+            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == updateJobDto.JobId);
             if (Job == null)
             {
                 return false;
@@ -157,7 +122,6 @@ namespace RealtyReachApi.Services
 
             Job.JobType = updateJobDto.JobType;
             Job.AdditionalDetails = updateJobDto.AdditionalDetails;
-            Job.Status = updateJobDto.Status;
             Job.UpdatedAt = DateTime.UtcNow;
 
             if (Job.JobDetails != null)
@@ -167,11 +131,12 @@ namespace RealtyReachApi.Services
 
             Job.JobDetails = new JobDetail
             {
-                JobId = JobId,
-                LocationOrPostCode = updateJobDto.JobDetail.LocationOrPostCode,
+                JobId = updateJobDto.JobId,
+                Postcode = updateJobDto.JobDetail.Postcode,
                 PurchaseType = updateJobDto.JobDetail.PurchaseType,
                 PropertyType = updateJobDto.JobDetail.PropertyType,
                 JourneyProgress = updateJobDto.JobDetail.JourneyProgress,
+                SelectedProfessionals = updateJobDto.JobDetail.SelectedProfessionals,
                 BudgetMin = updateJobDto.JobDetail.BudgetMin,
                 BudgetMax = updateJobDto.JobDetail.BudgetMax,
                 ContactEmail = updateJobDto.JobDetail.ContactEmail,
@@ -205,30 +170,6 @@ namespace RealtyReachApi.Services
             _context.Jobs.Remove(Job);
             await _context.SaveChangesAsync();
             return true;
-        }
-        
-        private async Task<List<ProfessionalType>> DetermineProfessionalTypesAsync(string journeyProgress)
-        {
-            // Define mappings of JourneyProgress to ProfessionalTypes
-            List<string> typeNames;
-            switch (journeyProgress)
-            {
-                case "Started":
-                    typeNames = new List<string> { "Advocate", "Broker" };
-                    break;
-                case "Pre-Approval":
-                    typeNames = new List<string> { "PestInspector" };
-                    break;
-                case "Post-Purchase":
-                    typeNames = new List<string> { "Advocate", "Broker", "PestInspector" };
-                    break;
-                default:
-                    typeNames = new List<string>();
-                    break;
-            }
-
-            // Fetch ProfessionalType entities from the database based on type names
-            return await _professionalTypeRepository.GetProfessionalTypeByNamesAsync(typeNames);
         }
     }
 }

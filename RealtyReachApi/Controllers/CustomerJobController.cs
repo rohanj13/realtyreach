@@ -7,26 +7,27 @@ using RealtyReachApi.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using RealtyReachApi.Dtos;
 
 namespace RealtyReachApi.Controllers
 {
     [ApiController]
     [Route("api/jobs")]
     [Authorize(Roles = "Customer")]
-    public class UserJobController : ControllerBase
+    public class CustomerJobController : ControllerBase
     {
-        private readonly IUserJobService _userJobService;
+        private readonly ICustomerJobService _customerJobService;
 
-        public UserJobController(IUserJobService userJobService)
+        public CustomerJobController(ICustomerJobService customerJobService)
         {
-            _userJobService = userJobService;
+            _customerJobService = customerJobService;
         }
 
         // GET: api/jobs/user/{userId}
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<List<JobDto>>> GetAllJobsForUser(string userId)
+        public async Task<ActionResult<List<JobDto>>> GetAllJobsForCustomer(string userId)
         {
-            var jobs = await _userJobService.GetAllJobsForUser(userId);
+            var jobs = await _customerJobService.GetAllJobsForCustomer(new Guid(userId));
 
             if (jobs.Count > 0)
             {
@@ -40,7 +41,7 @@ namespace RealtyReachApi.Controllers
         [HttpGet("{JobId}")]
         public async Task<ActionResult<JobDto>> GetJobById(int JobId)
         {
-            var job = await _userJobService.GetJobById(JobId);
+            var job = await _customerJobService.GetJobById(JobId);
             if (job == null)
             {
                 return NotFound();
@@ -53,16 +54,16 @@ namespace RealtyReachApi.Controllers
         [HttpPost]
         public async Task<ActionResult<JobDto>> CreateJob(CreateJobDto createJobDto)
         {
-            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var jobDto = await _userJobService.CreateJob(createJobDto, id);
+            // var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var jobDto = await _customerJobService.CreateJobAsync(createJobDto);
             return Ok();
         }
 
         // PUT: api/Jobs/{JobId}
         [HttpPut("{JobId}")]
-        public async Task<IActionResult> UpdateJob(int JobId, UpdateJobDto updateJobDto)
+        public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
         {
-            var success = await _userJobService.UpdateJob(JobId, updateJobDto);
+            var success = await _customerJobService.UpdateJob(updateJobDto);
             if (!success)
             {
                 return NotFound();
@@ -88,7 +89,7 @@ namespace RealtyReachApi.Controllers
         [HttpDelete("{JobId}")]
         public async Task<IActionResult> DeleteJob(int JobId)
         {
-            var success = await _userJobService.DeleteJob(JobId);
+            var success = await _customerJobService.DeleteJob(JobId);
             if (!success)
             {
                 return NotFound();

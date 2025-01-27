@@ -22,25 +22,15 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { ChevronRightIcon } from "@chakra-ui/icons";
 import axios from "axios";
 import Sidebar from "../../SharedComponents/Sidebar"; // Import the Sidebar component
-import jwtDecode from "jwt-decode";
-
-interface Job {
-  id: number;
-  title: string;
-  details: string;
-  professional: string;
-  responses: string[];
-}
+import { Job } from "../../Models/Job";
+import CreateJobForm from "../../Components/CreateJobForm";// Import the CreateJobForm component
 
 const Dashboard = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newJobTitle, setNewJobTitle] = useState("");
-  const [newJobDetails, setNewJobDetails] = useState("");
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null); // State to store the logged-in user's email
   const toast = useToast();
@@ -56,7 +46,7 @@ const Dashboard = () => {
 
   // Fetch jobs for the user
   useEffect(() => {
-    const userId = 1; // Replace with actual userId
+    const userId = 0; // Replace with actual userId
     axios
       .get(`/api/jobs?userId=${userId}`)
       .then((response) => {
@@ -78,33 +68,6 @@ const Dashboard = () => {
     setSelectedJob(job);
   };
 
-  // Handle job creation
-  const handleCreateJob = () => {
-    const newJob = {
-      title: newJobTitle,
-      details: newJobDetails,
-    };
-
-    axios
-      .post(`/api/jobs`, newJob)
-      .then((response) => {
-        setJobs([...jobs, response.data]);
-        toast({
-          title: "Job created successfully.",
-          status: "success",
-          isClosable: true,
-        });
-        onClose();
-      })
-      .catch((error) => {
-        toast({
-          title: "Error creating job.",
-          status: "error",
-          isClosable: true,
-        });
-      });
-  };
-
   if (loading) {
     return (
       <Flex justify="center" align="center" h="100vh">
@@ -119,7 +82,6 @@ const Dashboard = () => {
       <Flex direction="column" p={5} bg="gray.100" flex="1">
         {/* Show logged-in user's email at the top */}
         <Flex justify="space-between" align="center">
-          {/* <Heading size="md">My Dashboard</Heading> */}
           {userEmail && (
             <Text fontSize="md" color="black.600">
               Logged in as: {userEmail}
@@ -131,6 +93,7 @@ const Dashboard = () => {
 
         <Flex justify="space-between" align="center">
           <Heading size="md">My Jobs</Heading>
+          {/* Open the Create Job Form modal when clicking the button */}
           <Button colorScheme="blue" onClick={onOpen}>
             New Job
           </Button>
@@ -149,12 +112,12 @@ const Dashboard = () => {
           >
             {jobs.map((job) => (
               <Button
-                key={job.id}
-                variant={selectedJob?.id === job.id ? "solid" : "outline"}
-                colorScheme={selectedJob?.id === job.id ? "blue" : "gray"}
+                key={job.jobId}
+                variant={selectedJob?.jobId === job.jobId ? "solid" : "outline"}
+                colorScheme={selectedJob?.jobId === job.jobId ? "blue" : "gray"}
                 onClick={() => handleJobSelect(job)}
               >
-                {job.title}
+                {job.JobType}
               </Button>
             ))}
           </VStack>
@@ -163,67 +126,32 @@ const Dashboard = () => {
           <Box flex={1} p={4} ml={4} bg="white" borderRadius="md" boxShadow="md">
             {selectedJob ? (
               <>
-                <HStack mb={4}>
-                  <Avatar size="lg" name={selectedJob.professional} />
-                  <VStack align="start">
-                    <Heading size="md">{selectedJob.title}</Heading>
-                    <Text>{selectedJob.details}</Text>
-                  </VStack>
-                </HStack>
 
                 <Divider />
-
-                <VStack align="start" spacing={4} mt={4}>
-                  <Box w="100%">
-                    <Heading size="sm">Responses</Heading>
-                    {selectedJob.responses.length > 0 ? (
-                      selectedJob.responses.map((response, index) => (
-                        <Text key={index}>{response}</Text>
-                      ))
-                    ) : (
-                      <Text>No responses yet.</Text>
-                    )}
-                  </Box>
-                </VStack>
               </>
             ) : (
               <Text>Select a job to view details</Text>
             )}
           </Box>
         </Flex>
+
+        {/* Create Job Modal */}
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Create New Job</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <CreateJobForm onClose={onClose}/>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="blue" onClick={onClose}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Flex>
-
-      {/* Modal to Create New Job */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create New Job</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Input
-              placeholder="Job Title"
-              value={newJobTitle}
-              onChange={(e) => setNewJobTitle(e.target.value)}
-              mb={3}
-            />
-            <Input
-              placeholder="Job Details"
-              value={newJobDetails}
-              onChange={(e) => setNewJobDetails(e.target.value)}
-              mb={3}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreateJob}>
-              Submit
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Flex>
   );
 };
