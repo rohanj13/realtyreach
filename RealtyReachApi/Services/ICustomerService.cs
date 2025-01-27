@@ -1,6 +1,6 @@
 using RealtyReachApi.Models;
 
-namespace RealtyReachApi.Interfaces;
+namespace RealtyReachApi.Services;
 
 public interface ICustomerService
 {

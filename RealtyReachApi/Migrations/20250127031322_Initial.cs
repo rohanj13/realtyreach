@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RealtyReachApi.Migrations
 {
     /// <inheritdoc />
-    public partial class ProfessionalType : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,7 +34,8 @@ namespace RealtyReachApi.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true)
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    FirstLogin = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +43,7 @@ namespace RealtyReachApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProfessionalType",
+                name: "ProfessionalTypes",
                 columns: table => new
                 {
                     ProfessionalTypeId = table.Column<int>(type: "integer", nullable: false)
@@ -52,7 +53,7 @@ namespace RealtyReachApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfessionalType", x => x.ProfessionalTypeId);
+                    table.PrimaryKey("PK_ProfessionalTypes", x => x.ProfessionalTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -92,15 +93,16 @@ namespace RealtyReachApi.Migrations
                     ABN = table.Column<string>(type: "text", nullable: true),
                     LicenseNumber = table.Column<string>(type: "text", nullable: true),
                     VerificationStatus = table.Column<bool>(type: "boolean", nullable: false),
-                    CompanyName = table.Column<string>(type: "text", nullable: true)
+                    CompanyName = table.Column<string>(type: "text", nullable: true),
+                    FirstLogin = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Professionals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Professionals_ProfessionalType_ProfessionalTypeId",
+                        name: "FK_Professionals_ProfessionalTypes_ProfessionalTypeId",
                         column: x => x.ProfessionalTypeId,
-                        principalTable: "ProfessionalType",
+                        principalTable: "ProfessionalTypes",
                         principalColumn: "ProfessionalTypeId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -150,9 +152,9 @@ namespace RealtyReachApi.Migrations
                         principalColumn: "JobDetailId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_JobDetailProfessionalType_ProfessionalType_ProfessionalType~",
+                        name: "FK_JobDetailProfessionalType_ProfessionalTypes_ProfessionalTyp~",
                         column: x => x.ProfessionalTypesProfessionalTypeId,
-                        principalTable: "ProfessionalType",
+                        principalTable: "ProfessionalTypes",
                         principalColumn: "ProfessionalTypeId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -163,7 +165,8 @@ namespace RealtyReachApi.Migrations
                 {
                     JobDetailId = table.Column<int>(type: "integer", nullable: false),
                     ProfessionalId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SelectionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    SelectionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AssignedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -183,13 +186,14 @@ namespace RealtyReachApi.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "ProfessionalType",
+                table: "ProfessionalTypes",
                 columns: new[] { "ProfessionalTypeId", "Description", "TypeName" },
                 values: new object[,]
                 {
-                    { 1, "Legal professionals", "Advocate" },
+                    { 1, "Real Estate Professional representing a buyer", "Buyer's Advocate" },
                     { 2, "Real estate brokers", "Broker" },
-                    { 3, "Building and pest inspectors", "Build and Pest" }
+                    { 3, "Legal Professional", "Conveyancer" },
+                    { 4, "Building and pest inspectors", "Build and Pest" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -241,7 +245,7 @@ namespace RealtyReachApi.Migrations
                 name: "Jobs");
 
             migrationBuilder.DropTable(
-                name: "ProfessionalType");
+                name: "ProfessionalTypes");
 
             migrationBuilder.DropTable(
                 name: "Customers");

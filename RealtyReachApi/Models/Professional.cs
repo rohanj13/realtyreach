@@ -7,15 +7,8 @@ namespace RealtyReachApi.Models;
 [ExportTsClass]
 public class Professional
 {
-    public Professional(Guid id, string? email)
-    {
-        Id = id;
-        Email = email;
-        this.FirstLogin = true;
-    }
-
     public Guid Id { get; set; }
-    public int? ProfessionalTypeId { get; set; } // Foreign Key
+    public int ProfessionalTypeId { get; set; } // Foreign Key
     
     // Navigation properties
     //public ProfessionalType? ProfessionalType { get; set; }

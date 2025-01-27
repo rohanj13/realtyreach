@@ -5,12 +5,12 @@ using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RealtyReachApi.Interfaces;
+using RealtyReachApi.Dtos;
 
 namespace RealtyReachApi.Controllers
 {
     [ApiController]
-    [Route("api/professionals")]
+    [Route("api/jobs/professional")]
     [Authorize(Roles = "Professional")]
     public class ProfJobController : ControllerBase
     {

@@ -1,3 +1,5 @@
+using RealtyReachApi.Models;
+
 public class JobDetailDto
 {
     public int JobDetailId { get; set; }
@@ -11,6 +13,7 @@ public class JobDetailDto
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }
     public required string ContactPhone { get; set; }
+    public required List<int> JobDetailProfessionalTypeIds { get; set; } = new List<int>();
 }
 
 public class CreateJobDetailDto
@@ -24,6 +27,7 @@ public class CreateJobDetailDto
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }
     public required string ContactPhone { get; set; }
+    public required List<int> JobDetailProfessionalTypeIds { get; set; }
 }
 
 public class UpdateJobDetailDto
@@ -37,4 +41,5 @@ public class UpdateJobDetailDto
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }
     public required string ContactPhone { get; set; }
+    public required List<int> JobDetailProfessionalTypeIds;
 }

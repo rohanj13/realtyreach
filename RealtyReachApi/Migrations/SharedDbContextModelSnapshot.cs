@@ -180,6 +180,9 @@ namespace RealtyReachApi.Migrations
                     b.Property<Guid>("ProfessionalId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("SelectionDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -217,7 +220,7 @@ namespace RealtyReachApi.Migrations
                     b.Property<string>("LicenseNumber")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ProfessionalTypeId")
+                    b.Property<int>("ProfessionalTypeId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("VerificationStatus")
@@ -248,7 +251,7 @@ namespace RealtyReachApi.Migrations
 
                     b.HasKey("ProfessionalTypeId");
 
-                    b.ToTable("ProfessionalType");
+                    b.ToTable("ProfessionalTypes");
 
                     b.HasData(
                         new
@@ -337,7 +340,9 @@ namespace RealtyReachApi.Migrations
                 {
                     b.HasOne("RealtyReachApi.Models.ProfessionalType", null)
                         .WithMany("Professionals")
-                        .HasForeignKey("ProfessionalTypeId");
+                        .HasForeignKey("ProfessionalTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Customer", b =>

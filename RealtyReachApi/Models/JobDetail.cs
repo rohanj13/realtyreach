@@ -42,4 +42,5 @@ public class JobDetail
     [Required]
     [Phone]
     public required string ContactPhone { get; set; }
+    
 }

@@ -1,6 +1,6 @@
 using RealtyReachApi.Data;
-using RealtyReachApi.Interfaces;
 using RealtyReachApi.Models;
+using RealtyReachApi.Services;
 
 public class AdminService : IAdminService
 {

@@ -9,13 +9,13 @@ namespace RealtyReachApi.Data
     {
         public SharedDbContext(DbContextOptions<SharedDbContext> options) : base(options) { }
 
-        public DbSet<Job> Jobs { get; set; }
+        public DbSet<Job?> Jobs { get; set; }
         public DbSet<JobDetail> JobDetails { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Customer> Customers { get; set; }
-        public DbSet<Professional> Professionals { get; set; }
-
-
+        public DbSet<Professional?> Professionals { get; set; }
+        public DbSet<ProfessionalType> ProfessionalTypes { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -5,25 +5,32 @@ using RealtyReachApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RealtyReachApi.Dtos;
+using RealtyReachApi.Repositories;
 
 namespace RealtyReachApi.Services
 {
-    public class UserJobService : IUserJobService
+    public class CustomerJobService : ICustomerJobService
     {
         private readonly SharedDbContext _context;
+        private readonly IProfessionalTypeRepository _professionalTypeRepository;
 
-        public UserJobService(SharedDbContext context)
+        public CustomerJobService(SharedDbContext context, IProfessionalTypeRepository professionalTypeRepository)
         {
             _context = context;
+            _professionalTypeRepository = professionalTypeRepository;
         }
 
-        public async Task<List<JobDto>> GetAllJobsForUser(Guid userId)
+        public async Task<List<JobDto>> GetAllJobsForCustomer(Guid userId)
         {
+            // Get from repository
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Where(r => r.CustomerId == userId)
                 .Select(r => new JobDto
                 {
+                    JobId = r.JobId,
+                    UserId = r.CustomerId,
                     JobType = r.JobType,
                     JobTitle = r.JobTitle,
                     AdditionalDetails = r.AdditionalDetails,
@@ -44,6 +51,7 @@ namespace RealtyReachApi.Services
 
         public async Task<JobDto> GetJobById(int JobId)
         {
+            // Get from repository
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Where(r => r.JobId == JobId)
@@ -64,14 +72,14 @@ namespace RealtyReachApi.Services
                     ContactPhone = r.JobDetails.ContactPhone
 
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
-        public async Task<bool> CreateJob(CreateJobDto createJobDto, Guid customerId)
+        public async Task<bool> CreateJobAsync(CreateJobDto createJobDto)
         {
             var Job = new Job
             {
-                CustomerId = customerId,
+                CustomerId = createJobDto.UserId,
                 JobType = createJobDto.JobType,
                 JobTitle = createJobDto.JobTitle,
                 AdditionalDetails = createJobDto.AdditionalDetails,
@@ -104,9 +112,9 @@ namespace RealtyReachApi.Services
             }
         }
 
-        public async Task<bool> UpdateJob(int JobId, UpdateJobDto updateJobDto)
+        public async Task<bool> UpdateJob(UpdateJobDto updateJobDto)
         {
-            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == JobId);
+            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == updateJobDto.JobId);
             if (Job == null)
             {
                 return false;
@@ -123,7 +131,7 @@ namespace RealtyReachApi.Services
 
             Job.JobDetails = new JobDetail
             {
-                JobId = JobId,
+                JobId = updateJobDto.JobId,
                 Postcode = updateJobDto.JobDetail.Postcode,
                 PurchaseType = updateJobDto.JobDetail.PurchaseType,
                 PropertyType = updateJobDto.JobDetail.PropertyType,

@@ -29,4 +29,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\SharedDbContextModelSnapshot.cs" />
+  </ItemGroup>
+
 </Project>

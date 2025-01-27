@@ -1,5 +1,9 @@
+namespace RealtyReachApi.Dtos;
+
 public class JobDto
 {
+    public int JobId { get; set; }
+    public Guid UserId { get; set; }
     public required string JobType { get; set; }
     public required string JobTitle { get; set; }
     public required string Postcode { get; set; }
@@ -17,6 +21,7 @@ public class JobDto
 
 public class CreateJobDto
 {
+    public Guid UserId { get; set; }
     public required string JobType { get; set; }
     public required string JobTitle { get; set; }
     public required string Postcode { get; set; }
@@ -34,6 +39,7 @@ public class CreateJobDto
 
 public class UpdateJobDto
 {
+    public required int JobId { get; set; }
     public required string JobType { get; set; }
     public required string JobTitle { get; set; }
     public required string AdditionalDetails { get; set; }
