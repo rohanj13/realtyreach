@@ -7,17 +7,13 @@ namespace RealtyReachApi.Repositories;
 
 public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepository
 {
-    public async Task CreateProfessionalAsync(CreateProfessionalDto professional)
+    public async Task CreateProfessionalAsync(Professional professional)
     {
-        Professional? prof = new Professional();
-        prof.Id = professional.Id;
-        prof.Email = professional.Email;
-        prof.ProfessionalTypeId = (int)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum), professional.Type);
-        context.Professionals.Add(prof);
+        context.Professionals.Add(professional);
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<ProfessionalDto>> GetProfessionalsByProfessionalTypeIdsAsync(List<int> professionalTypeIds)
+    public async Task<List<Professional>> GetProfessionalsByProfessionalTypeIdsAsync(List<int> professionalTypeIds)
     {
         return await context.Professionals
             .Where(p => professionalTypeIds.Contains((int)p.ProfessionalTypeId))
@@ -42,31 +38,31 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
         throw new NotImplementedException();
     }
 
-    public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid professionalId)
+    public async Task<Professional> GetProfessionalByIdAsync(Guid professionalId)
     {
         Professional? professional = await context.Professionals.FindAsync(professionalId);
-        ProfessionalDto professionalDto = new ProfessionalDto();
-        if (professional != null)
-        {
-            professionalDto.Id = professional.Id;
-            professionalDto.Email = professional.Email;
-            professionalDto.FirstName = professional.FirstName;
-            professionalDto.LastName = professional.LastName;
-            professionalDto.ABN = professional.ABN;
-            professionalDto.LicenseNumber = professional.LicenseNumber;
-            professionalDto.VerificationStatus = professional.VerificationStatus;
-            professionalDto.CompanyName = professional.CompanyName;
-            professionalDto.FirstLogin = professional.FirstLogin;
-            professionalDto.ProfessionalType =
-                ((ProfessionalType.ProfessionalTypeEnum)professional.ProfessionalTypeId).ToString();
-            return professionalDto;
-        }
-
-        return professionalDto;
+        // ProfessionalDto professionalDto = new ProfessionalDto();
+        // if (professional != null)
+        // {
+        //     professionalDto.Id = professional.Id;
+        //     professionalDto.Email = professional.Email;
+        //     professionalDto.FirstName = professional.FirstName;
+        //     professionalDto.LastName = professional.LastName;
+        //     professionalDto.ABN = professional.ABN;
+        //     professionalDto.LicenseNumber = professional.LicenseNumber;
+        //     professionalDto.VerificationStatus = professional.VerificationStatus;
+        //     professionalDto.CompanyName = professional.CompanyName;
+        //     professionalDto.FirstLogin = professional.FirstLogin;
+        //     professionalDto.ProfessionalType =
+        //         ((ProfessionalType.ProfessionalTypeEnum)professional.ProfessionalTypeId).ToString();
+        //     return professionalDto;
+        // }
+        //
+        // return professionalDto;
     }
 
     public Task<bool> DeleteProfessionalAsync(ProfessionalDto professional)
     {
-        throw new NotImplementedException();
+        context.Professionals.Remove(professional);
     }
 }

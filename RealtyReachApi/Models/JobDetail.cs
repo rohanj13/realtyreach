@@ -28,6 +28,8 @@ public class JobDetail
     public required string JourneyProgress { get; set; }  // Just Started, Have Pre-approval, Post Purchase
 
     public required string[] SelectedProfessionals { get; set; }
+    
+    public required int[] SuggestedProfessionalIds { get; set; }
 
     [Required]
     public int BudgetMin { get; set; }

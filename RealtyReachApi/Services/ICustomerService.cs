@@ -4,8 +4,8 @@ namespace RealtyReachApi.Services;
 
 public interface ICustomerService
 {
-    Task CreateCustomerAsync(Customer customer);
-    Task<Customer> GetCustomerAsync(Guid id);
-    Task UpdateCustomerAsync(Guid id, CustomerDto customer);
+    Task CreateCustomerAsync(CustomerDto customer);
+    Task<CustomerDto> GetCustomerAsync(Guid id);
+    Task UpdateCustomerAsync(CustomerDto customer);
     Task DeleteCustomerAsync(Guid id);
 }

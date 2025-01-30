@@ -5,7 +5,7 @@ namespace RealtyReachApi.Services;
 
 public interface IProfessionalService
 {
-    Task CreateProfessionalAsync(CreateProfessionalDto professional);
+    Task CreateProfessionalAsync(ProfessionalDto professional);
     Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id);
     Task UpdateProfessionalAsync(Guid id, Professional professional);
     Task DeleteProfessionalAsync(Guid id);

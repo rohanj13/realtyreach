@@ -6,5 +6,5 @@ public interface IJobRepository
 {
     Task<Job?> GetJobByIdAsync(int jobId);
     Task<Job?> CreateJobAsync(Job? job);
-    Task<JobDetailDto?> GetJobDetailWithProfessionalTypesAsync(int jobId);
+    Task<JobDetail?> GetJobDetailWithProfessionalTypesAsync(int jobId);
 }

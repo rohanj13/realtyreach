@@ -16,10 +16,3 @@ public class ProfessionalDto
     public int ProfessionalTypeId { get; set; }
     public string ProfessionalType { get; set; }
 }
-
-public class CreateProfessionalDto
-{
-    public Guid Id { get; set; }
-    public required string Email { get; set; }
-    public required string Type { get; set; }
-}

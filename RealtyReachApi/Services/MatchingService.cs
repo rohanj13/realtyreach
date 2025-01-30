@@ -14,7 +14,7 @@ public class MatchingService : IMatchingService
         _jobRepository = jobRepository;
         _professionalRepository = professionalRepository;
     }
-
+    //TODO: Change to accept JobDto in the argument
     public async Task<List<ProfessionalDto>> IdentifySuitableProfessionalsAsync(int jobId)
     {
         // Retrieve the job from the repository
@@ -26,10 +26,19 @@ public class MatchingService : IMatchingService
         }
 
         // Get professionals matching the required professional types
+        // TODO: Read this https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/pattern-matching
         var suitableProfessionals =
             await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(jobDetail
                 .JobDetailProfessionalTypeIds);
-
+        //TODO: Separate the suitable professionals into lists based on type
+        //TODO: Run scoring algorithm on each list and return top 5 of each type
+        //TODO: Run db transaction via repository to save the Job and add prof ids to Job details
         return suitableProfessionals;
+    }
+    //TODO: Get MatchingJobDto that has job id and selected professional id
+    public async Task<bool> FinalizeMatchAsync()
+    {
+        //TODO: Run db transaction to store the matches to JobProfessionalLink table
+        //TODO: Update the JobDetail SuggestedProfessionals attribute to remove matched professional id
     }
 }

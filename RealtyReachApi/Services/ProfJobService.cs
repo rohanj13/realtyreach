@@ -21,6 +21,7 @@ namespace RealtyReachApi.Services
         {
             //add logic to get the professional type from the user manager
             // string userId = User.Identity.userName;
+            //TODO: Retrieve from JobProfessionalLink table, to show matches
             return await _context.Jobs
                 .Include(r => r.JobDetails)
                 .Select(r => new JobDto

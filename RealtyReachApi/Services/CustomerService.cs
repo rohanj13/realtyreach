@@ -1,47 +1,50 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Models;
+using RealtyReachApi.Repositories;
 using RealtyReachApi.Services;
 
 public class CustomerService : ICustomerService
 {
-    private readonly SharedDbContext _context;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly Mapper _mapper;
 
-    public CustomerService(SharedDbContext context)
+    public CustomerService(ICustomerRepository customerRepository, Mapper mapper)
     {
-        _context = context;
+        _customerRepository = customerRepository;
+        _mapper = mapper;
     }
 
-    public async Task CreateCustomerAsync(Customer customer)
+    public async Task CreateCustomerAsync(CustomerDto customerDto)
     {
-        //use a dto as an argument here
-        _context.Customers.Add(customer);
-        await _context.SaveChangesAsync();
-        Console.WriteLine("added to db");
+        Customer c = _mapper.ToCustomerEntity(customerDto);
+        await _customerRepository.CreateCustomerAsync(c);
     }
 
-    public async Task<Customer> GetCustomerAsync(Guid id)
+    public async Task<CustomerDto> GetCustomerAsync(Guid id)
     {
-        return await _context.Customers.FindAsync(id);
+        var c = await _customerRepository.GetCustomerByIdAsync(id);
+        
+        if (c == null)
+        {
+            return null;
+        }
+        else
+        {
+            CustomerDto cDto = _mapper.ToCustomerDto(c);
+            return cDto;
+        }
+
     }
 
-    public async Task UpdateCustomerAsync(Guid id, CustomerDto updatedCustomer)
+    public async Task UpdateCustomerAsync(CustomerDto updatedCustomer)
     {
-        var customer = await _context.Customers.FindAsync(id);
-        if (customer == null) return;
-
-        customer.Email = updatedCustomer.Email;
-        customer.FirstName = updatedCustomer.FirstName;
-        customer.LastName = updatedCustomer.LastName;
-        customer.FirstLogin = updatedCustomer.FirstLogin;
-        await _context.SaveChangesAsync();
+        Customer c = _mapper.ToCustomerEntity(updatedCustomer);
+        await _customerRepository.UpdateCustomerAsync(c);
     }
 
     public async Task DeleteCustomerAsync(Guid id)
     {
-        var customer = await _context.Customers.FindAsync(id);
-        if (customer == null) return;
-
-        _context.Customers.Remove(customer);
-        await _context.SaveChangesAsync();
+        await _customerRepository.DeleteCustomerAsync(id);
     }
 }

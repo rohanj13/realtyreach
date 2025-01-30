@@ -7,35 +7,24 @@ namespace RealtyReachApi.Services;
 
 public class ProfessionalService : IProfessionalService
 {
-    private readonly SharedDbContext _context;
     private readonly IProfessionalRepository _repository;
 
-    public ProfessionalService(SharedDbContext context, IProfessionalRepository professionalRepository)
+    public ProfessionalService(IProfessionalRepository professionalRepository)
     {
-        _context = context;
         _repository = professionalRepository;
     }
 
-    public async Task CreateProfessionalAsync(CreateProfessionalDto professional)
+    public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
+        //TODO: convert from professional dto to professional object
         await _repository.CreateProfessionalAsync(professional);
     }
 
     public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
     {
-        ProfessionalDto professional = await _repository.GetProfessionalByIdAsync(id);
+        Professional professional = await _repository.GetProfessionalByIdAsync(id);
+        //TODO: convert from professional to professional dto
         return professional;
-    }
-
-    public async Task CreateProfessionalNoRepoAsync(Professional? professional)
-    {
-        _context.Professionals.Add(professional);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<Professional> GetProfessionalAsync(Guid id)
-    {
-        return await _context.Professionals.FindAsync(id);
     }
 
     public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessional)
@@ -56,6 +45,7 @@ public class ProfessionalService : IProfessionalService
 
     public async Task DeleteProfessionalAsync(Guid id)
     {
+        // var professional = await _context.Professionals.FindAsync(id);
         var professional = await _context.Professionals.FindAsync(id);
         if (professional == null) return;
 
@@ -66,6 +56,7 @@ public class ProfessionalService : IProfessionalService
     public async Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId)
     {
         var professionals = await _repository.GetProfessionalsByTypeAsync(professionalTypeId);
+        //TODO: convert professional list to professional dto list
         return new List<ProfessionalDto>();
     }
 }

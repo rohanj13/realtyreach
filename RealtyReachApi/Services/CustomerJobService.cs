@@ -12,12 +12,10 @@ namespace RealtyReachApi.Services
 {
     public class CustomerJobService : ICustomerJobService
     {
-        private readonly SharedDbContext _context;
         private readonly IProfessionalTypeRepository _professionalTypeRepository;
 
-        public CustomerJobService(SharedDbContext context, IProfessionalTypeRepository professionalTypeRepository)
+        public CustomerJobService(IProfessionalTypeRepository professionalTypeRepository)
         {
-            _context = context;
             _professionalTypeRepository = professionalTypeRepository;
         }
 
@@ -75,7 +73,7 @@ namespace RealtyReachApi.Services
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
-        public async Task<bool> CreateJobAsync(CreateJobDto createJobDto)
+        public async Task<bool> CreateJobAsync(JobDto createJobDto)
         {
             var Job = new Job
             {
@@ -99,11 +97,14 @@ namespace RealtyReachApi.Services
                     ContactPhone = createJobDto.ContactPhone
                 }
             };
-
+            
             _context.Jobs.Add(Job);
             try
             {
+                //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
+                //TODO: Call repo to add row to JobProfessionalLink table
                 await _context.SaveChangesAsync();
+                
                 return true;
             }
             catch (DbUpdateException)
@@ -112,7 +113,7 @@ namespace RealtyReachApi.Services
             }
         }
 
-        public async Task<bool> UpdateJob(UpdateJobDto updateJobDto)
+        public async Task<bool> UpdateJob(JobDto updateJobDto)
         {
             var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == updateJobDto.JobId);
             if (Job == null)
