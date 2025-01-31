@@ -46,17 +46,23 @@ namespace RealtyReachApi.Controllers
             }
             else if (role == "Customer")
             {
-                var customer = new Customer(userId, email);
+                var customer = new CustomerDto
+                {
+                    Id = userId,
+                    Email = email,
+                    FirstLogin = true
+                };
                 await _customerService.CreateCustomerAsync(customer);
                 return Ok("Success");
             }
             else if (role == "Professional")
             {
-                var professional = new CreateProfessionalDto
+                var professional = new ProfessionalDto
                 {
                     Id = userId,
                     Email = email,
-                    Type = "Advocate" //TODO: Accept Values from frontend 
+                    ProfessionalType = "Advocate", //TODO: Accept Values from frontend
+                    FirstLogin = true
                 };
                 await _professionalService.CreateProfessionalAsync(professional);
                 return Ok("Success");
@@ -112,7 +118,7 @@ namespace RealtyReachApi.Controllers
             // if (role == "Customer")
             // {
             // var customer = userDto as Customer;
-            await _customerService.UpdateCustomerAsync(userId, customer);
+            await _customerService.UpdateCustomerAsync(customer, userId);
             return Ok("Customer updated successfully.");
             // }
             // else if (role == "Professional")

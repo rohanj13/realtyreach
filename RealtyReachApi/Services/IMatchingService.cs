@@ -1,8 +1,8 @@
-using RealtyReachApi.Dtos;
+using RealtyReachApi.Models;
 
 namespace RealtyReachApi.Services;
 
 public interface IMatchingService
 {
-    Task<List<ProfessionalDto>> IdentifySuitableProfessionalsAsync(int jobId);
+    Task<List<Professional>> IdentifySuitableProfessionalsAsync(string[] selectedProfessionals);
 }

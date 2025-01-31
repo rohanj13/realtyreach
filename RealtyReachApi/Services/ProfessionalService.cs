@@ -2,6 +2,7 @@ using RealtyReachApi.Data;
 using RealtyReachApi.Dtos;
 using RealtyReachApi.Models;
 using RealtyReachApi.Repositories;
+using static RealtyReachApi.Models.ProfessionalType;
 
 namespace RealtyReachApi.Services;
 
@@ -17,18 +18,29 @@ public class ProfessionalService : IProfessionalService
     public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
         //TODO: convert from professional dto to professional object
-        await _repository.CreateProfessionalAsync(professional);
+        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
+        Professional prof = new Professional
+        {
+            Id = professional.Id,
+            Email = professional.Email,
+            FirstLogin = professional.FirstLogin,
+            ProfessionalTypeId = (int) professionalTypeId
+        };
+        await _repository.CreateProfessionalAsync(prof);
     }
 
     public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
     {
         Professional professional = await _repository.GetProfessionalByIdAsync(id);
         //TODO: convert from professional to professional dto
-        return professional;
+        ProfessionalDto profDto = new ProfessionalDto();
+        return profDto;
     }
 
     public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessional)
     {
+        throw new NotImplementedException();
+        /*
         var professional = await _context.Professionals.FindAsync(id);
         if (professional == null) return;
 
@@ -41,16 +53,18 @@ public class ProfessionalService : IProfessionalService
         professional.CompanyName = updatedProfessional.CompanyName;
         professional.FirstLogin = updatedProfessional.FirstLogin;
         await _context.SaveChangesAsync();
+        */
     }
 
     public async Task DeleteProfessionalAsync(Guid id)
     {
+        throw new NotImplementedException();
         // var professional = await _context.Professionals.FindAsync(id);
-        var professional = await _context.Professionals.FindAsync(id);
-        if (professional == null) return;
-
-        _context.Professionals.Remove(professional);
-        await _context.SaveChangesAsync();
+        // var professional = await _context.Professionals.FindAsync(id);
+        // if (professional == null) return;
+        //
+        // _context.Professionals.Remove(professional);
+        // await _context.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId)

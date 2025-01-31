@@ -1,4 +1,5 @@
 // JobController.cs
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +9,12 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using RealtyReachApi.Dtos;
+using RealtyReachApi.Helpers;
 
 namespace RealtyReachApi.Controllers
 {
     [ApiController]
-    [Route("api/jobs")]
+    [Route("api/jobs/customer")]
     [Authorize(Roles = "Customer")]
     public class CustomerJobController : ControllerBase
     {
@@ -50,18 +52,17 @@ namespace RealtyReachApi.Controllers
             return Ok(job);
         }
 
-        // POST: api/Jobs
+        // POST: api/jobs/customer
         [HttpPost]
         public async Task<ActionResult<JobDto>> CreateJob(CreateJobDto createJobDto)
         {
-            // var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var jobDto = await _customerJobService.CreateJobAsync(createJobDto);
+            var jobDto = await _customerJobService.CreateJobAsync(createJobDto, Guid.Parse(User.GetUserId()));
             return Ok();
         }
 
         // PUT: api/Jobs/{JobId}
         [HttpPut("{JobId}")]
-        public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
+        /* public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
         {
             var success = await _customerJobService.UpdateJob(updateJobDto);
             if (!success)
@@ -71,6 +72,7 @@ namespace RealtyReachApi.Controllers
 
             return NoContent();
         }
+        */
 
         // // PUT: api/Jobs/{JobId}/NextStage
         // [HttpPut("{JobId}/nextstage")]

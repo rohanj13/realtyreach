@@ -21,6 +21,7 @@ builder.Services.AddDbContext<SharedDbContext>(options => options.UseNpgsql(conn
 builder.Services.AddScoped<IJobRepository,JobRepository>();
 builder.Services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
 builder.Services.AddScoped<IProfessionalTypeRepository, ProfessionalTypeRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 builder.Services.AddCors(options =>
 {

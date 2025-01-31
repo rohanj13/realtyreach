@@ -28,7 +28,7 @@ public class JobRepository : IJobRepository
         return job;
     }
 
-    public Task<JobDetailDto?> GetJobDetailWithProfessionalTypesAsync(int jobId)
+    public Task<JobDetail?> GetJobDetailWithProfessionalTypesAsync(int jobId)
     {
         throw new NotImplementedException();
     }
