@@ -1,5 +1,4 @@
 using RealtyReachApi.Data;
-using RealtyReachApi.Mappers;
 using RealtyReachApi.Models;
 using RealtyReachApi.Repositories;
 using RealtyReachApi.Services;
@@ -7,18 +6,21 @@ using RealtyReachApi.Services;
 public class CustomerService : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository;
-    private readonly Mapper _mapper;
 
-    public CustomerService(ICustomerRepository customerRepository, Mapper mapper)
+    public CustomerService(ICustomerRepository customerRepository)
     {
         _customerRepository = customerRepository;
-        _mapper = mapper;
     }
 
-    public async Task CreateCustomerAsync(CustomerDto customerDto)
+    public async Task CreateCustomerAsync(CustomerDto customer)
     {
-        Customer c = _mapper.ToCustomerEntity(customerDto);
-        await _customerRepository.CreateCustomerAsync(c);
+        Customer cus = new Customer
+        {
+            Id = customer.Id,
+            Email = customer.Email,
+            FirstLogin = customer.FirstLogin
+        };
+        await _customerRepository.CreateCustomerAsync(cus);
     }
 
     public async Task<CustomerDto> GetCustomerAsync(Guid id)
@@ -31,15 +33,27 @@ public class CustomerService : ICustomerService
         }
         else
         {
-            CustomerDto cDto = _mapper.ToCustomerDto(c);
+            CustomerDto cDto = new CustomerDto
+            {
+                Email = c.Email,
+                FirstName = c.FirstName,
+                LastName = c.LastName
+            };
             return cDto;
         }
 
     }
 
-    public async Task UpdateCustomerAsync(CustomerDto updatedCustomer)
+    public async Task UpdateCustomerAsync(CustomerDto updatedCustomer, Guid customerId)
     {
-        Customer c = _mapper.ToCustomerEntity(updatedCustomer);
+        Customer c = new Customer
+        {
+            Id = customerId,
+            FirstName = updatedCustomer.FirstName,
+            LastName = updatedCustomer.LastName,
+            FirstLogin = updatedCustomer.FirstLogin,
+            Email = updatedCustomer.Email
+        };
         await _customerRepository.UpdateCustomerAsync(c);
     }
 

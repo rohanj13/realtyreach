@@ -13,10 +13,13 @@ namespace RealtyReachApi.Services
     public class CustomerJobService : ICustomerJobService
     {
         private readonly IProfessionalTypeRepository _professionalTypeRepository;
+        private IMatchingService _matchingService;
+        private readonly SharedDbContext _context;
 
-        public CustomerJobService(IProfessionalTypeRepository professionalTypeRepository)
+        public CustomerJobService(IProfessionalTypeRepository professionalTypeRepository, IMatchingService matchingService)
         {
             _professionalTypeRepository = professionalTypeRepository;
+            _matchingService = matchingService;
         }
 
         public async Task<List<JobDto>> GetAllJobsForCustomer(Guid userId)
@@ -73,8 +76,9 @@ namespace RealtyReachApi.Services
                 .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
         }
 
-        public async Task<bool> CreateJobAsync(JobDto createJobDto)
+        public async Task<bool> CreateJobAsync(CreateJobDto createJobDto, Guid customerId)
         {
+            /*
             var Job = new Job
             {
                 CustomerId = createJobDto.UserId,
@@ -97,13 +101,16 @@ namespace RealtyReachApi.Services
                     ContactPhone = createJobDto.ContactPhone
                 }
             };
+            */
             
-            _context.Jobs.Add(Job);
+            // _context.Jobs.Add(Job);
             try
             {
                 //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
+                List<Professional> professionals =
+                    await _matchingService.IdentifySuitableProfessionalsAsync(createJobDto.SelectedProfessionals);
                 //TODO: Call repo to add row to JobProfessionalLink table
-                await _context.SaveChangesAsync();
+                // await _context.SaveChangesAsync();
                 
                 return true;
             }
@@ -130,6 +137,7 @@ namespace RealtyReachApi.Services
                 _context.JobDetails.Remove(Job.JobDetails);
             }
 
+            /*
             Job.JobDetails = new JobDetail
             {
                 JobId = updateJobDto.JobId,
@@ -143,10 +151,12 @@ namespace RealtyReachApi.Services
                 ContactEmail = updateJobDto.JobDetail.ContactEmail,
                 ContactPhone = updateJobDto.JobDetail.ContactPhone
             };
+            */
 
             try
             {
                 await _context.SaveChangesAsync();
+                // Call Matching Service to IdentifySuitableProfessionalsAsync
                 return true;
             }
             catch (DbUpdateException)

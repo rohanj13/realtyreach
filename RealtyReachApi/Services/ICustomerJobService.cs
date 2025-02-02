@@ -10,8 +10,8 @@ namespace RealtyReachApi.Services
     {
         Task<List<JobDto>> GetAllJobsForCustomer(Guid userId);
         Task<JobDto> GetJobById(int JobId);
-        Task<bool> CreateJobAsync(CreateJobDto createJobDto);
-        Task<bool> UpdateJob(UpdateJobDto updateJobDto);
+        Task<bool> CreateJobAsync(CreateJobDto createJobDto, Guid customerId);
+        // Task<bool> UpdateJob(UpdateJobDto updateJobDto);
         Task<bool> DeleteJob(int JobId);
     }
 }

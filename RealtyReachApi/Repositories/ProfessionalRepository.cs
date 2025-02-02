@@ -17,7 +17,7 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
     {
         return await context.Professionals
             .Where(p => professionalTypeIds.Contains((int)p.ProfessionalTypeId))
-            .Select(p => new ProfessionalDto
+            .Select(p => new Professional
             {
                 Id = p.Id,
                 Email = p.Email,
@@ -28,7 +28,6 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
                 VerificationStatus = p.VerificationStatus,
                 CompanyName = p.CompanyName,
                 ProfessionalTypeId = p.ProfessionalTypeId,
-                ProfessionalType = ((ProfessionalType.ProfessionalTypeEnum)p.ProfessionalTypeId).ToString()
             })
             .ToListAsync();
     }
@@ -41,6 +40,7 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
     public async Task<Professional> GetProfessionalByIdAsync(Guid professionalId)
     {
         Professional? professional = await context.Professionals.FindAsync(professionalId);
+        return professional;
         // ProfessionalDto professionalDto = new ProfessionalDto();
         // if (professional != null)
         // {
@@ -61,8 +61,8 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
         // return professionalDto;
     }
 
-    public Task<bool> DeleteProfessionalAsync(ProfessionalDto professional)
+    public Task<bool> DeleteProfessionalAsync(Professional professional)
     {
-        context.Professionals.Remove(professional);
+        throw new NotImplementedException();
     }
 }
