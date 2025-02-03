@@ -29,7 +29,7 @@ namespace RealtyReachApi.Controllers
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<List<JobDto>>> GetAllJobsForCustomer(string userId)
         {
-            var jobs = await _customerJobService.GetAllJobsForCustomer(new Guid(userId));
+            var jobs = await _customerJobService.GetAllJobsForCustomerAsync(new Guid(userId));
 
             if (jobs.Count > 0)
             {
@@ -41,9 +41,9 @@ namespace RealtyReachApi.Controllers
 
         // GET: api/Jobs/{JobId}
         [HttpGet("{JobId}")]
-        public async Task<ActionResult<JobDto>> GetJobById(int JobId)
+        public async Task<ActionResult<JobDto>> GetJobById(int jobId)
         {
-            var job = await _customerJobService.GetJobById(JobId);
+            var job = await _customerJobService.GetJobByIdAsync(jobId);
             if (job == null)
             {
                 return NotFound();

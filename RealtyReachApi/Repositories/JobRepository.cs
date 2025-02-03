@@ -21,6 +21,14 @@ public class JobRepository : IJobRepository
             .FirstOrDefaultAsync(j => j!.JobId == jobId);
     }
 
+    public async Task<List<Job>> GetAllJobsforCustomerAsync(Guid customerId)
+    {
+        return await _context.Jobs
+            .Include(r => r.JobDetails)
+            .Where(r => r.CustomerId == customerId)
+            .ToListAsync();
+    }
+
     public async Task<Job?> CreateJobAsync(Job? job)
     {
         _context.Jobs.Add(job);
@@ -32,7 +40,17 @@ public class JobRepository : IJobRepository
     {
         throw new NotImplementedException();
     }
-    
+
+    public Task<bool> UpdateJobAsync(Job? job)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeleteJobAsync(int jobId)
+    {
+        throw new NotImplementedException();
+    }
+
     // public async Task<JobDetailDto?> GetJobDetailWithProfessionalTypesAsync(int jobId)
     // {
     //     var jobDetail = await _context.JobDetails

@@ -9,6 +9,7 @@ public class JobDetailDto
     public required string PropertyType { get; set; }
     public required string JourneyProgress { get; set; }
     public required string[] SelectedProfessionals { get; set; }
+    public required int[] SuggestedProfessionalIds { get; set; }
     public int BudgetMin { get; set; }
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }

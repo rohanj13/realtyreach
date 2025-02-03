@@ -1,5 +1,6 @@
 using RealtyReachApi.Data;
 using RealtyReachApi.Dtos;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Models;
 using RealtyReachApi.Repositories;
 using static RealtyReachApi.Models.ProfessionalType;
@@ -9,24 +10,27 @@ namespace RealtyReachApi.Services;
 public class ProfessionalService : IProfessionalService
 {
     private readonly IProfessionalRepository _repository;
-
-    public ProfessionalService(IProfessionalRepository professionalRepository)
+    private readonly IProfessionalMapper _mapper;
+    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper)
     {
         _repository = professionalRepository;
+        _mapper = mapper;
     }
 
     public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
         //TODO: convert from professional dto to professional object
         ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
-        Professional prof = new Professional
-        {
-            Id = professional.Id,
-            Email = professional.Email,
-            FirstLogin = professional.FirstLogin,
-            ProfessionalTypeId = (int) professionalTypeId
-        };
-        await _repository.CreateProfessionalAsync(prof);
+        Professional p = _mapper.ToProfessionalEntity(professional);
+        p.ProfessionalTypeId = (int) professionalTypeId;
+        // Professional prof = new Professional
+        // {
+        //     Id = professional.Id,
+        //     Email = professional.Email,
+        //     FirstLogin = professional.FirstLogin,
+        //     ProfessionalTypeId = (int) professionalTypeId
+        // };
+        await _repository.CreateProfessionalAsync(p);
     }
 
     public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
