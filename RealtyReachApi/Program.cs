@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RealtyReachApi.Data;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Repositories;
 using RealtyReachApi.Models;
 using RealtyReachApi.Services;
@@ -60,6 +61,11 @@ builder.Services.AddScoped<IProfessionalService, ProfessionalService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
 builder.Services.AddScoped<JourneyProgressOptions>();
+
+// Register Mapper
+builder.Services.AddScoped<IJobMapper, JobMapper>();
+builder.Services.AddScoped<IProfessionalMapper, ProfessionalMapper>();
+builder.Services.AddScoped<ICustomerMapper, CustomerMapper>();
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<SharedDbContext>()

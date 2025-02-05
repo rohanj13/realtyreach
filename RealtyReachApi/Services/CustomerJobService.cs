@@ -50,14 +50,11 @@ namespace RealtyReachApi.Services
         public async Task<bool> CreateJobAsync(CreateJobDto createJobDto, Guid customerId)
         {
             Job job = _jobMapper.ToJobEntity(createJobDto, customerId);
-            await _jobRepository.CreateJobAsync(job);
             try
             {
                 //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
                 List<Professional> professionals =
                     await _matchingService.IdentifySuitableProfessionalsAsync(createJobDto.SelectedProfessionals);
-                //TODO: Call repo to add row to JobProfessionalLink table
-                // await _context.SaveChangesAsync();
                 
                 return true;
             }

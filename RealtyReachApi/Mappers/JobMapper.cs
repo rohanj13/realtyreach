@@ -19,7 +19,7 @@ public class JobMapper : IJobMapper
             PropertyType = job.JobDetails?.PropertyType ?? string.Empty,
             JourneyProgress = job.JobDetails?.JourneyProgress ?? string.Empty,
             SelectedProfessionals = job.JobDetails?.SelectedProfessionals ?? Array.Empty<string>(),
-            SuggestedProfessionalIds = job.JobDetails?.SuggestedProfessionalIds ?? Array.Empty<int>(),
+            SuggestedProfessionalIds = job.JobDetails?.SuggestedProfessionalIds ?? Array.Empty<Guid>(),
             Status = job.Status.ToString(),
             BudgetMin = job.JobDetails?.BudgetMin ?? 0,
             BudgetMax = job.JobDetails?.BudgetMax ?? 0,
@@ -39,7 +39,7 @@ public class JobMapper : IJobMapper
             JobType = jobDto.JobType,
             JobTitle = jobDto.JobTitle,
             AdditionalDetails = jobDto.AdditionalDetails,
-            Status = Enum.Parse<JobStatus>(jobDto.Status), // Assuming you have an enum for JobStatus
+            Status = Enum.Parse<JobStatus>(jobDto.Status),
             JobDetails = new JobDetail
             {
                 Postcode = jobDto.Postcode,

@@ -29,7 +29,7 @@ public class JobDetail
 
     public required string[] SelectedProfessionals { get; set; }
     
-    public required int[] SuggestedProfessionalIds { get; set; }
+    public required Guid[] SuggestedProfessionalIds { get; set; }
 
     [Required]
     public int BudgetMin { get; set; }

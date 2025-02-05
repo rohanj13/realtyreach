@@ -19,62 +19,35 @@ public class ProfessionalService : IProfessionalService
 
     public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
-        //TODO: convert from professional dto to professional object
         ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
         Professional p = _mapper.ToProfessionalEntity(professional);
         p.ProfessionalTypeId = (int) professionalTypeId;
-        // Professional prof = new Professional
-        // {
-        //     Id = professional.Id,
-        //     Email = professional.Email,
-        //     FirstLogin = professional.FirstLogin,
-        //     ProfessionalTypeId = (int) professionalTypeId
-        // };
         await _repository.CreateProfessionalAsync(p);
     }
 
     public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
     {
         Professional professional = await _repository.GetProfessionalByIdAsync(id);
-        //TODO: convert from professional to professional dto
-        ProfessionalDto profDto = new ProfessionalDto();
+        ProfessionalDto profDto = _mapper.ToProfessionalDto(professional);
         return profDto;
     }
 
     public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessional)
     {
         throw new NotImplementedException();
-        /*
-        var professional = await _context.Professionals.FindAsync(id);
-        if (professional == null) return;
-
-        professional.Email = updatedProfessional.Email;
-        professional.FirstName = updatedProfessional.FirstName;
-        professional.LastName = updatedProfessional.LastName;
-        professional.ProfessionalTypeId = updatedProfessional.ProfessionalTypeId;
-        professional.ABN = updatedProfessional.ABN;
-        professional.LicenseNumber = updatedProfessional.LicenseNumber;
-        professional.CompanyName = updatedProfessional.CompanyName;
-        professional.FirstLogin = updatedProfessional.FirstLogin;
-        await _context.SaveChangesAsync();
-        */
     }
 
     public async Task DeleteProfessionalAsync(Guid id)
     {
         throw new NotImplementedException();
-        // var professional = await _context.Professionals.FindAsync(id);
-        // var professional = await _context.Professionals.FindAsync(id);
-        // if (professional == null) return;
-        //
-        // _context.Professionals.Remove(professional);
-        // await _context.SaveChangesAsync();
     }
 
     public async Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId)
     {
         var professionals = await _repository.GetProfessionalsByTypeAsync(professionalTypeId);
-        //TODO: convert professional list to professional dto list
-        return new List<ProfessionalDto>();
+        List<ProfessionalDto> professionalDtos = new List<ProfessionalDto>();
+        foreach (var professional in professionals)
+            professionalDtos.Add(_mapper.ToProfessionalDto(professional));
+        return professionalDtos;
     }
 }
