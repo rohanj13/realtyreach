@@ -119,6 +119,7 @@ namespace RealtyReachApi.Migrations
                     PropertyType = table.Column<string>(type: "text", nullable: false),
                     JourneyProgress = table.Column<string>(type: "text", nullable: false),
                     SelectedProfessionals = table.Column<string[]>(type: "text[]", nullable: false),
+                    SuggestedProfessionalIds = table.Column<Guid[]>(type: "uuid[]", nullable: false),
                     BudgetMin = table.Column<int>(type: "integer", nullable: false),
                     BudgetMax = table.Column<int>(type: "integer", nullable: false),
                     ContactEmail = table.Column<string>(type: "text", nullable: false),

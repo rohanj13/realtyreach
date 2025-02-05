@@ -12,7 +12,7 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    [Migration("20250127031322_Initial")]
+    [Migration("20250205064918_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -166,6 +166,10 @@ namespace RealtyReachApi.Migrations
                     b.Property<string[]>("SelectedProfessionals")
                         .IsRequired()
                         .HasColumnType("text[]");
+
+                    b.Property<Guid[]>("SuggestedProfessionalIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
 
                     b.HasKey("JobDetailId");
 

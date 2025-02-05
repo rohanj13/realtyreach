@@ -31,7 +31,10 @@ public class CreateJobDto
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }
     public required string ContactPhone { get; set; }
+
     public required string JourneyProgress { get; set; }
+
+    // SelectedProfessionals are professionals that are chosen by the Customer via the frontend. I.e = They select ["Advocate", "Building and Pest"]
     public required string[] SelectedProfessionals { get; set; }
     public string? AdditionalDetails { get; set; }
 }
