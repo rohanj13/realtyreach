@@ -20,13 +20,15 @@ namespace RealtyReachApi.Services
         private readonly IJobMapper _jobMapper;
         private readonly SharedDbContext _context;
 
-        public CustomerJobService(IProfessionalTypeRepository professionalTypeRepository, IJobMapper jobMapper,
+        public CustomerJobService(
+            IProfessionalTypeRepository professionalTypeRepository, IJobMapper jobMapper,
             IMatchingService matchingService, IJobRepository jobRepository)
         {
             //_professionalTypeRepository = professionalTypeRepository;
             _jobRepository = jobRepository;
             _matchingService = matchingService;
             _jobMapper = jobMapper;
+            _jobRepository = jobRepository;
         }
 
         public async Task<List<JobDto>> GetAllJobsForCustomerAsync(Guid userId)
@@ -57,7 +59,37 @@ namespace RealtyReachApi.Services
                 //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
                 List<Professional> professionals =
                     await _matchingService.IdentifySuitableProfessionalsAsync(createJobDto.SelectedProfessionals);
+                if (professionals.Any())
+                {
+                    Job jb = new Job
+                    {
+                        CustomerId = customerId,
+                        JobTitle = createJobDto.JobTitle,
+                        JobType = createJobDto.JobType,
+                        AdditionalDetails = createJobDto.AdditionalDetails ?? string.Empty,
+                        CreatedAt = DateTime.UtcNow,
+                        Status = JobStatus.Open,
+                        JobDetails = new JobDetail
+                        {
+                            Postcode = createJobDto.Postcode,
+                            PurchaseType = createJobDto.PurchaseType ?? string.Empty,
+                            PropertyType = createJobDto.PropertyType,
+                            JourneyProgress = createJobDto.JourneyProgress,
+                            SelectedProfessionals = createJobDto.SelectedProfessionals,
+                            SuggestedProfessionalIds = professionals.Select(p => p.Id).ToArray(),
+                            BudgetMin = createJobDto.BudgetMin,
+                            BudgetMax = createJobDto.BudgetMax,
+                            ContactEmail = createJobDto.ContactEmail,
+                            ContactPhone = createJobDto.ContactPhone
+                        }
 
+                    };
+                    await _jobRepository.CreateJobAsync(jb);
+                }
+                else
+                {
+                    throw new InvalidDataException("No Suitable Professionals Found");
+                }
                 return true;
             }
             catch (DbUpdateException)
