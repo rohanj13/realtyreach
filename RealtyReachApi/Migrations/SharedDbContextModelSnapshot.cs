@@ -164,6 +164,10 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
+                    b.Property<Guid[]>("SuggestedProfessionalIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]");
+
                     b.HasKey("JobDetailId");
 
                     b.HasIndex("JobId")
