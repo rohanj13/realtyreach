@@ -39,7 +39,7 @@ public class MatchingService : IMatchingService
             await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(professionalTypeIds);
         //TODO: Separate the suitable professionals into lists based on type
         //TODO: Run scoring algorithm on each list and return top 5 of each type
-        Console.WriteLine(suitableProfessionals[0].ProfessionalTypeId);
+        // Console.WriteLine(suitableProfessionals[0].ProfessionalTypeId);
         return suitableProfessionals;
     }
     //TODO: Get MatchingJobDto that has job id and selected professional id

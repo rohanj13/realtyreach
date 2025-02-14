@@ -11,7 +11,6 @@ public class JobDetail
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int JobDetailId { get; set; }
-
     public int JobId { get; set; } // Required foreign key property
     public Job Job { get; set; } = null!; // Required reference navigation to principal
     public ICollection<JobProfessionalLink> JobProfessionalLinks { get; set; } = new List<JobProfessionalLink>();
@@ -26,9 +25,8 @@ public class JobDetail
     [Required] public required string JourneyProgress { get; set; } // Just Started, Have Pre-approval, Post Purchase
 
     public required string[] SelectedProfessionals { get; set; }
-
-    public required Guid[]
-        SuggestedProfessionalIds { get; set; } // Matching service returns id's of suitable professionals for this Job
+    
+    public required Guid[] SuggestedProfessionalIds { get; set; }
 
     [Required] public int BudgetMin { get; set; }
 
