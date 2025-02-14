@@ -11,6 +11,7 @@ public class JobDto
     public required string PropertyType { get; set; }
     public required string JourneyProgress { get; set; }
     public required string[] SelectedProfessionals { get; set; }
+    public required Guid[] SuggestedProfessionalIds { get; set; }
     public required string Status { get; set; }
     public int BudgetMin { get; set; }
     public int BudgetMax { get; set; }
@@ -33,5 +34,6 @@ public class CreateJobDto
     public required string ContactPhone { get; set; }
     public required string JourneyProgress { get; set; }
     public required string[] SelectedProfessionals { get; set; }
+    public required Guid[] SuggestedProfessionalIds { get; set; }
     public string? AdditionalDetails { get; set; }
 }

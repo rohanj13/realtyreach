@@ -6,111 +6,55 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RealtyReachApi.Dtos;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Repositories;
 
 namespace RealtyReachApi.Services
 {
     public class CustomerJobService : ICustomerJobService
     {
-        private readonly IProfessionalTypeRepository _professionalTypeRepository;
-        private IMatchingService _matchingService;
-        private readonly SharedDbContext _context;
+        //private readonly IProfessionalTypeRepository _professionalTypeRepository;
+        private readonly IJobRepository _jobRepository;
+        private readonly IMatchingService _matchingService;
+        private readonly IJobMapper _jobMapper;
 
-        public CustomerJobService(IProfessionalTypeRepository professionalTypeRepository, IMatchingService matchingService)
+        public CustomerJobService(IJobMapper jobMapper, 
+            IMatchingService matchingService, IJobRepository jobRepository)
         {
-            _professionalTypeRepository = professionalTypeRepository;
+            //_professionalTypeRepository = professionalTypeRepository;
+            _jobRepository = jobRepository;
             _matchingService = matchingService;
+            _jobMapper = jobMapper;
         }
 
-        public async Task<List<JobDto>> GetAllJobsForCustomer(Guid userId)
+        public async Task<List<JobDto>> GetAllJobsForCustomerAsync(Guid userId)
         {
             // Get from repository
-            return await _context.Jobs
-                .Include(r => r.JobDetails)
-                .Where(r => r.CustomerId == userId)
-                .Select(r => new JobDto
-                {
-                    JobId = r.JobId,
-                    UserId = r.CustomerId,
-                    JobType = r.JobType,
-                    JobTitle = r.JobTitle,
-                    AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status.ToString(),
-                    Postcode = r.JobDetails.Postcode,
-                    PurchaseType = r.JobDetails.PurchaseType,
-                    PropertyType = r.JobDetails.PropertyType,
-                    JourneyProgress = r.JobDetails.JourneyProgress,
-                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
-                    BudgetMin = r.JobDetails.BudgetMin,
-                    BudgetMax = r.JobDetails.BudgetMax,
-                    ContactEmail = r.JobDetails.ContactEmail,
-                    ContactPhone = r.JobDetails.ContactPhone
-
-                })
-                .ToListAsync();
+            var jobs = await _jobRepository.GetAllJobsforCustomerAsync(userId);
+            List<JobDto> jobDtos = new List<JobDto>();
+            foreach (var j in jobs)
+            {
+                jobDtos.Add(_jobMapper.ToJobDto(j));
+            }
+            return jobDtos;
         }
 
-        public async Task<JobDto> GetJobById(int JobId)
+        public async Task<JobDto> GetJobByIdAsync(int jobId)
         {
             // Get from repository
-            return await _context.Jobs
-                .Include(r => r.JobDetails)
-                .Where(r => r.JobId == JobId)
-                .Select(r => new JobDto
-                {
-                    JobType = r.JobType,
-                    JobTitle = r.JobTitle,
-                    AdditionalDetails = r.AdditionalDetails,
-                    Status = r.Status.ToString(),
-                    Postcode = r.JobDetails.Postcode,
-                    PurchaseType = r.JobDetails.PurchaseType,
-                    PropertyType = r.JobDetails.PropertyType,
-                    JourneyProgress = r.JobDetails.JourneyProgress,
-                    SelectedProfessionals = r.JobDetails.SelectedProfessionals,
-                    BudgetMin = r.JobDetails.BudgetMin,
-                    BudgetMax = r.JobDetails.BudgetMax,
-                    ContactEmail = r.JobDetails.ContactEmail,
-                    ContactPhone = r.JobDetails.ContactPhone
-
-                })
-                .FirstOrDefaultAsync() ?? throw new InvalidOperationException();
+            var job = await _jobRepository.GetJobByIdAsync(jobId);
+            if (job == null) return null;
+            return _jobMapper.ToJobDto(job);
         }
 
         public async Task<bool> CreateJobAsync(CreateJobDto createJobDto, Guid customerId)
         {
-            /*
-            var Job = new Job
-            {
-                CustomerId = createJobDto.UserId,
-                JobType = createJobDto.JobType,
-                JobTitle = createJobDto.JobTitle,
-                AdditionalDetails = createJobDto.AdditionalDetails,
-                Status = JobStatus.Open,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                JobDetails = new JobDetail
-                {
-                    Postcode = createJobDto.Postcode,
-                    PurchaseType = createJobDto.PurchaseType,
-                    PropertyType = createJobDto.PropertyType,
-                    JourneyProgress = createJobDto.JourneyProgress,
-                    SelectedProfessionals = createJobDto.SelectedProfessionals,
-                    BudgetMin = createJobDto.BudgetMin,
-                    BudgetMax = createJobDto.BudgetMax,
-                    ContactEmail = createJobDto.ContactEmail,
-                    ContactPhone = createJobDto.ContactPhone
-                }
-            };
-            */
-            
-            // _context.Jobs.Add(Job);
+            Job job = _jobMapper.ToJobEntity(createJobDto, customerId);
             try
             {
                 //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
                 List<Professional> professionals =
                     await _matchingService.IdentifySuitableProfessionalsAsync(createJobDto.SelectedProfessionals);
-                //TODO: Call repo to add row to JobProfessionalLink table
-                // await _context.SaveChangesAsync();
                 
                 return true;
             }
@@ -122,65 +66,13 @@ namespace RealtyReachApi.Services
 
         public async Task<bool> UpdateJob(JobDto updateJobDto)
         {
-            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == updateJobDto.JobId);
-            if (Job == null)
-            {
-                return false;
-            }
-
-            Job.JobType = updateJobDto.JobType;
-            Job.AdditionalDetails = updateJobDto.AdditionalDetails;
-            Job.UpdatedAt = DateTime.UtcNow;
-
-            if (Job.JobDetails != null)
-            {
-                _context.JobDetails.Remove(Job.JobDetails);
-            }
-
-            /*
-            Job.JobDetails = new JobDetail
-            {
-                JobId = updateJobDto.JobId,
-                Postcode = updateJobDto.JobDetail.Postcode,
-                PurchaseType = updateJobDto.JobDetail.PurchaseType,
-                PropertyType = updateJobDto.JobDetail.PropertyType,
-                JourneyProgress = updateJobDto.JobDetail.JourneyProgress,
-                SelectedProfessionals = updateJobDto.JobDetail.SelectedProfessionals,
-                BudgetMin = updateJobDto.JobDetail.BudgetMin,
-                BudgetMax = updateJobDto.JobDetail.BudgetMax,
-                ContactEmail = updateJobDto.JobDetail.ContactEmail,
-                ContactPhone = updateJobDto.JobDetail.ContactPhone
-            };
-            */
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                // Call Matching Service to IdentifySuitableProfessionalsAsync
-                return true;
-            }
-            catch (DbUpdateException)
-            {
-                return false;
-            }
+            Job job = _jobMapper.ToJobEntity(updateJobDto);
+            return await _jobRepository.UpdateJobAsync(job);
         }
 
-        public async Task<bool> DeleteJob(int JobId)
+        public async Task<bool> DeleteJob(int jobId)
         {
-            var Job = await _context.Jobs.Include(r => r.JobDetails).FirstOrDefaultAsync(r => r.JobId == JobId);
-            if (Job == null)
-            {
-                return false;
-            }
-
-            if (Job.JobDetails != null)
-            {
-                _context.JobDetails.Remove(Job.JobDetails);
-            }
-
-            _context.Jobs.Remove(Job);
-            await _context.SaveChangesAsync();
-            return true;
+            return await _jobRepository.DeleteJobAsync(jobId);
         }
     }
 }
