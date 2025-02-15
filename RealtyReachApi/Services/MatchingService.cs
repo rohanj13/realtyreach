@@ -14,6 +14,7 @@ public class MatchingService : IMatchingService
         _jobRepository = jobRepository;
         _professionalRepository = professionalRepository;
     }
+
     //TODO: Change to accept JobDto in the argument
     public async Task<List<Professional>> IdentifySuitableProfessionalsAsync(string[] selectedProfessionals)
     {
@@ -25,7 +26,7 @@ public class MatchingService : IMatchingService
             return new List<ProfessionalDto>(); // Return empty if job not found or already matched
         }
         */
-        List<int> professionalTypeIds=[];
+        List<int> professionalTypeIds = [];
         foreach (var selectedProfessional in selectedProfessionals)
         {
             ProfessionalType.ProfessionalTypeEnum id =
@@ -33,15 +34,22 @@ public class MatchingService : IMatchingService
                     selectedProfessional);
             professionalTypeIds.Add((int)id);
         }
+
         // Get professionals matching the required professional types
         // TODO: Read this https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/pattern-matching
         var suitableProfessionals =
             await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(professionalTypeIds);
-        //TODO: Separate the suitable professionals into lists based on type
+
+        // Separate the suitable professionals into lists based on type
+        List<List<Professional>> groupedProfessionals = suitableProfessionals
+            .GroupBy(professional => professional.ProfessionalTypeId)
+            .Select(group => group.ToList())
+            .ToList();
         //TODO: Run scoring algorithm on each list and return top 5 of each type
         // Console.WriteLine(suitableProfessionals[0].ProfessionalTypeId);
         return suitableProfessionals;
     }
+
     //TODO: Get MatchingJobDto that has job id and selected professional id
     public async Task<bool> FinalizeMatchAsync()
     {
