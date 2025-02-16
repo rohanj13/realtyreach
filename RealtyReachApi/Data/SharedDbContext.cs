@@ -15,6 +15,7 @@ namespace RealtyReachApi.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Professional?> Professionals { get; set; }
         public DbSet<ProfessionalType> ProfessionalTypes { get; set; }
+        public DbSet<JobProfessionalLink> JobProfessionalLinks {get; set;}
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

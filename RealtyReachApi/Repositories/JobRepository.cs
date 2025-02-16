@@ -51,6 +51,12 @@ public class JobRepository : IJobRepository
         throw new NotImplementedException();
     }
 
+    public async Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink) {
+        _context.JobProfessionalLinks.Add(jobProfessionalLink);
+        await _context.SaveChangesAsync();
+        return jobProfessionalLink;
+    }
+
     // public async Task<JobDetailDto?> GetJobDetailWithProfessionalTypesAsync(int jobId)
     // {
     //     var jobDetail = await _context.JobDetails

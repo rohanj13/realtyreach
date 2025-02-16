@@ -1,8 +1,7 @@
-using TypeGen.Core.TypeAnnotations;
+
 
 namespace RealtyReachApi.Models;
 
-[ExportTsClass]
 public class JobProfessionalLink
 {
     public int JobDetailId { get; set; } // Composite Key Part 1
@@ -12,6 +11,6 @@ public class JobProfessionalLink
     public DateTime AssignedDate { get; set; }
 
     // Navigation properties
-    public JobDetail JobDetail { get; set; }
-    public Professional Professional { get; set; }
+    // public JobDetail JobDetail { get; set; }
+    // public Professional Professional { get; set; }
 }
