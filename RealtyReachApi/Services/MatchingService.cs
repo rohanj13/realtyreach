@@ -58,6 +58,8 @@ public class MatchingService : IMatchingService
         if (tempJob != null) {
             jobProfessionalLink.JobDetailId = tempJob.JobDetails.JobDetailId;
             jobProfessionalLink.ProfessionalId = matchingJobDto.ProfessionalId;
+            jobProfessionalLink.AssignedDate = DateTime.UtcNow;
+            jobProfessionalLink.SelectionDate = DateTime.UtcNow;
             
             //TODO: Run db transaction to store the matches to JobProfessionalLink table
             await _jobRepository.MatchJobAsync(jobProfessionalLink);

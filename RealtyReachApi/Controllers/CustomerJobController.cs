@@ -19,10 +19,12 @@ namespace RealtyReachApi.Controllers
     public class CustomerJobController : ControllerBase
     {
         private readonly ICustomerJobService _customerJobService;
+        private readonly IMatchingService _matchingService;
 
-        public CustomerJobController(ICustomerJobService customerJobService)
+        public CustomerJobController(ICustomerJobService customerJobService, IMatchingService matchingService)
         {
             _customerJobService = customerJobService;
+            _matchingService = matchingService;
         }
 
         // GET: api/jobs/user/{userId}
@@ -40,7 +42,7 @@ namespace RealtyReachApi.Controllers
         }
 
         // GET: api/Jobs/{JobId}
-        [HttpGet("{JobId}")]
+        [HttpGet("{jobId}")]
         public async Task<ActionResult<JobDto>> GetJobById(int jobId)
         {
             var job = await _customerJobService.GetJobByIdAsync(jobId);
@@ -58,6 +60,13 @@ namespace RealtyReachApi.Controllers
         {
             var jobDto = await _customerJobService.CreateJobAsync(createJobDto, Guid.Parse(User.GetUserId()));
             return Ok();
+        }
+
+        [HttpPost("finalise")]
+        public async Task<ActionResult<MatchingJobDto>> FinalizeMatch(MatchingJobDto matchingJobDto)
+        {
+            var jobDto = await _matchingService.FinalizeMatchAsync(matchingJobDto);
+            return Ok(jobDto);
         }
 
         // PUT: api/Jobs/{JobId}

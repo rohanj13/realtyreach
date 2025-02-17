@@ -41,9 +41,20 @@ public class JobRepository : IJobRepository
         throw new NotImplementedException();
     }
 
-    public Task<bool> UpdateJobAsync(Job? job)
+    public async Task<bool> UpdateJobAsync(Job? job)
     {
-        throw new NotImplementedException();
+        if (job == null) {
+            return false;
+        }
+
+        var existingJob = await _context.Jobs.FindAsync(job.JobId);
+        if (existingJob == null) {
+            return false;
+        }
+
+        _context.Entry(existingJob).CurrentValues.SetValues(job);
+
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public Task<bool> DeleteJobAsync(int jobId)
@@ -52,7 +63,7 @@ public class JobRepository : IJobRepository
     }
 
     public async Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink) {
-        _context.JobProfessionalLinks.Add(jobProfessionalLink);
+        _context.JobProfessionalLink.Add(jobProfessionalLink);
         await _context.SaveChangesAsync();
         return jobProfessionalLink;
     }

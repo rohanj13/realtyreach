@@ -11,6 +11,6 @@ public class JobProfessionalLink
     public DateTime AssignedDate { get; set; }
 
     // Navigation properties
-    // public JobDetail JobDetail { get; set; }
-    // public Professional Professional { get; set; }
+    public JobDetail JobDetail { get; set; }
+    public Professional Professional { get; set; }
 }
