@@ -4,5 +4,5 @@ namespace RealtyReachApi.Services;
 
 public interface IMatchingService
 {
-    Task<List<Professional>> IdentifySuitableProfessionalsAsync(string[] selectedProfessionals);
+    Task<List<Professional>> IdentifySuitableProfessionalsAsync(Job job);
 }

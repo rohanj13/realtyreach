@@ -16,24 +16,15 @@ public class MatchingService : IMatchingService
     }
 
     //TODO: Change to accept JobDto in the argument
-    public async Task<List<Professional>> IdentifySuitableProfessionalsAsync(string[] selectedProfessionals)
+    public async Task<List<Professional>> IdentifySuitableProfessionalsAsync(Job job)
     {
-        // Retrieve the job from the repository
-        // Get job details with required professional types
-        //var jobDetail = await _jobRepository.GetJobDetailWithProfessionalTypesAsync(jobId);
-        /*if (jobDetail == null || !jobDetail.JobDetailProfessionalTypeIds.Any())
-        {
-            return new List<ProfessionalDto>(); // Return empty if job not found or already matched
-        }
-        */
+        if (job.JobDetails == null) throw new InvalidDataException("Job details are empty");
         List<int> professionalTypeIds = [];
-        foreach (var selectedProfessional in selectedProfessionals)
-        {
-            ProfessionalType.ProfessionalTypeEnum id =
-                (ProfessionalType.ProfessionalTypeEnum)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum),
-                    selectedProfessional);
-            professionalTypeIds.Add((int)id);
-        }
+        professionalTypeIds.AddRange(job.JobDetails.SelectedProfessionals.Select(selectedProfessional =>
+            (ProfessionalType.ProfessionalTypeEnum)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum),
+                selectedProfessional)).Select(id => (int)id));
+
+        if (professionalTypeIds.Count == 0) throw new InvalidDataException("No suitable professionals found");
 
         // Get professionals matching the required professional types
         // TODO: Read this https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/tutorials/pattern-matching
@@ -41,12 +32,36 @@ public class MatchingService : IMatchingService
             await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(professionalTypeIds);
 
         // Separate the suitable professionals into lists based on type
-        List<List<Professional>> groupedProfessionals = suitableProfessionals
-            .GroupBy(professional => professional.ProfessionalTypeId)
-            .Select(group => group.ToList())
+        
+        List<List<ScoredProfessionalDto>> groupedProfessionals = suitableProfessionals
+            .Select(professional => new ScoredProfessionalDto
+                { Professional = professional, Score = CalculateScore(professional, job) }) // Assign score
+            .GroupBy(sp => sp.Professional.ProfessionalTypeId) // Group by type
+            .Select(group => group.OrderByDescending(sp => sp.Score).Take(5).ToList()) // Sort & take top 5
             .ToList();
-        //TODO: Run scoring algorithm on each list and return top 5 of each type
-        // Console.WriteLine(suitableProfessionals[0].ProfessionalTypeId);
+
+        // Printing results of scoring algorithm. Should be deleted before Production
+        foreach (var spL in groupedProfessionals)
+        {
+            Console.WriteLine(
+                $"\nGroup: {(ProfessionalType.ProfessionalTypeEnum)spL.First().Professional.ProfessionalTypeId}");
+            foreach (var sp in spL)
+            {
+                Console.WriteLine(
+                    $"  - {sp.Professional.Email} | Verified: {sp.Professional.VerificationStatus} | Score: {sp.Score}");
+            }
+        }
+        var gp = groupedProfessionals.SelectMany(sp => sp)
+            .Select(p => p.Professional)
+            .ToList();
+        foreach (var p in gp)
+        {
+            Console.WriteLine(
+                $"\nProfessionalType: {(ProfessionalType.ProfessionalTypeEnum)p.ProfessionalTypeId}");
+            Console.WriteLine(
+                $"  - {p.Email}");
+        }
+
         return suitableProfessionals;
     }
 
@@ -56,5 +71,17 @@ public class MatchingService : IMatchingService
         //TODO: Run db transaction to store the matches to JobProfessionalLink table
         //TODO: Update the JobDetail SuggestedProfessionals attribute to remove matched professional id
         throw new NotImplementedException();
+    }
+
+    /**
+     * Matching algorithm returning an associated score for each professional.
+     */
+    private static int CalculateScore(Professional professional, Job job)
+    {
+        var score = 0;
+
+        if (professional.VerificationStatus) score += 10; // Verified Professionals get +10 points
+        if (!string.IsNullOrEmpty(professional.ABN)) score += 5; // ABN non-empty match gets +5 points
+        return score;
     }
 }
