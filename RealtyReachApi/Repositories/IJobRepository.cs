@@ -10,4 +10,5 @@ public interface IJobRepository
     // Task<JobDetail?> GetJobDetailWithProfessionalTypesAsync(int jobId);
     Task<bool> UpdateJobAsync(Job? job);
     Task<bool> DeleteJobAsync(int jobId);
+    Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink);
 }

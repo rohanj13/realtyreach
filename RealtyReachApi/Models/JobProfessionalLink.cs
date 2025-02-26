@@ -1,8 +1,7 @@
-using TypeGen.Core.TypeAnnotations;
+
 
 namespace RealtyReachApi.Models;
 
-[ExportTsClass]
 public class JobProfessionalLink
 {
     public int JobDetailId { get; set; } // Composite Key Part 1
