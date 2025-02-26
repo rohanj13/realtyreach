@@ -66,11 +66,28 @@ public class MatchingService : IMatchingService
     }
 
     //TODO: Get MatchingJobDto that has job id and selected professional id
-    public async Task<bool> FinalizeMatchAsync()
+    public async Task<bool> FinalizeMatchAsync(MatchingJobDto matchingJobDto)
     {
-        //TODO: Run db transaction to store the matches to JobProfessionalLink table
-        //TODO: Update the JobDetail SuggestedProfessionals attribute to remove matched professional id
-        throw new NotImplementedException();
+        Job? tempJob = await _jobRepository.GetJobByIdAsync(matchingJobDto.JobId);
+        JobProfessionalLink jobProfessionalLink = new JobProfessionalLink();
+        if (tempJob != null) {
+            jobProfessionalLink.JobDetailId = tempJob.JobDetails.JobDetailId;
+            jobProfessionalLink.ProfessionalId = matchingJobDto.ProfessionalId;
+            jobProfessionalLink.AssignedDate = DateTime.UtcNow;
+            jobProfessionalLink.SelectionDate = DateTime.UtcNow;
+            
+            //TODO: Run db transaction to store the matches to JobProfessionalLink table
+            await _jobRepository.MatchJobAsync(jobProfessionalLink);
+            
+            //TODO: Update the JobDetail SuggestedProfessionals attribute to remove matched professional id
+            tempJob.JobDetails.SuggestedProfessionalIds = Array.FindAll
+            (tempJob.JobDetails.SuggestedProfessionalIds, val => val != matchingJobDto.ProfessionalId);
+            await _jobRepository.UpdateJobAsync(tempJob);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**

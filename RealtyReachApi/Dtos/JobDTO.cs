@@ -35,8 +35,16 @@ public class CreateJobDto
 
     public required string JourneyProgress { get; set; }
 
-    // SelectedProfessionals are professionals that are chosen by the Customer via the frontend. I.e = They select ["Advocate", "Building and Pest"]
+    // SelectedProfessionals are professionals that are chosen by the Customer via the frontend. 
+    //I.e = They select ["Advocate", "Building and Pest"]
     public required string[] SelectedProfessionals { get; set; }
     public required Guid[] SuggestedProfessionalIds { get; set; }
     public string? AdditionalDetails { get; set; }
+}
+
+public class MatchingJobDto
+{
+    public required int JobId { get; set; }
+    public required Guid ProfessionalId { get; set; }
+
 }
