@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using RealtyReachApi.Dtos;
+using RealtyReachApi.Helpers;
 
 namespace RealtyReachApi.Controllers
 {
@@ -27,28 +29,13 @@ namespace RealtyReachApi.Controllers
             _customerService = customerService;
             _professionalService = professionalService;
         }
-
-        private string GetUserIdFromToken()
-        {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        }
-
-        private string GetUserRoleFromToken()
-        {
-            return User.FindFirst(ClaimTypes.Role)?.Value;
-        }
-
-        private string GetEmailFromToken()
-        {
-            return User.FindFirst(ClaimTypes.Email)?.Value;
-        }
-
+        
         [HttpPost]
         public async Task<IActionResult> CreateUser()
         {
-            var role = GetUserRoleFromToken();
-            var userId = Guid.Parse(GetUserIdFromToken());
-            var email = GetEmailFromToken();
+            var role = User.GetUserRole();
+            var userId = Guid.Parse(User.GetUserId());
+            var email = User.GetUserEmail();
             if (role == "Admin")
             {
                 var admin = new Admin(); //update this to use DTO
@@ -59,17 +46,24 @@ namespace RealtyReachApi.Controllers
             }
             else if (role == "Customer")
             {
-                var customer = new Customer();
-                customer.Id = userId;
-                customer.Email = email;
+                var customer = new CustomerDto
+                {
+                    Id = userId,
+                    Email = email,
+                    FirstLogin = true
+                };
                 await _customerService.CreateCustomerAsync(customer);
                 return Ok("Success");
             }
             else if (role == "Professional")
             {
-                var professional = new Professional();
-                professional.Id = userId;
-                professional.Email = email;
+                var professional = new ProfessionalDto
+                {
+                    Id = userId,
+                    Email = email,
+                    ProfessionalType = "Advocate", //TODO: Accept Values from frontend
+                    FirstLogin = true
+                };
                 await _professionalService.CreateProfessionalAsync(professional);
                 return Ok("Success");
             }
@@ -82,8 +76,8 @@ namespace RealtyReachApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser()
         {
-            var role = GetUserRoleFromToken();
-            var userId = Guid.Parse(GetUserIdFromToken());
+            var role = User.GetUserRole();
+            var userId = Guid.Parse(User.GetUserId());
 
             if (role == "Admin")
             {
@@ -99,7 +93,7 @@ namespace RealtyReachApi.Controllers
             }
             else if (role == "Professional")
             {
-                var professional = await _professionalService.GetProfessionalAsync(userId);
+                var professional = await _professionalService.GetProfessionalByIdAsync(userId);
                 if (professional == null) return NotFound();
                 return Ok(professional);
             }
@@ -112,9 +106,9 @@ namespace RealtyReachApi.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDto customer)
         {
-            // var role = GetUserRoleFromToken();
-            var userId = Guid.Parse(GetUserIdFromToken());
-
+            var role = User.GetUserRole();
+            var userId = Guid.Parse(User.GetUserId());
+            
             // if (role == "Admin")
             // {
             //     var admin = userDto as Admin;
@@ -124,7 +118,7 @@ namespace RealtyReachApi.Controllers
             // if (role == "Customer")
             // {
             // var customer = userDto as Customer;
-            await _customerService.UpdateCustomerAsync(userId, customer);
+            await _customerService.UpdateCustomerAsync(customer, userId);
             return Ok("Customer updated successfully.");
             // }
             // else if (role == "Professional")
@@ -142,8 +136,8 @@ namespace RealtyReachApi.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteUser()
         {
-            var role = GetUserRoleFromToken();
-            var userId = Guid.Parse(GetUserIdFromToken());
+            var role = User.GetUserRole();
+            var userId = Guid.Parse(User.GetUserId());
 
             if (role == "Admin")
             {

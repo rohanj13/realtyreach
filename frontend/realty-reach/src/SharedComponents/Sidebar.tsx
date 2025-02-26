@@ -1,57 +1,54 @@
-import React from 'react';
-import { Box, VStack, Button, Text, useColorMode, Switch, Flex, useColorModeValue } from '@chakra-ui/react';
-import { FiHome, FiFileText, FiMessageSquare, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
-import { useAuth } from '../Context/useAuth';
+import React from "react";
+import { Box, VStack, Button, Icon, Heading } from "@chakra-ui/react";
+import {
+  Home,
+  Briefcase,
+  MessageSquare,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import NavItem from "./NavItem"; // Adjust the path based on your file structure
+import { useAuth } from "../Context/useAuth";
 
 const Sidebar: React.FC = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const { logout } = useAuth();
-
-  // Automatically set background color based on the color mode
-  const bgColor = useColorModeValue('gray.100', 'gray.800'); // Light mode uses 'gray.100', dark mode uses 'gray.800'
-  const textColor = useColorModeValue('black', 'white'); // Adjust text color based on color mode
-
   return (
-    <Box
-      w="250px"
-      bg={bgColor} // Use the dynamic background color
-      p={4}
-      display="flex"
-      flexDirection="column"
-      justifyContent="space-between"
-    >
-      <VStack align="start" spacing={4}>
-        <Text fontSize="2xl" fontWeight="bold" color={textColor}> {/* Dynamically set text color */}
+    <Box w="64" bg="white" shadow="lg" position="relative">
+      {/* Logo/Header */}
+      <Box p={4}>
+        <Heading size="lg" color="gray.800">
           RealtyReach
-        </Text>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiHome />} color={textColor}>
-          Home
-        </Button>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiFileText />} color={textColor}>
-          My Requests
-        </Button>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiMessageSquare />} color={textColor}>
-          My Messages
-        </Button>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiFileText />} color={textColor}>
-          My Documents
-        </Button>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiUser />} color={textColor}>
-          Profile
-        </Button>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiSettings />} color={textColor}>
+        </Heading>
+      </Box>
+
+      {/* Navigation Items */}
+      <VStack spacing={2} align="stretch" mt={4} px={4}>
+        <NavItem icon={Home} to="/dashboard" isActive={window.location.pathname === "/dashboard"}>
+          Dashboard
+        </NavItem>
+        <NavItem icon={Briefcase} to="/my-jobs" isActive={window.location.pathname === "/my-jobs"}>
+          My Jobs
+        </NavItem>
+        <NavItem icon={MessageSquare} to="/messages" isActive={window.location.pathname === "/messages"}>
+          Messages
+        </NavItem>
+        <NavItem icon={Settings} to="/settings" isActive={window.location.pathname === "/settings"}>
           Settings
-        </Button>
+        </NavItem>
       </VStack>
-      <VStack align="start">
-        <Flex align="center">
-          <Text color={textColor}>Dark Mode</Text>
-          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} ml={2} />
-        </Flex>
-        <Button variant="ghost" justifyContent="start" width="full" leftIcon={<FiLogOut />} onClick={logout} color={textColor}>
+
+      {/* Logout Button */}
+      <Box position="absolute" bottom={0} w="full" p={4}>
+        <Button
+          leftIcon={<Icon as={LogOut} />}
+          variant="ghost"
+          w="full"
+          justifyContent="flex-start"
+          onClick={logout}
+        >
           Logout
         </Button>
-      </VStack>
+      </Box>
     </Box>
   );
 };

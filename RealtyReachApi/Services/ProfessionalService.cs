@@ -1,47 +1,53 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Dtos;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Models;
+using RealtyReachApi.Repositories;
+using static RealtyReachApi.Models.ProfessionalType;
+
+namespace RealtyReachApi.Services;
 
 public class ProfessionalService : IProfessionalService
 {
-    private readonly SharedDbContext _context;
-
-    public ProfessionalService(SharedDbContext context)
+    private readonly IProfessionalRepository _repository;
+    private readonly IProfessionalMapper _mapper;
+    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper)
     {
-        _context = context;
+        _repository = professionalRepository;
+        _mapper = mapper;
     }
 
-    public async Task CreateProfessionalAsync(Professional professional)
+    public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
-        _context.Professionals.Add(professional);
-        await _context.SaveChangesAsync();
+        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
+        Professional p = _mapper.ToProfessionalEntity(professional);
+        p.ProfessionalTypeId = (int) professionalTypeId;
+        await _repository.CreateProfessionalAsync(p);
     }
 
-    public async Task<Professional> GetProfessionalAsync(Guid id)
+    public async Task<ProfessionalDto> GetProfessionalByIdAsync(Guid id)
     {
-        return await _context.Professionals.FindAsync(id);
+        Professional professional = await _repository.GetProfessionalByIdAsync(id);
+        ProfessionalDto profDto = _mapper.ToProfessionalDto(professional);
+        return profDto;
     }
 
     public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessional)
     {
-        var professional = await _context.Professionals.FindAsync(id);
-        if (professional == null) return;
-
-        professional.Email = updatedProfessional.Email;
-        professional.FirstName = updatedProfessional.FirstName;
-        professional.LastName = updatedProfessional.LastName;
-        professional.ABN = updatedProfessional.ABN;
-        professional.LicenseNumber = updatedProfessional.LicenseNumber;
-        professional.CompanyName = updatedProfessional.CompanyName;
-        professional.VerificationStatus = updatedProfessional.VerificationStatus;
-        await _context.SaveChangesAsync();
+        throw new NotImplementedException();
     }
 
     public async Task DeleteProfessionalAsync(Guid id)
     {
-        var professional = await _context.Professionals.FindAsync(id);
-        if (professional == null) return;
+        throw new NotImplementedException();
+    }
 
-        _context.Professionals.Remove(professional);
-        await _context.SaveChangesAsync();
+    public async Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId)
+    {
+        var professionals = await _repository.GetProfessionalsByTypeAsync(professionalTypeId);
+        List<ProfessionalDto> professionalDtos = new List<ProfessionalDto>();
+        foreach (var professional in professionals)
+            professionalDtos.Add(_mapper.ToProfessionalDto(professional));
+        return professionalDtos;
     }
 }

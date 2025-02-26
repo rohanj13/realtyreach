@@ -23,7 +23,7 @@ export interface CreateJobDto {
     BudgetMin: number;
     BudgetMax: number;
     JourneyProgress: string;
-    SelectedProfessionals: string[];
+    SelectedProfessionals: number[];
     AdditionalDetails: string;
     ContactEmail: string;
     ContactPhone: string;

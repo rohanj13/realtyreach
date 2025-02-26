@@ -1,12 +1,13 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RealtyReachApi.Data;
+using RealtyReachApi.Mappers;
+using RealtyReachApi.Repositories;
 using RealtyReachApi.Models;
 using RealtyReachApi.Services;
 
@@ -16,6 +17,13 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<SharedDbContext>(options => options.UseNpgsql(connectionString));
+
+// Register Repositories
+builder.Services.AddScoped<IJobRepository,JobRepository>();
+builder.Services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
+builder.Services.AddScoped<IProfessionalTypeRepository, ProfessionalTypeRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -45,13 +53,19 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 // Register services
-builder.Services.AddScoped<IUserJobService, UserJobService>();
+builder.Services.AddScoped<ICustomerJobService, CustomerJobService>();
 builder.Services.AddScoped<IProfJobService, ProfJobService>();
 builder.Services.AddScoped<IProfJobService, ProfJobService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IProfessionalService, ProfessionalService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IMatchingService, MatchingService>();
 builder.Services.AddScoped<JourneyProgressOptions>();
+
+// Register Mapper
+builder.Services.AddScoped<IJobMapper, JobMapper>();
+builder.Services.AddScoped<IProfessionalMapper, ProfessionalMapper>();
+builder.Services.AddScoped<ICustomerMapper, CustomerMapper>();
 
 builder.Services.AddIdentityApiEndpoints<IdentityUser>()
     .AddEntityFrameworkStores<SharedDbContext>()
@@ -60,6 +74,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApiDocument();
 // builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(option =>
 {
@@ -98,17 +113,16 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<SharedDbContext>();
-        // dbContext.Database.Migrate();
+        dbContext.Database.Migrate();
     }
-}
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
     app.UseSwagger().UseAuthentication().UseAuthorization();
     app.UseSwaggerUI().UseAuthentication().UseAuthorization();
 }
-
+app.UseOpenApi(); // serve documents (same as app.UseSwagger())
+app.UseReDoc(options =>
+{
+    options.Path = "/redoc";
+});
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -116,7 +130,6 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapIdentityApi<IdentityUser>();
 app.MapControllers();
 
 app.Run();
