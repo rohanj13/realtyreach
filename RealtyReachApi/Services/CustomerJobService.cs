@@ -58,7 +58,7 @@ namespace RealtyReachApi.Services
             {
                 //TODO: Call matching service function IdentifySuitableProfessionalsAsync(int jobId)
                 List<Professional> professionals =
-                    await _matchingService.IdentifySuitableProfessionalsAsync(createJobDto.SelectedProfessionals);
+                    await _matchingService.IdentifySuitableProfessionalsAsync(job);
                 if (professionals.Any())
                 {
                     Job jb = new Job

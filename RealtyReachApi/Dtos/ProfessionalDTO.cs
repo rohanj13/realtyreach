@@ -16,3 +16,9 @@ public class ProfessionalDto
     public int ProfessionalTypeId { get; set; }
     public string ProfessionalType { get; set; }
 }
+
+public class ScoredProfessionalDto
+{
+    public Professional Professional { get; set; }
+    public int Score { get; set; }
+}
