@@ -15,6 +15,8 @@ public class ProfessionalDto
     public bool? FirstLogin { get; set; }
     public int ProfessionalTypeId { get; set; }
     public string ProfessionalType { get; set; }
+    public List<string> Regions { get; set; }
+    public List<AustralianState> States { get; set; }
 }
 
 public class ScoredProfessionalDto

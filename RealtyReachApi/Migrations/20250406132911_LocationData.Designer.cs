@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RealtyReachApi.Data;
@@ -12,9 +13,11 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    partial class SharedDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250406132911_LocationData")]
+    partial class LocationData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -169,6 +172,10 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("integer[]");
 
+                    b.Property<List<int>>("SuburbIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
                     b.Property<Guid[]>("SuggestedProfessionalIds")
                         .IsRequired()
                         .HasColumnType("uuid[]");
@@ -237,6 +244,10 @@ namespace RealtyReachApi.Migrations
                         .HasColumnType("text[]");
 
                     b.Property<int[]>("States")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<List<int>>("SuburbIds")
                         .IsRequired()
                         .HasColumnType("integer[]");
 

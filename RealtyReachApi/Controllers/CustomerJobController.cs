@@ -56,7 +56,7 @@ namespace RealtyReachApi.Controllers
 
         // POST: api/jobs/customer
         [HttpPost]
-        public async Task<ActionResult<JobDto>> CreateJob(CreateJobDto createJobDto)
+        public async Task<ActionResult<JobDto>> CreateJob([FromBody] CreateJobDto createJobDto)
         {
             var jobDto = await _customerJobService.CreateJobAsync(createJobDto, Guid.Parse(User.GetUserId()));
             return Ok();

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RealtyReachApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class UpdatedSUburbs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -114,7 +114,6 @@ namespace RealtyReachApi.Migrations
                     JobDetailId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     JobId = table.Column<int>(type: "integer", nullable: false),
-                    Postcode = table.Column<string>(type: "text", nullable: false),
                     PurchaseType = table.Column<string>(type: "text", nullable: false),
                     PropertyType = table.Column<string>(type: "text", nullable: false),
                     JourneyProgress = table.Column<string>(type: "text", nullable: false),
@@ -186,6 +185,35 @@ namespace RealtyReachApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Suburbs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Postcode = table.Column<string>(type: "text", nullable: false),
+                    Locality = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<string>(type: "text", nullable: false),
+                    Longitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    JobDetailId = table.Column<int>(type: "integer", nullable: true),
+                    ProfessionalId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suburbs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Suburbs_JobDetails_JobDetailId",
+                        column: x => x.JobDetailId,
+                        principalTable: "JobDetails",
+                        principalColumn: "JobDetailId");
+                    table.ForeignKey(
+                        name: "FK_Suburbs_Professionals_ProfessionalId",
+                        column: x => x.ProfessionalId,
+                        principalTable: "Professionals",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "ProfessionalTypes",
                 columns: new[] { "ProfessionalTypeId", "Description", "TypeName" },
@@ -222,6 +250,16 @@ namespace RealtyReachApi.Migrations
                 name: "IX_Professionals_ProfessionalTypeId",
                 table: "Professionals",
                 column: "ProfessionalTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Suburbs_JobDetailId",
+                table: "Suburbs",
+                column: "JobDetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Suburbs_ProfessionalId",
+                table: "Suburbs",
+                column: "ProfessionalId");
         }
 
         /// <inheritdoc />
@@ -235,6 +273,9 @@ namespace RealtyReachApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobProfessionalLink");
+
+            migrationBuilder.DropTable(
+                name: "Suburbs");
 
             migrationBuilder.DropTable(
                 name: "JobDetails");

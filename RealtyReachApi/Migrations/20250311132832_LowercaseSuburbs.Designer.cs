@@ -12,8 +12,8 @@ using RealtyReachApi.Data;
 namespace RealtyReachApi.Migrations
 {
     [DbContext(typeof(SharedDbContext))]
-    [Migration("20250205064918_Initial")]
-    partial class Initial
+    [Migration("20250311132832_LowercaseSuburbs")]
+    partial class LowercaseSuburbs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,10 +151,6 @@ namespace RealtyReachApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Postcode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PropertyType")
                         .IsRequired()
                         .HasColumnType("text");
@@ -287,6 +283,47 @@ namespace RealtyReachApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Suburb", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+
+                    b.Property<int?>("JobDetailId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ProfessionalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("latitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("locality")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("longitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("postcode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("state")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("JobDetailId");
+
+                    b.HasIndex("ProfessionalId");
+
+                    b.ToTable("Suburbs");
+                });
+
             modelBuilder.Entity("JobDetailProfessionalType", b =>
                 {
                     b.HasOne("RealtyReachApi.Models.JobDetail", null)
@@ -352,6 +389,17 @@ namespace RealtyReachApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Suburb", b =>
+                {
+                    b.HasOne("RealtyReachApi.Models.JobDetail", null)
+                        .WithMany("Suburbs")
+                        .HasForeignKey("JobDetailId");
+
+                    b.HasOne("RealtyReachApi.Models.Professional", null)
+                        .WithMany("Locations")
+                        .HasForeignKey("ProfessionalId");
+                });
+
             modelBuilder.Entity("RealtyReachApi.Models.Customer", b =>
                 {
                     b.Navigation("Jobs");
@@ -365,11 +413,15 @@ namespace RealtyReachApi.Migrations
             modelBuilder.Entity("RealtyReachApi.Models.JobDetail", b =>
                 {
                     b.Navigation("JobProfessionalLinks");
+
+                    b.Navigation("Suburbs");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.Professional", b =>
                 {
                     b.Navigation("JobProfessionalLinks");
+
+                    b.Navigation("Locations");
                 });
 
             modelBuilder.Entity("RealtyReachApi.Models.ProfessionalType", b =>
