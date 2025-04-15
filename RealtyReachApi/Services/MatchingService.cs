@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.Tokens;
 using RealtyReachApi.Dtos;
 using RealtyReachApi.Models;
 using RealtyReachApi.Repositories;
@@ -106,17 +107,22 @@ public class MatchingService : IMatchingService
     private int CalculateScore(Professional professional, Job job)
     {
         var score = 0;
-        //int locationScore = 0;
-        score += _locationService.CalculateMatchingScore(job, professional);
-        //score += locationScore;
+        
+        score += _locationService.CalculateMatchingScore(job, professional); // Calculate the location score
+        
         if (professional.VerificationStatus) score += 10; // Verified Professionals get +10 points
+        
         if (!string.IsNullOrEmpty(professional.ABN)) score += 5; // ABN non-empty match gets +5 points
+        
+        // 15 points for each specialisation match
+        if (!professional.Specialisations.IsNullOrEmpty() && !job.JobDetails.Specialisations.IsNullOrEmpty())
+        {
+            
+            var matchingSpecialisations =
+                job.JobDetails.Specialisations.Intersect(professional.Specialisations).Count();
+            score += 15 * matchingSpecialisations;
+        }
+        // return final score
         return score;
     }
-
-    // private static double CalculateLocationScore(Professional professional, Job job)
-    // {
-    //     var score = 0;
-    //     
-    // }
 }

@@ -13,6 +13,7 @@ public class JobDetailDto
     //public List<int>  SuburbIds { get; set; }
     public List<string> Regions { get; set; }
     public List<AustralianState> States { get; set; }
+    public List<Specialisation> Specialisations { get; set; }
     public int BudgetMin { get; set; }
     public int BudgetMax { get; set; }
     public required string ContactEmail { get; set; }

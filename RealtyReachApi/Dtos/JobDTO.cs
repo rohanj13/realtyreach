@@ -11,6 +11,7 @@ public class JobDto
     //public List<int>  SuburbIds { get; set; }
     public List<string> Regions { get; set; }
     public List<AustralianState> States { get; set; }
+    public List<Specialisation> Specialisations { get; set; }
     public required string PurchaseType { get; set; }
     public required string PropertyType { get; set; }
     public required string JourneyProgress { get; set; }
@@ -32,6 +33,7 @@ public class CreateJobDto
     //public List<int>  SuburbIds { get; set; }
     public List<string> Regions { get; set; }
     public List<AustralianState> States { get; set; }
+    public List<Specialisation> Specialisations { get; set; }
     public string? PurchaseType { get; set; }
     public required string PropertyType { get; set; }
     public int BudgetMin { get; set; }

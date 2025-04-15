@@ -22,7 +22,8 @@ public class ProfessionalMapper : IProfessionalMapper
             ProfessionalTypeId = professional.ProfessionalTypeId,
             ProfessionalType = string.Empty, // This can be populated if you fetch the related ProfessionalType
             Regions = professional.Regions,
-            States = professional.States
+            States = professional.States,
+            Specialisations = professional.Specialisations,
         };
     }
 
@@ -42,7 +43,8 @@ public class ProfessionalMapper : IProfessionalMapper
             FirstLogin = professionalDto.FirstLogin,
             ProfessionalTypeId = professionalDto.ProfessionalTypeId,
             Regions = professionalDto.Regions,
-            States = professionalDto.States
+            States = professionalDto.States,
+            Specialisations = professionalDto.Specialisations
         };
     }
 }

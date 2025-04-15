@@ -30,6 +30,7 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
                 ProfessionalTypeId = p.ProfessionalTypeId,
                 Regions = p.Regions,
                 States = p.States,
+                Specialisations = p.Specialisations,
             })
             .ToListAsync();
     }

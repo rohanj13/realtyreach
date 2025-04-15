@@ -21,7 +21,8 @@ public class Professional
     public bool VerificationStatus { get; set; } // True if verified, false otherwise
     public string? CompanyName { get; set; }
     //public List<int>  SuburbIds { get; set; } = new List<int>();
-    public List<string> Regions { get; set; } =  new List<string>();
-    public List<AustralianState> States { get; set; } = new List<AustralianState>();
+    public List<string>? Regions { get; set; }
+    public List<AustralianState>? States { get; set; }
+    public List<Specialisation>? Specialisations { get; set; }
     public bool? FirstLogin { get; set; }
 }
