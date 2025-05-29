@@ -28,6 +28,9 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
                 VerificationStatus = p.VerificationStatus,
                 CompanyName = p.CompanyName,
                 ProfessionalTypeId = p.ProfessionalTypeId,
+                Regions = p.Regions,
+                States = p.States,
+                Specialisations = p.Specialisations,
             })
             .ToListAsync();
     }

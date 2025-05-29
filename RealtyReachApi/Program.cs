@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using RealtyReachApi.Data;
 using RealtyReachApi.Mappers;
 using RealtyReachApi.Repositories;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IJobRepository,JobRepository>();
 builder.Services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
 builder.Services.AddScoped<IProfessionalTypeRepository, ProfessionalTypeRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ILocationRepository, LocationRepository>();
 
 builder.Services.AddCors(options =>
 {
@@ -60,6 +62,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IProfessionalService, ProfessionalService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IMatchingService, MatchingService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<JourneyProgressOptions>();
 
 // Register Mapper
@@ -113,6 +116,7 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<SharedDbContext>();
+        SuburbSeeder.SeedDatabase(dbContext);
         dbContext.Database.Migrate();
     }
     app.UseSwagger().UseAuthentication().UseAuthorization();

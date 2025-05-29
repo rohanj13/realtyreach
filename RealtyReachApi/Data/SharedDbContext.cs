@@ -16,7 +16,9 @@ namespace RealtyReachApi.Data
         public DbSet<Professional?> Professionals { get; set; }
         public DbSet<ProfessionalType> ProfessionalTypes { get; set; }
         public DbSet<JobProfessionalLink> JobProfessionalLink {get; set;}
+        public DbSet<Suburb> Suburbs { get; set; }
         
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -52,6 +54,10 @@ namespace RealtyReachApi.Data
 
             modelBuilder.Entity<JobDetail>()
                 .HasKey(rd => rd.JobDetailId);
+            
+            modelBuilder.Entity<Suburb>()
+                .Property(s => s.State)
+                .HasConversion<string>();;
 
             modelBuilder.Entity<Job>()
                 .HasOne(rd => rd.JobDetails)

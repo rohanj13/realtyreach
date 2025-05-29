@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -9,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RealtyReachApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class SpecialisationField : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,6 +58,24 @@ namespace RealtyReachApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Suburbs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Postcode = table.Column<string>(type: "text", nullable: false),
+                    Locality = table.Column<string>(type: "text", nullable: false),
+                    Region = table.Column<string>(type: "text", nullable: false),
+                    State = table.Column<string>(type: "text", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suburbs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
@@ -94,6 +113,9 @@ namespace RealtyReachApi.Migrations
                     LicenseNumber = table.Column<string>(type: "text", nullable: true),
                     VerificationStatus = table.Column<bool>(type: "boolean", nullable: false),
                     CompanyName = table.Column<string>(type: "text", nullable: true),
+                    Regions = table.Column<List<string>>(type: "text[]", nullable: false),
+                    States = table.Column<int[]>(type: "integer[]", nullable: false),
+                    Specialisations = table.Column<int[]>(type: "integer[]", nullable: false),
                     FirstLogin = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
@@ -114,7 +136,9 @@ namespace RealtyReachApi.Migrations
                     JobDetailId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     JobId = table.Column<int>(type: "integer", nullable: false),
-                    Postcode = table.Column<string>(type: "text", nullable: false),
+                    Regions = table.Column<List<string>>(type: "text[]", nullable: false),
+                    States = table.Column<int[]>(type: "integer[]", nullable: false),
+                    Specialisations = table.Column<int[]>(type: "integer[]", nullable: false),
                     PurchaseType = table.Column<string>(type: "text", nullable: false),
                     PropertyType = table.Column<string>(type: "text", nullable: false),
                     JourneyProgress = table.Column<string>(type: "text", nullable: false),
@@ -235,6 +259,9 @@ namespace RealtyReachApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobProfessionalLink");
+
+            migrationBuilder.DropTable(
+                name: "Suburbs");
 
             migrationBuilder.DropTable(
                 name: "JobDetails");
