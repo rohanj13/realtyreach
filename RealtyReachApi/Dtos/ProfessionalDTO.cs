@@ -17,6 +17,7 @@ public class ProfessionalDto
     public string ProfessionalType { get; set; }
     public List<string> Regions { get; set; }
     public List<AustralianState> States { get; set; }
+    public List<Specialisation> Specialisations { get; set; }
 }
 
 public class ScoredProfessionalDto

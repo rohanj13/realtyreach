@@ -18,6 +18,8 @@ public class JobDetail
     //public List<int>  SuburbIds { get; set; } = new List<int>();
     public List<string>? Regions { get; set; }
     public List<AustralianState>? States { get; set; }
+    public List<Specialisation>? Specialisations { get; set; } = new List<Specialisation>();
+
     [Required] public required string PurchaseType { get; set; } // First Home/Investment Property
 
     [Required] public required string PropertyType { get; set; } // Comma Separated Strings of Property Types
