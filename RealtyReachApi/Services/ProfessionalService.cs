@@ -11,15 +11,19 @@ public class ProfessionalService : IProfessionalService
 {
     private readonly IProfessionalRepository _repository;
     private readonly IProfessionalMapper _mapper;
-    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper)
+    private readonly IProfessionalTypeRepository _professionalTypeRepository;
+    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper, 
+        IProfessionalTypeRepository professionalTypeRepository)
     {
         _repository = professionalRepository;
         _mapper = mapper;
+        _professionalTypeRepository = professionalTypeRepository;
     }
 
     public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
-        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
+        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) 
+            Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
         Professional p = _mapper.ToProfessionalEntity(professional);
         p.ProfessionalTypeId = (int) professionalTypeId;
         await _repository.CreateProfessionalAsync(p);
@@ -49,5 +53,14 @@ public class ProfessionalService : IProfessionalService
         foreach (var professional in professionals)
             professionalDtos.Add(_mapper.ToProfessionalDto(professional));
         return professionalDtos;
+    }
+    
+    public async Task<ProfessionalProfileDto?> GetProfessionalProfileAsync(Guid professionalId)
+    {
+        var professional = await _repository.GetProfessionalByIdAsync(professionalId);
+        var professionalType = await _professionalTypeRepository.GetProfessionalTypeByIdAsync(professional.ProfessionalTypeId);
+        //if (professional == null) return null;
+        ProfessionalProfileDto profile =  _mapper.ToProfileDto(professional, professionalType);
+        return profile;
     }
 }

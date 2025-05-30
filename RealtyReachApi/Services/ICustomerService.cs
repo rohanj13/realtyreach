@@ -8,4 +8,5 @@ public interface ICustomerService
     Task<CustomerDto> GetCustomerAsync(Guid id);
     Task UpdateCustomerAsync(CustomerDto customer, Guid customerId);
     Task DeleteCustomerAsync(Guid id);
+    Task<CustomerProfileDto?> GetCustomerProfileAsync(Guid customerId);
 }

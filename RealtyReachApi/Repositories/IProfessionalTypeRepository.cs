@@ -6,4 +6,5 @@ public interface IProfessionalTypeRepository
 {
     Task<ProfessionalType> GetProfessionalTypeByNameAsync(string typeName);
     Task<List<ProfessionalType>> GetProfessionalTypeByNamesAsync(List<string> typeNames);
+    Task<ProfessionalType> GetProfessionalTypeByIdAsync(int id);
 }

@@ -1,4 +1,5 @@
 using RealtyReachApi.Data;
+using RealtyReachApi.Mappers;
 using RealtyReachApi.Models;
 using RealtyReachApi.Repositories;
 using RealtyReachApi.Services;
@@ -6,10 +7,12 @@ using RealtyReachApi.Services;
 public class CustomerService : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly ICustomerMapper _customerMapper;
 
-    public CustomerService(ICustomerRepository customerRepository)
+    public CustomerService(ICustomerRepository customerRepository,  ICustomerMapper customerMapper)
     {
         _customerRepository = customerRepository;
+        _customerMapper = customerMapper;
     }
 
     public async Task CreateCustomerAsync(CustomerDto customer)
@@ -60,5 +63,14 @@ public class CustomerService : ICustomerService
     public async Task DeleteCustomerAsync(Guid id)
     {
         await _customerRepository.DeleteCustomerAsync(id);
+    }
+    
+    public async Task<CustomerProfileDto?> GetCustomerProfileAsync(Guid customerId)
+    {
+        var customer = await _customerRepository.GetCustomerByIdAsync(customerId);
+        if (customer == null) return null;
+        CustomerProfileDto profile = _customerMapper.ToCustomerProfileDto(customer);
+        
+        return profile;
     }
 }

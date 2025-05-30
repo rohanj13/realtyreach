@@ -47,4 +47,24 @@ public class ProfessionalMapper : IProfessionalMapper
             Specialisations = professionalDto.Specialisations
         };
     }
+    
+    public ProfessionalProfileDto ToProfileDto(Professional professional, ProfessionalType professionalType)
+    {
+        return new ProfessionalProfileDto
+        {
+            Id = professional.Id,
+            Email = professional.Email,
+            FirstName = professional.FirstName,
+            LastName = professional.LastName,
+            CompanyName = professional.CompanyName,
+            ABN = professional.ABN,
+            LicenseNumber = professional.LicenseNumber,
+            VerificationStatus = professional.VerificationStatus,
+            ProfessionalTypeName = professionalType.TypeName,
+            ProfessionalTypeDescription = professionalType.Description,
+            Regions = professional.Regions,
+            States = professional.States,
+            Specialisations = professional.Specialisations,
+        };
+    }
 }

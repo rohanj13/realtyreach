@@ -102,6 +102,36 @@ namespace RealtyReachApi.Controllers
                 return BadRequest("Invalid role.");
             }
         }
+        
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var role = User.GetUserRole();
+            var userId = Guid.Parse(User.GetUserId());
+
+            if (role == "Customer")
+            {
+                var customerProfile = await _customerService.GetCustomerProfileAsync(userId);
+                if (customerProfile == null) return NotFound();
+                return Ok(customerProfile);
+            }
+
+            if (role == "Professional")
+            {
+                var professionalProfile = await _professionalService.GetProfessionalProfileAsync(userId);
+                if (professionalProfile == null) return NotFound();
+                return Ok(professionalProfile);
+            }
+
+            if (role == "Admin")
+            {
+                var admin = await _adminService.GetAdminAsync(userId);
+                if (admin == null) return NotFound();
+                return Ok(admin);
+            }
+
+            return BadRequest("Invalid role.");
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpdateCustomer([FromBody] CustomerDto customer)

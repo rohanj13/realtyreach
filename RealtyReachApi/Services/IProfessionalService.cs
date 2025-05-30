@@ -10,4 +10,5 @@ public interface IProfessionalService
     Task UpdateProfessionalAsync(Guid id, Professional professional);
     Task DeleteProfessionalAsync(Guid id);
     Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId);
+    Task<ProfessionalProfileDto?> GetProfessionalProfileAsync(Guid professionalId);
 }
