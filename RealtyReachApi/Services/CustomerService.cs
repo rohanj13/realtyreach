@@ -38,9 +38,11 @@ public class CustomerService : ICustomerService
         {
             CustomerDto cDto = new CustomerDto
             {
+                Id = c.Id,
                 Email = c.Email,
                 FirstName = c.FirstName,
-                LastName = c.LastName
+                LastName = c.LastName,
+                FirstLogin = c.FirstLogin,
             };
             return cDto;
         }
@@ -49,6 +51,7 @@ public class CustomerService : ICustomerService
 
     public async Task UpdateCustomerAsync(CustomerDto updatedCustomer, Guid customerId)
     {
+        Console.WriteLine("Customer info received: "  + updatedCustomer.FirstName + " " + updatedCustomer.FirstLogin);
         Customer c = new Customer
         {
             Id = customerId,

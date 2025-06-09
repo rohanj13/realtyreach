@@ -9,4 +9,4 @@ public enum Specialisation
     ForeignInvestors,
     Downsizers,
     Retirees
-}
+} 

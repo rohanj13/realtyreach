@@ -32,6 +32,7 @@ public class CustomerRepository(SharedDbContext context) : ICustomerRepository
         customer.Email = updatedCustomer.Email;
         customer.FirstName = updatedCustomer.FirstName;
         customer.LastName = updatedCustomer.LastName;
+        customer.FirstLogin = updatedCustomer.FirstLogin;
 
         // Save changes to the database
         await context.SaveChangesAsync();

@@ -22,13 +22,14 @@ public class JobMapper : IJobMapper
             PropertyType = job.JobDetails?.PropertyType ?? string.Empty,
             JourneyProgress = job.JobDetails?.JourneyProgress ?? string.Empty,
             SelectedProfessionals = job.JobDetails?.SelectedProfessionals ?? Array.Empty<string>(),
-            //SuggestedProfessionalIds = job.JobDetails?.SuggestedProfessionalIds ?? Array.Empty<Guid>(),
+            SuggestedProfessionalIds = job.JobDetails?.SuggestedProfessionalIds ?? Array.Empty<Guid>(),
             Status = job.Status.ToString(),
             BudgetMin = job.JobDetails?.BudgetMin ?? 0,
             BudgetMax = job.JobDetails?.BudgetMax ?? 0,
             ContactEmail = job.JobDetails?.ContactEmail ?? string.Empty,
             ContactPhone = job.JobDetails?.ContactPhone ?? string.Empty,
-            AdditionalDetails = job.AdditionalDetails
+            AdditionalDetails = job.AdditionalDetails,
+            CreatedAt  = job.CreatedAt,
         };
     }
 
