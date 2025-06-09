@@ -71,7 +71,10 @@ namespace RealtyReachApi.Services
                         Status = JobStatus.Open,
                         JobDetails = new JobDetail
                         {
-                            Postcode = createJobDto.Postcode,
+                            //SuburbIds = createJobDto.SuburbIds,
+                            Regions = createJobDto.Regions,
+                            States = createJobDto.States,
+                            Specialisations = createJobDto.Specialisations,
                             PurchaseType = createJobDto.PurchaseType ?? string.Empty,
                             PropertyType = createJobDto.PropertyType,
                             JourneyProgress = createJobDto.JourneyProgress,

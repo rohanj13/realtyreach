@@ -1,23 +1,29 @@
 import axios from "axios";
 
-// Set base URL for API requests
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || "http://localhost:5073";
+const backendApi = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || "http://localhost:5073", // backend service URL
+});
 
-// Add a response interceptor for handling token expiration
-axios.interceptors.response.use(
+// Add token to request headers
+backendApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle expired token (401)
+backendApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Token is expired or invalid
-      const token = localStorage.getItem("token");
-      if (token) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
-      }
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
 
-export default axios;
+export default backendApi;

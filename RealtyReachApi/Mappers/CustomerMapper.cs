@@ -29,4 +29,25 @@ public class CustomerMapper : ICustomerMapper
             FirstLogin = customerDto.FirstLogin
         };
     }
+    public CustomerProfileDto ToCustomerProfileDto(Customer customer)
+    {
+        return new CustomerProfileDto
+        {
+            Id = customer.Id,
+            Email = customer.Email,
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+        };
+    }
+
+    public Customer ToCustomerEntity(CustomerProfileDto dto)
+    {
+        return new Customer
+        {
+            Id = dto.Id,
+            Email = dto.Email,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+        };
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Avatar,
   Button,
@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { PersonAddOutlined as PersonAddIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../Context/useAuth';
+import { UserContext } from '../../Context/userContext';
 import * as yup from 'yup';
 
 const validationSchema = yup.object({
@@ -48,7 +48,7 @@ const validationSchema = yup.object({
 });
 
 const RegisterPage: React.FC = () => {
-  const { registerUser } = useAuth();
+  const { registerUser } = useContext(UserContext)
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({

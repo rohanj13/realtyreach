@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { 
   Box, 
   Typography, 
@@ -27,13 +27,13 @@ import {
 } from "@mui/icons-material";
 import Sidebar from "../../SharedComponents/Sidebar";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
-import { useAuth } from "../../Context/useAuth";
+import { UserContext } from "../../Context/userContext";
 import { getAvailableJobsForProfessional } from "../../services/JobService";
 import { Job } from "../../Models/Job";
 import { ProfessionalProfile } from "../../Models/User";
 
 const ProfessionalDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
@@ -229,16 +229,16 @@ const ProfessionalDashboard: React.FC = () => {
                       >
                         <CardContent>
                           <Typography variant="h6" gutterBottom noWrap>
-                            {job.JobTitle}
+                            {job.jobTitle}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Type: {job.JobType} • {job.PropertyType}
+                            Type: {job.jobType} • {job.propertyType}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Budget: ${job.BudgetMin.toLocaleString()} - ${job.BudgetMax.toLocaleString()}
+                            Budget: ${job.budgetMin.toLocaleString()} - ${job.budgetMax.toLocaleString()}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Location: {job.Postcode}
+                            Location: {job.regions}
                           </Typography>
                         </CardContent>
                       </CardActionArea>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Avatar,
   Button,
@@ -17,10 +17,10 @@ import {
 } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../Context/useAuth';
+import { UserContext } from '../../Context/userContext';
 
 const LoginPage: React.FC = () => {
-  const { loginUser } = useAuth();
+  const { loginUser, user } = useContext(UserContext);
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ const LoginPage: React.FC = () => {
   const togglePasswordVisibility = () => {
     setFormData({ ...formData, showPassword: !formData.showPassword });
   };
+
   
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

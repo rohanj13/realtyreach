@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Box,
   Typography,
@@ -40,12 +40,12 @@ import {
   BuildCircle as BuildCircleIcon,
 } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/useAuth";
+import { UserContext } from "../../Context/userContext";
 
 const ProfLandingPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { isLoggedIn, getUserRole } = useAuth();
+  const { isLoggedIn, getUserRole } = useContext(UserContext);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isLoggedInUser = isLoggedIn();
   const userRole = getUserRole();

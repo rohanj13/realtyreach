@@ -12,7 +12,8 @@ import CustomerProfileCompletionPage from "./Pages/RegisterPage/CustomerProfileC
 import ProfProfileCompletionPage from "./Pages/RegisterPage/ProfProfileCompletion";
 import UnauthorizedPage from "./Pages/ErrorPages/UnauthorizedPage";
 import MyJobs from "./Pages/UserDashboard/MyJobs";
-import AvailableJobs from "./Pages/UserDashboard/AvailableJobs";
+//import AvailableJobs from "./Pages/UserDashboard/AvailableJobs";
+import JobMatches from "./Pages/UserDashboard/JobMatches";
 
 const RoutesConfig: React.FC = () => {
   return (
@@ -42,6 +43,14 @@ const RoutesConfig: React.FC = () => {
         }
       />
       <Route
+        path="/job/:jobId/matches"
+        element={
+          <ProtectedRoute allowedRoles={["Customer"]}>
+            <JobMatches />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/customerregistration"
         element={
           <ProtectedRoute allowedRoles={["Customer"]}>
@@ -59,14 +68,14 @@ const RoutesConfig: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/available-jobs"
         element={
           <ProtectedRoute allowedRoles={["Professional"]}>
             <AvailableJobs />
           </ProtectedRoute>
         }
-      />
+      /> */}
       <Route
         path="/professionalregistration"
         element={

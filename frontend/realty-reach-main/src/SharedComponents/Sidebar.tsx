@@ -1,8 +1,8 @@
-import React from "react";
+import React, {useContext} from "react";
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography, Button, Divider } from "@mui/material";
 import { Home, Business, Email, Settings, Logout } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../Context/useAuth";
+import { UserContext } from "../Context/userContext";
 
 interface SidebarProps {
   open?: boolean;
@@ -15,7 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onClose = () => {}, 
   variant = "permanent" 
 }) => {
-  const { logout, getUserRole } = useAuth();
+  const { logout, getUserRole } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const userRole = getUserRole();
@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems = [
     {
-      text: isCustomer ? "Customer Dashboard" : "Professional Dashboard",
+      text: "Dashboard",
       icon: <Home />,
       path: isCustomer ? "/customerdashboard" : "/professionaldashboard",
       roles: ["Customer", "Professional"],

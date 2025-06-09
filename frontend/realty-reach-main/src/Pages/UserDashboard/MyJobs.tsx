@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Box,
   Typography,
@@ -34,9 +34,9 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import Sidebar from '../../SharedComponents/Sidebar';
-import { useAuth } from '../../Context/useAuth';
+import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
-import { Job } from '../../Models/Job';
+import { AustralianState, Job } from '../../Models/Job';
 
 interface JobViewDialogProps {
   open: boolean;
@@ -55,10 +55,10 @@ const JobViewDialog: React.FC<JobViewDialogProps> = ({ open, job, onClose }) => 
       <DialogContent dividers>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h6">{job.JobTitle}</Typography>
+            <Typography variant="h6">{job.jobTitle}</Typography>
             <Chip 
-              label={job.Status || 'Open'} 
-              color={job.Status === 'Closed' ? 'default' : 'success'} 
+              label={job.status || 'Open'} 
+              color={job.status === 'Closed' ? 'default' : 'success'} 
               size="small" 
               sx={{ ml: 1 }}
             />
@@ -66,31 +66,28 @@ const JobViewDialog: React.FC<JobViewDialogProps> = ({ open, job, onClose }) => 
           
           <Grid item xs={12}>
             <Typography variant="subtitle2" color="text.secondary">
-              Job Type: {job.JobType}
+              Job Type: {job.jobType}
             </Typography>
           </Grid>
           
+          
           <Grid item xs={12} sm={6}>
-            <Typography variant="body2"><strong>Postcode:</strong> {job.Postcode}</Typography>
+            <Typography variant="body2"><strong>Property Type:</strong> {job.propertyType}</Typography>
           </Grid>
           
           <Grid item xs={12} sm={6}>
-            <Typography variant="body2"><strong>Property Type:</strong> {job.PropertyType}</Typography>
-          </Grid>
-          
-          <Grid item xs={12} sm={6}>
-            <Typography variant="body2"><strong>Purchase Type:</strong> {job.PurchaseType}</Typography>
+            <Typography variant="body2"><strong>Purchase Type:</strong> {job.purchaseType}</Typography>
           </Grid>
           
           <Grid item xs={12} sm={6}>
             <Typography variant="body2">
-              <strong>Budget:</strong> ${job.BudgetMin.toLocaleString()} - ${job.BudgetMax.toLocaleString()}
+              <strong>Budget:</strong> ${job.budgetMin.toLocaleString()} - ${job.budgetMax.toLocaleString()}
             </Typography>
           </Grid>
           
           <Grid item xs={12}>
             <Typography variant="body2">
-              <strong>Journey Progress:</strong> {job.JourneyProgress}
+              <strong>Journey Progress:</strong> {job.journeyProgress}
             </Typography>
           </Grid>
           
@@ -98,18 +95,18 @@ const JobViewDialog: React.FC<JobViewDialogProps> = ({ open, job, onClose }) => 
             <Divider sx={{ my: 1 }} />
             <Typography variant="subtitle2">Selected Professional Types:</Typography>
             <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {job.SelectedProfessionals.map((professional, index) => (
+              {job.selectedProfessionals.map((professional, index) => (
                 <Chip key={index} label={professional} size="small" />
               ))}
             </Box>
           </Grid>
           
-          {job.AdditionalDetails && (
+          {job.additionalDetails && (
             <Grid item xs={12}>
               <Divider sx={{ my: 1 }} />
               <Typography variant="subtitle2">Additional Details:</Typography>
               <Typography variant="body2" paragraph sx={{ mt: 1 }}>
-                {job.AdditionalDetails}
+                {job.additionalDetails}
               </Typography>
             </Grid>
           )}
@@ -118,10 +115,10 @@ const JobViewDialog: React.FC<JobViewDialogProps> = ({ open, job, onClose }) => 
             <Divider sx={{ my: 1 }} />
             <Typography variant="subtitle2">Contact Information:</Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              <strong>Email:</strong> {job.ContactEmail}
+              <strong>Email:</strong> {job.contactEmail}
             </Typography>
             <Typography variant="body2">
-              <strong>Phone:</strong> {job.ContactPhone}
+              <strong>Phone:</strong> {job.contactPhone}
             </Typography>
           </Grid>
         </Grid>
@@ -134,7 +131,7 @@ const JobViewDialog: React.FC<JobViewDialogProps> = ({ open, job, onClose }) => 
 };
 
 const MyJobs: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext)
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
@@ -152,6 +149,7 @@ const MyJobs: React.FC = () => {
   
   useEffect(() => {
     const fetchJobs = async () => {
+      console.log('Fetching jobs for user:', user);
       if (!user?.Id) return;
       
       try {
@@ -188,24 +186,26 @@ const MyJobs: React.FC = () => {
     setJobToDelete(jobId);
     setDeleteDialogOpen(true);
   };
+
+  //const stateNames = job.states.map((s: number) => AustralianState[s]).join(', ');
   
-  const handleDeleteConfirm = async () => {
-    if (!jobToDelete) return;
+  // const handleDeleteConfirm = async () => {
+  //   if (!jobToDelete) return;
     
-    try {
-      setIsDeleting(true);
-      await deleteJob(jobToDelete);
-      // Remove the deleted job from the state
-      setJobs(jobs.filter(job => job.jobId !== jobToDelete));
-      setDeleteDialogOpen(false);
-      setJobToDelete(null);
-    } catch (err) {
-      console.error('Error deleting job:', err);
-      // Show error message
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  //   try {
+  //     setIsDeleting(true);
+  //     await deleteJob(jobToDelete);
+  //     // Remove the deleted job from the state
+  //     setJobs(jobs.filter(job => job.jobId !== jobToDelete));
+  //     setDeleteDialogOpen(false);
+  //     setJobToDelete(null);
+  //   } catch (err) {
+  //     console.error('Error deleting job:', err);
+  //     // Show error message
+  //   } finally {
+  //     setIsDeleting(false);
+  //   }
+  // };
   
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
@@ -288,9 +288,9 @@ const MyJobs: React.FC = () => {
                     <TableRow>
                       <TableCell>Job Title</TableCell>
                       <TableCell>Type</TableCell>
-                      <TableCell>Location</TableCell>
+                      <TableCell>Region</TableCell>
+                      <TableCell>State</TableCell>
                       <TableCell>Status</TableCell>
-                      <TableCell>Created</TableCell>
                       <TableCell align="right">Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -306,50 +306,52 @@ const MyJobs: React.FC = () => {
                     ) : (
                       jobs
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((job) => (
-                          <TableRow key={job.jobId} hover>
-                            <TableCell>
-                              {job.JobTitle}
-                            </TableCell>
-                            <TableCell>{job.JobType}</TableCell>
-                            <TableCell>{job.Postcode}</TableCell>
-                            <TableCell>
-                              <Chip 
-                                label={job.Status || 'Open'} 
-                                color={getStatusColor(job.Status) as any}
-                                size="small"
-                              />
-                            </TableCell>
-                            <TableCell>
-                              {job.CreatedAt ? new Date(job.CreatedAt).toLocaleDateString() : 'N/A'}
-                            </TableCell>
-                            <TableCell align="right">
-                              <IconButton
-                                size="small"
-                                onClick={() => handleViewJob(job)}
-                                title="View Details"
-                              >
-                                <VisibilityIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                title="Edit Job"
-                                // onClick={() => handleEditJob(job.jobId)}
-                                disabled
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                title="Delete Job"
-                                onClick={() => handleDeleteClick(job.jobId)}
-                                color="error"
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        ))
+                        .map((job) => {
+                          const stateNames = Array.isArray(job.states)
+                            ? job.states.map((s: number) => AustralianState[s]).join(', ')
+                            : 'N/A';
+
+                          return (
+                            <TableRow key={job.jobId} hover>
+                              <TableCell>{job.jobTitle}</TableCell>
+                              <TableCell>{job.jobType}</TableCell>
+                              <TableCell>{job.regions || 'N/A'}</TableCell>
+                              <TableCell sx={{ verticalAlign: 'middle' }}>
+                                {stateNames}
+                              </TableCell>
+                              <TableCell>
+                                <Chip 
+                                  label={job.status || 'Open'} 
+                                  color={getStatusColor(job.status) as any}
+                                  size="small"
+                                />
+                              </TableCell>
+                              <TableCell align="right">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleViewJob(job)}
+                                  title="View Details"
+                                >
+                                  <VisibilityIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  title="Edit Job"
+                                  disabled
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  title="Delete Job"
+                                  color="error"
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
                     )}
                   </TableBody>
                 </Table>
@@ -391,7 +393,7 @@ const MyJobs: React.FC = () => {
             Cancel
           </Button>
           <Button 
-            onClick={handleDeleteConfirm} 
+            //onClick={handleDeleteConfirm} 
             color="error" 
             variant="contained"
             disabled={isDeleting}

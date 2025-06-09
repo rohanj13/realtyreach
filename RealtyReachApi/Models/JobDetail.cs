@@ -15,8 +15,10 @@ public class JobDetail
     public Job Job { get; set; } = null!; // Required reference navigation to principal
     public ICollection<JobProfessionalLink> JobProfessionalLinks { get; set; } = new List<JobProfessionalLink>();
     public ICollection<ProfessionalType> ProfessionalTypes { get; set; } = new List<ProfessionalType>();
-
-    [Required] public required string Postcode { get; set; } // Comma Separated Strings
+    //public List<int>  SuburbIds { get; set; } = new List<int>();
+    public List<string>? Regions { get; set; }
+    public List<AustralianState>? States { get; set; }
+    public List<Specialisation>? Specialisations { get; set; } = new List<Specialisation>();
 
     [Required] public required string PurchaseType { get; set; } // First Home/Investment Property
 
@@ -26,7 +28,7 @@ public class JobDetail
 
     public required string[] SelectedProfessionals { get; set; }
     
-    public required Guid[] SuggestedProfessionalIds { get; set; }
+    public Guid[] SuggestedProfessionalIds { get; set; }
 
     [Required] public int BudgetMin { get; set; }
 

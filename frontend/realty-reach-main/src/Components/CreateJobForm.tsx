@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent, useEffect, useContext } from 'react';
 import {
   Box,
   Button,
@@ -22,23 +22,29 @@ import {
   Alert,
   InputAdornment,
   Snackbar,
+  Autocomplete,
+  SelectChangeEvent,
+  CircularProgress,
 } from '@mui/material';
 import { Phone as PhoneIcon, Email as EmailIcon } from '@mui/icons-material';
 import { createJob } from '../services/JobService';
-import { CreateJobDto } from '../Models/Job';
+import { AustralianState, CreateJobDto, Specialisation } from '../Models/Job';
 import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '../Models/User';
-import { useAuth } from '../Context/useAuth';
+import { UserContext} from '../Context/userContext';
+import { LocationService, Region, State } from '../services/LocationService';
 
 interface FormData {
-  jobType: 'Buy' | 'Sell';
+  jobType: "Buy" | "Sell";
   jobTitle: string;
-  postcode: string;
+  regions: string[];
+  states: number[];
+  specialisations: number[];
   purchaseType: string;
   propertyType: string;
   budgetMin: number;
   budgetMax: number;
   journeyProgress: string;
-  selectedProfessionals: ProfessionalTypeEnum[];
+  selectedProfessionals: string[];
   additionalDetails: string;
   contactEmail: string;
   contactPhone: string;
@@ -64,9 +70,14 @@ interface JobFormProps {
 }
 
 const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext)
   const [activeStep, setActiveStep] = useState(0);
   const steps = ['Basic Information', 'Property Details', 'Journey Progress', 'Contact Information'];
+  
+  const [regions, setRegions] = useState<string[]>([]);
+  //const [states, setStates] = useState<number[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
   
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -81,7 +92,9 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
   const [formData, setFormData] = useState<FormData>({
     jobType: 'Buy',
     jobTitle: '',
-    postcode: '',
+    regions: [],
+    states: [],
+    specialisations: [],
     purchaseType: '',
     propertyType: '',
     budgetMin: 0,
@@ -94,6 +107,35 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
   });
   
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [stateOptions, setStateOptions] = useState<{ label: string; value: number }[]>([]);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        setIsLoadingLocations(true);
+        const [regionsData, statesData] = await Promise.all([
+          LocationService.getAllRegions(),
+          LocationService.getAllStates().then((states: string[]) => {
+            const options = states.map((stateStr) => ({
+              label: stateStr,
+              value: AustralianState[stateStr as keyof typeof AustralianState],
+            }));
+            setStateOptions(options);
+          })
+        ]);
+        setRegions(regionsData);
+        //setStates(statesData.map(state => Number(state)));
+        setLocationError(null);
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+        setLocationError('Failed to load location data. Please try again later.');
+      } finally {
+        setIsLoadingLocations(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   const validateStep = () => {
     let stepValid = true;
@@ -108,10 +150,18 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
         newErrors.jobTitle = 'Job title must be at least 5 characters';
         stepValid = false;
       }
-      if (!formData.postcode || !formData.postcode.match(/^\d{4}$/)) {
-        newErrors.postcode = 'Please enter a valid 4-digit postcode';
-        stepValid = false;
-      }
+      // if (formData.regions.length === 0) {
+      //   newErrors.regions = 'At least one region is required';
+      //   stepValid = false;
+      // }
+      // if (formData.states.length === 0) {
+      //   newErrors.states = 'At least one state is required';
+      //   stepValid = false;
+      // }
+      // if (formData.specialisations.length === 0) {
+      //   newErrors.specialisations = 'At least one specialisation is required';
+      //   stepValid = false;
+      // }
       if (!formData.purchaseType) {
         newErrors.purchaseType = 'Purchase type is required';
         stepValid = false;
@@ -123,6 +173,15 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
         newErrors.propertyType = 'Property type is required';
         stepValid = false;
       }
+      if (formData.regions.length === 0 && formData.states.length === 0) {
+        newErrors.regions = 'At least one region is required';
+        newErrors.states = 'At least one state is required';
+        stepValid = false;
+      }
+      // if (formData.states.length === 0) {
+      //   newErrors.states = 'At least one state is required';
+      //   stepValid = false;
+      // }
       if (formData.budgetMin <= 0) {
         newErrors.budgetMin = 'Minimum budget must be greater than 0';
         stepValid = false;
@@ -173,9 +232,28 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     
-    // Clear the error for this field if it exists
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    if (name) {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      
+      if (name === 'journeyProgress') {
+        const stage = value as BuyingStages;
+        setFormData((prev) => ({
+          ...prev,
+          journeyProgress: value,
+          selectedProfessionals: (buyingStages[stage] || []).map(p => ProfessionalTypeEnum[p])
+        }));
+      }
+      
+      if (errors[name as keyof FormData]) {
+        setErrors((prev) => ({ ...prev, [name]: undefined }));
+      }
     }
   };
 
@@ -183,31 +261,8 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
     const numValue = parseInt(value, 10) || 0;
     setFormData((prev) => ({ ...prev, [field]: numValue }));
     
-    // Clear the error for this field if it exists
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
-  
-  const handleSelectChange = (e: ChangeEvent<{ name?: string; value: unknown }>) => {
-    const { name, value } = e.target;
-    if (name) {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-      
-      // Handle journey progress selection automatically updating professionals
-      if (name === 'journeyProgress') {
-        const stage = value as BuyingStages;
-        setFormData((prev) => ({
-          ...prev,
-          [name]: value,
-          selectedProfessionals: buyingStages[stage] || []
-        }));
-      }
-      
-      // Clear the error for this field if it exists
-      if (errors[name as keyof FormData]) {
-        setErrors((prev) => ({ ...prev, [name]: undefined }));
-      }
     }
   };
 
@@ -215,31 +270,38 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
     const value = e.target.value as 'Buy' | 'Sell';
     setFormData((prev) => ({ ...prev, jobType: value }));
     
-    // Clear the error for this field if it exists
     if (errors.jobType) {
       setErrors((prev) => ({ ...prev, jobType: undefined }));
     }
   };
 
   const handleProfessionalCheck = (professionalType: ProfessionalTypeEnum) => {
-    setFormData((prev) => {
-      const currentSelected = [...prev.selectedProfessionals];
-      const index = currentSelected.indexOf(professionalType);
-      
-      if (index === -1) {
-        currentSelected.push(professionalType);
-      } else {
-        currentSelected.splice(index, 1);
-      }
-      
-      return { ...prev, selectedProfessionals: currentSelected };
-    });
-    
-    // Clear the error for this field if it exists
-    if (errors.selectedProfessionals) {
-      setErrors((prev) => ({ ...prev, selectedProfessionals: undefined }));
+  const professionalKey = ProfessionalTypeEnum[professionalType]; // e.g., "Advocate"
+
+  setFormData((prev) => {
+    const currentSelected = [...prev.selectedProfessionals];
+    const index = currentSelected.indexOf(professionalKey);
+
+    if (index === -1) {
+      currentSelected.push(professionalKey);
+    } else {
+      currentSelected.splice(index, 1);
     }
-  };
+
+    return { ...prev, selectedProfessionals: currentSelected };
+  });
+
+  if (errors.selectedProfessionals) {
+    setErrors((prev) => ({ ...prev, selectedProfessionals: undefined }));
+  }
+};
+
+  const specialisationOptions = Object.entries(Specialisation)
+  .filter(([key, value]) => !isNaN(Number(value)))
+  .map(([key, value]) => ({
+    label: key.replace(/([A-Z])/g, ' $1').trim(), // Convert to "First Home Buyers"
+    value: Number(value),
+  }));
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -248,18 +310,20 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
     }
 
     const createJobDto: CreateJobDto = {
-      JobType: formData.jobType,
-      JobTitle: formData.jobTitle,
-      Postcode: formData.postcode,
-      PurchaseType: formData.purchaseType,
-      PropertyType: formData.propertyType,
-      BudgetMin: formData.budgetMin,
-      BudgetMax: formData.budgetMax,
-      JourneyProgress: formData.journeyProgress,
-      SelectedProfessionals: formData.selectedProfessionals,
-      AdditionalDetails: formData.additionalDetails || '',
-      ContactEmail: formData.contactEmail,
-      ContactPhone: formData.contactPhone,
+      jobTitle: formData.jobTitle,
+      jobType: formData.jobType,
+      regions: formData.regions,
+      states: formData.states,
+      specialisations: formData.specialisations,
+      purchaseType: formData.purchaseType,
+      propertyType: formData.propertyType,
+      budgetMin: formData.budgetMin,
+      budgetMax: formData.budgetMax,
+      journeyProgress: formData.journeyProgress,
+      selectedProfessionals: formData.selectedProfessionals,
+      additionalDetails: formData.additionalDetails || '',
+      contactEmail: formData.contactEmail,
+      contactPhone: formData.contactPhone,
     };
 
     try {
@@ -315,20 +379,6 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
               {errors.jobTitle && <FormHelperText>{errors.jobTitle}</FormHelperText>}
             </FormControl>
             
-            <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.postcode}>
-              <FormLabel htmlFor="postcode">Job Location (Postcode)</FormLabel>
-              <TextField
-                id="postcode"
-                name="postcode"
-                placeholder="Enter postcode"
-                value={formData.postcode}
-                onChange={handleChange}
-                fullWidth
-                size="small"
-              />
-              {errors.postcode && <FormHelperText>{errors.postcode}</FormHelperText>}
-            </FormControl>
-            
             <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.purchaseType}>
               <FormLabel htmlFor="purchase-type">Purchase Type</FormLabel>
               <Select
@@ -370,6 +420,68 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
                 <MenuItem value="blockOfUnits">Block of Units</MenuItem>
               </Select>
               {errors.propertyType && <FormHelperText>{errors.propertyType}</FormHelperText>}
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.regions}>
+              <FormLabel>Regions</FormLabel>
+              {isLoadingLocations ? (
+                <CircularProgress size={24} />
+              ) : locationError ? (
+                <Alert severity="error">{locationError}</Alert>
+              ) : (
+                <Autocomplete
+                  multiple
+                  options={regions}
+                  value={formData.regions}
+                  onChange={(_, newValue) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      regions: newValue
+                    }));
+                    if (errors.regions) {
+                      setErrors(prev => ({ ...prev, regions: undefined }));
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      placeholder="Select regions"
+                      size="small"
+                    />
+                  )}
+                />
+              )}
+              {errors.regions && <FormHelperText>{errors.regions}</FormHelperText>}
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.states}>
+              <FormLabel>States</FormLabel>
+              <Autocomplete
+                multiple
+                options={stateOptions}
+                value={stateOptions.filter(opt => formData.states.includes(opt.value))}
+                onChange={(_, newValue) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    states: newValue.map(opt => opt.value),
+                  }));
+                  if (errors.states) {
+                    setErrors(prev => ({ ...prev, states: undefined }));
+                  }
+                }}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Select states"
+                    size="small"
+                  />
+                )}
+              />
+              {errors.states && (
+                <FormHelperText>{errors.states}</FormHelperText>
+              )}
             </FormControl>
             
             <FormControl fullWidth sx={{ mb: 2 }}>
@@ -427,6 +539,38 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
       case 2:
         return (
           <Box sx={{ mt: 2 }}>
+            <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.specialisations}>
+              <FormLabel>Specialisations</FormLabel>
+              <Autocomplete
+                multiple
+                options={specialisationOptions}
+                value={specialisationOptions.filter(opt =>
+                  formData.specialisations.includes(opt.value)
+                )}
+                onChange={(_, newValue) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    specialisations: newValue.map(opt => opt.value),
+                  }));
+                  if (errors.specialisations) {
+                    setErrors(prev => ({ ...prev, specialisations: undefined }));
+                  }
+                }}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder="Select specialisations"
+                    size="small"
+                  />
+                )}
+              />
+              {errors.specialisations && (
+                <FormHelperText>{errors.specialisations}</FormHelperText>
+              )}
+            </FormControl>
+
             <FormControl fullWidth sx={{ mb: 2 }} error={!!errors.journeyProgress}>
               <FormLabel htmlFor="journey-progress">Where are you in your home buying journey?</FormLabel>
               <Select
@@ -462,7 +606,7 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
                       key={professionalType}
                       control={
                         <Checkbox
-                          checked={formData.selectedProfessionals.includes(professionalType)}
+                          checked={formData.selectedProfessionals.includes(ProfessionalTypeEnum[professionalType])}
                           onChange={() => handleProfessionalCheck(professionalType)}
                         />
                       }

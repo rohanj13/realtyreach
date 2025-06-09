@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { 
   Container, 
   Box, 
@@ -10,24 +10,19 @@ import {
   Alert,
   useTheme
 } from "@mui/material";
-import { useAuth } from "../../Context/useAuth";
-import axios from "axios";
+import { UserContext } from "../../Context/userContext";
+import backendApi from "@/axiosConfig";
 import { useNavigate } from "react-router-dom";
+import { CustomerProfile } from "@/Models/User";
 
 const CustomerProfileCompletion: React.FC = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useContext(UserContext)
   const theme = useTheme();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     firstName: user?.FirstName || "",
     lastName: user?.LastName || "",
-    phone: "",
-    addressLine1: "",
-    addressLine2: "",
-    suburb: "",
-    state: "",
-    postcode: ""
   });
   
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -54,11 +49,6 @@ const CustomerProfileCompletion: React.FC = () => {
     
     if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
-    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    if (!formData.addressLine1.trim()) newErrors.addressLine1 = "Address is required";
-    if (!formData.suburb.trim()) newErrors.suburb = "Suburb is required";
-    if (!formData.state.trim()) newErrors.state = "State is required";
-    if (!formData.postcode.trim()) newErrors.postcode = "Postcode is required";
     
     setFormErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -74,19 +64,17 @@ const CustomerProfileCompletion: React.FC = () => {
     
     try {
       const customerData = {
-        userId: user?.Id,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        addressLine1: formData.addressLine1,
-        addressLine2: formData.addressLine2,
-        suburb: formData.suburb,
-        state: formData.state,
-        postcode: formData.postcode
+        Id: user?.Id,
+        Email: user?.Email,
+        FirstName: formData.firstName,
+        LastName: formData.lastName,
+        FirstLogin: false,
       };
       
-      await axios.post('/api/Customer/profile', customerData);
-      
+      await backendApi.put('/api/User', customerData);
+      localStorage.setItem("user", JSON.stringify(customerData));
+      setUser(customerData as CustomerProfile);
+
       setSubmitSuccess(true);
       setTimeout(() => {
         navigate('/customerdashboard');
@@ -141,81 +129,6 @@ const CustomerProfileCompletion: React.FC = () => {
                     onChange={handleInputChange}
                     error={!!formErrors.lastName}
                     helperText={formErrors.lastName}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    error={!!formErrors.phone}
-                    helperText={formErrors.phone}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Address Line 1"
-                    name="addressLine1"
-                    value={formData.addressLine1}
-                    onChange={handleInputChange}
-                    error={!!formErrors.addressLine1}
-                    helperText={formErrors.addressLine1}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Address Line 2"
-                    name="addressLine2"
-                    value={formData.addressLine2}
-                    onChange={handleInputChange}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    label="Suburb"
-                    name="suburb"
-                    value={formData.suburb}
-                    onChange={handleInputChange}
-                    error={!!formErrors.suburb}
-                    helperText={formErrors.suburb}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    label="State"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    error={!!formErrors.state}
-                    helperText={formErrors.state}
-                    required
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    label="Postcode"
-                    name="postcode"
-                    value={formData.postcode}
-                    onChange={handleInputChange}
-                    error={!!formErrors.postcode}
-                    helperText={formErrors.postcode}
                     required
                     variant="outlined"
                   />

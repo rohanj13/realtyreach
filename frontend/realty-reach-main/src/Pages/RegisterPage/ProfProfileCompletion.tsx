@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { 
   Container, 
   Box, 
@@ -16,13 +16,13 @@ import {
   useTheme,
   Alert
 } from "@mui/material";
-import { useAuth } from "../../Context/useAuth";
+import { UserContext } from "../../Context/userContext";
 import { ProfessionalProfile, ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from "../../Models/User";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const ProfProfileCompletion: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext);
   const theme = useTheme();
   const navigate = useNavigate();
   const professionalUser = user as ProfessionalProfile;

@@ -20,7 +20,10 @@ public class ProfessionalMapper : IProfessionalMapper
             CompanyName = professional.CompanyName,
             FirstLogin = professional.FirstLogin,
             ProfessionalTypeId = professional.ProfessionalTypeId,
-            ProfessionalType = string.Empty // This can be populated if you fetch the related ProfessionalType
+            ProfessionalType = string.Empty, // This can be populated if you fetch the related ProfessionalType
+            Regions = professional.Regions,
+            States = professional.States,
+            Specialisations = professional.Specialisations,
         };
     }
 
@@ -38,7 +41,30 @@ public class ProfessionalMapper : IProfessionalMapper
             VerificationStatus = professionalDto.VerificationStatus,
             CompanyName = professionalDto.CompanyName,
             FirstLogin = professionalDto.FirstLogin,
-            ProfessionalTypeId = professionalDto.ProfessionalTypeId
+            ProfessionalTypeId = professionalDto.ProfessionalTypeId,
+            Regions = professionalDto.Regions,
+            States = professionalDto.States,
+            Specialisations = professionalDto.Specialisations
+        };
+    }
+    
+    public ProfessionalProfileDto ToProfileDto(Professional professional, ProfessionalType professionalType)
+    {
+        return new ProfessionalProfileDto
+        {
+            Id = professional.Id,
+            Email = professional.Email,
+            FirstName = professional.FirstName,
+            LastName = professional.LastName,
+            CompanyName = professional.CompanyName,
+            ABN = professional.ABN,
+            LicenseNumber = professional.LicenseNumber,
+            VerificationStatus = professional.VerificationStatus,
+            ProfessionalTypeName = professionalType.TypeName,
+            ProfessionalTypeDescription = professionalType.Description,
+            Regions = professional.Regions,
+            States = professional.States,
+            Specialisations = professional.Specialisations,
         };
     }
 }

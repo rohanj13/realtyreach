@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useContext} from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../Context/useAuth";
+import { UserContext } from "../Context/userContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-  const { isLoggedIn, getUserRole } = useAuth();
+  const { isLoggedIn, getUserRole } = useContext(UserContext);
   const isAuthenticated = isLoggedIn();
   const userRole = getUserRole();
 

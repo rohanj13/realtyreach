@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { 
   Box, 
   Typography, 
@@ -22,10 +22,10 @@ import Metrics from "../../Components/Metrics";
 import ActiveJobsSection from "../../SharedComponents/ActiveJobsSection";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import CreateJobModal from "../../SharedComponents/CreateJobModal";
-import { useAuth } from "../../Context/useAuth";
+import { UserContext} from "../../Context/userContext";
 
 const CustomerDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user } = useContext(UserContext)
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
@@ -92,7 +92,7 @@ const CustomerDashboard: React.FC = () => {
             </IconButton>
             
             <Typography variant="subtitle2" sx={{ ml: 1, display: { xs: 'none', sm: 'block' } }}>
-              Welcome, {user?.FirstName || "Customer"}
+              Welcome, {user?.FirstName}
             </Typography>
           </Toolbar>
         </AppBar>

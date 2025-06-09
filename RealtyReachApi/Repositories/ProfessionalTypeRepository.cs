@@ -23,4 +23,9 @@ public class ProfessionalTypeRepository : IProfessionalTypeRepository
             .ToListAsync();
 
     }
+
+    public async Task<ProfessionalType> GetProfessionalTypeByIdAsync(int id)
+    {
+        return await _context.ProfessionalTypes.FindAsync(id);
+    }
 }

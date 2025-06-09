@@ -97,6 +97,7 @@ const LandingPage: React.FC = () => {
                 component="img"
                 src="/house.jpg"
                 alt="A modern house"
+                loading='lazy'
                 sx={{
                   width: '100%',
                   height: 'auto',
@@ -181,22 +182,22 @@ const LandingPage: React.FC = () => {
               {
                 title: "Buyer's Advocates",
                 description: "Expert advice and representation throughout your property purchase.",
-                image: "/advocate.jpg"
+                //image: "/advocate.jpg"
               },
               {
                 title: "Conveyancers",
                 description: "Legal specialists for property transfers and contracts.",
-                image: "/conveyancer.jpg"
+                //image: "/conveyancer.jpg"
               },
               {
                 title: "Building Inspectors",
                 description: "Thorough property inspections to identify any issues.",
-                image: "/inspector.jpg"
+                //image: "/inspector.jpg"
               },
               {
                 title: "Mortgage Brokers",
                 description: "Find the best financing options for your property purchase.",
-                image: "/broker.jpg"
+                //image: "/broker.jpg"
               }
             ].map((prof, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
@@ -204,7 +205,7 @@ const LandingPage: React.FC = () => {
                   <CardMedia
                     component="img"
                     height="140"
-                    image={prof.image}
+                    //image={prof.image}
                     alt={prof.title}
                     onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                       e.currentTarget.src = 'https://via.placeholder.com/300x140?text=RealtyReach';

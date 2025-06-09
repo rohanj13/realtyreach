@@ -1,12 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Box, Container, Typography, Button, Paper } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { ErrorOutline as ErrorOutlineIcon } from '@mui/icons-material';
-import { useAuth } from '../../Context/useAuth';
+import { UserContext } from '../../Context/userContext';
 
 const UnauthorizedPage: React.FC = () => {
   const navigate = useNavigate();
-  const { isLoggedIn, getUserRole } = useAuth();
+  const { isLoggedIn, getUserRole } = useContext(UserContext);
   const userRole = getUserRole();
   const isAuthenticated = isLoggedIn();
 

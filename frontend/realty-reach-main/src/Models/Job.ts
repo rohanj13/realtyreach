@@ -1,40 +1,81 @@
+export enum JobStatus {
+    Open = "Open",
+    Closed = "Closed",
+    InProgress = "InProgress"
+}
+
+export enum AustralianState {
+    NSW = 1,
+    VIC,
+    QLD,
+    SA,
+    WA,
+    TAS,
+    NT,
+    ACT
+  }
+
+// export enum Specialisation {
+//     FirstHomeBuyers = "First Home Buyer Specialist",
+//     Investors = "Investment Property Specialist",
+//     LuxuryHomes = "Luxury Homes Specialist",
+//     ForeignInvestors = "Foreign Investor Specialist",
+//     RuralHomes = "Rural Homes Specialist",
+//     Downsizers = "Downsizers SPecialist",
+//     Retirees = "Retirement Specialists"
+// }
+export enum Specialisation {
+    FirstHomeBuyers = 1,
+    Investors,
+    LuxuryHomes,
+    ForeignInvestors,
+    RuralHomes,
+    Downsizers,
+    Retirees
+}
+
 export interface Job {
-    jobId: string;
-    JobTitle: string;
-    JobType: 'Buy' | 'Sell';
-    Postcode: string;
-    PurchaseType: string;
-    PropertyType: string;
-    BudgetMin: number;
-    BudgetMax: number;
-    JourneyProgress: string;
-    SelectedProfessionals: string[];
-    AdditionalDetails: string;
-    ContactEmail: string;
-    ContactPhone: string;
-    Status?: string;
-    CreatedAt?: string;
-    UpdatedAt?: string;
+    jobId: number;
+    status: string;
+    jobTitle: string;
+    jobType: string;
+    regions: string[];
+    states: number[];
+    specialisations: number[];
+    purchaseType?: string;
+    propertyType: string;
+    budgetMin: number;
+    budgetMax: number;
+    contactEmail: string;
+    contactPhone: string;
+    journeyProgress: string;
+    selectedProfessionals: string[];
+    additionalDetails?: string;
 }
 
 export interface CreateJobDto {
-    JobType: 'Buy' | 'Sell';
-    JobTitle: string;
-    Postcode: string;
-    PurchaseType: string;
-    PropertyType: string;
-    BudgetMin: number;
-    BudgetMax: number;
-    JourneyProgress: string;
-    SelectedProfessionals: number[];
-    AdditionalDetails: string;
-    ContactEmail: string;
-    ContactPhone: string;
+    jobTitle: string;
+    jobType: string;
+    regions: string[];
+    states: number[];
+    specialisations: number[];
+    purchaseType?: string;
+    propertyType: string;
+    budgetMin: number;
+    budgetMax: number;
+    contactEmail: string;
+    contactPhone: string;
+    journeyProgress: string;
+    selectedProfessionals: string[];
+    additionalDetails?: string;
 }
 
-export interface UpdateJobDto {
-    JobId: string;
-    JobTitle: string;
-    AdditionalDetails: string;
-    Status?: string;
+export interface MatchingJobDto {
+    jobId: number;
+    professionalId: string;
+}
+
+export interface UpdateJobDto extends Partial<CreateJobDto> {
+    jobId: number;
+    status?: JobStatus;
 }
