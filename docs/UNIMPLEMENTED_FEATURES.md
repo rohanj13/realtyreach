@@ -371,6 +371,16 @@ public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessio
 6. Update matching algorithm to consider ratings
 
 ---
+### 4.5 Professional Type Management 🟡 **Partially Implemented**
+**Status**: `ProfessionalType` field exists but is hard coded
+
+**User Stories**:
+- ❌ As a professional, I want to be able to define what my type or capabilities are
+
+**Implementation Needed**
+1. Update the UserController to accept values being passed from the frontend
+2. Store these values in the database
+---
 
 ## 5. Payment & Pricing
 
