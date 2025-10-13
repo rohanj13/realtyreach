@@ -64,6 +64,13 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
         // return professionalDto;
     }
 
+    public async Task<bool> UpdateProfessionalAsync(Professional professional)
+    {
+        context.Professionals.Update(professional);
+        var result = await context.SaveChangesAsync();
+        return result > 0;
+    }
+
     public Task<bool> DeleteProfessionalAsync(Professional professional)
     {
         throw new NotImplementedException();

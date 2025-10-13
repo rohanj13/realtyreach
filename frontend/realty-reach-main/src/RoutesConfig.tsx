@@ -10,6 +10,7 @@ import ProfessionalDashboard from "./Pages/UserDashboard/ProfessionalDashboard";
 import ProfLandingPage from "./Pages/LandingPage/ProfLandingPage";
 import CustomerProfileCompletionPage from "./Pages/RegisterPage/CustomerProfileCompletion";
 import ProfProfileCompletionPage from "./Pages/RegisterPage/ProfProfileCompletion";
+import ProfessionalProfileEdit from "./Pages/UserDashboard/ProfessionalProfileEdit";
 import UnauthorizedPage from "./Pages/ErrorPages/UnauthorizedPage";
 import MyJobs from "./Pages/UserDashboard/MyJobs";
 //import AvailableJobs from "./Pages/UserDashboard/AvailableJobs";
@@ -81,6 +82,14 @@ const RoutesConfig: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={["Professional"]}>
             <ProfProfileCompletionPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/professional/profile/edit"
+        element={
+          <ProtectedRoute allowedRoles={["Professional"]}>
+            <ProfessionalProfileEdit />
           </ProtectedRoute>
         }
       />

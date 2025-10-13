@@ -67,4 +67,38 @@ public class ProfessionalMapper : IProfessionalMapper
             Specialisations = professional.Specialisations,
         };
     }
+
+    /// <summary>
+    /// Applies partial updates from UpdateProfessionalDto to Professional entity.
+    /// Only updates fields that are non-null in the DTO.
+    /// Follows SOLID principles: Single Responsibility (mapping only), Open/Closed (extensible).
+    /// </summary>
+    public void ApplyUpdateToEntity(UpdateProfessionalDto updateDto, Professional professional)
+    {
+        // Update basic information fields if provided
+        if (!string.IsNullOrEmpty(updateDto.FirstName))
+            professional.FirstName = updateDto.FirstName;
+
+        if (!string.IsNullOrEmpty(updateDto.LastName))
+            professional.LastName = updateDto.LastName;
+
+        if (!string.IsNullOrEmpty(updateDto.CompanyName))
+            professional.CompanyName = updateDto.CompanyName;
+
+        if (!string.IsNullOrEmpty(updateDto.ABN))
+            professional.ABN = updateDto.ABN;
+
+        if (!string.IsNullOrEmpty(updateDto.LicenseNumber))
+            professional.LicenseNumber = updateDto.LicenseNumber;
+
+        // Update service areas if provided
+        if (updateDto.Regions != null)
+            professional.Regions = updateDto.Regions;
+
+        if (updateDto.States != null)
+            professional.States = updateDto.States;
+
+        if (updateDto.Specialisations != null)
+            professional.Specialisations = updateDto.Specialisations;
+    }
 }
