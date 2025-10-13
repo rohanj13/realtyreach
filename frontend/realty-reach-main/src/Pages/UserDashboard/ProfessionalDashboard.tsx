@@ -15,7 +15,8 @@ import {
   Card,
   CardContent,
   CardActionArea,
-  Avatar
+  Avatar,
+  Button
 } from "@mui/material";
 import { 
   Menu as MenuIcon, 
@@ -30,19 +31,60 @@ import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import { UserContext } from "../../Context/userContext";
 import { getAvailableJobsForProfessional } from "../../services/JobService";
 import { Job } from "../../Models/Job";
-import { ProfessionalProfile } from "../../Models/User";
+import { ProfessionalProfile, ProfessionalTypeEnumMapping } from "../../Models/User";
+import { useNavigate } from "react-router-dom";
+import { backendApi } from "../../api/backendApi";
+
+interface ProfessionalData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  abn: string;
+  licenseNumber: string;
+  professionalTypeId: number;
+  professionalType: string;
+  verificationStatus: boolean;
+  firstLogin: boolean;
+}
 
 const ProfessionalDashboard: React.FC = () => {
   const { user } = useContext(UserContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
   
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [professionalData, setProfessionalData] = useState<ProfessionalData | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   
-  const professionalUser = user as ProfessionalProfile;
+  // Get professional type display name
+  const getProfessionalTypeDisplay = () => {
+    if (professionalData?.professionalTypeId) {
+      const typeKey = professionalData.professionalTypeId.toString();
+      return ProfessionalTypeEnumMapping[typeKey as unknown as keyof typeof ProfessionalTypeEnumMapping] || "Not Set";
+    }
+    return "Not Set";
+  };
+  
+  // Fetch professional profile data
+  useEffect(() => {
+    const fetchProfessionalProfile = async () => {
+      try {
+        const response = await backendApi.get<ProfessionalData>('/api/Professional');
+        setProfessionalData(response.data);
+      } catch (error) {
+        console.error("Error fetching professional profile:", error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+    
+    fetchProfessionalProfile();
+  }, []);
   
   useEffect(() => {
     const fetchAvailableJobs = async () => {
@@ -165,19 +207,32 @@ const ProfessionalDashboard: React.FC = () => {
                     bgcolor: theme.palette.primary.main 
                   }}
                 >
-                  {user?.FirstName?.charAt(0)}{user?.LastName?.charAt(0)}
+                  {(professionalData?.firstName || user?.FirstName)?.charAt(0)}
+                  {(professionalData?.lastName || user?.LastName)?.charAt(0)}
                 </Avatar>
               </Grid>
               <Grid item xs>
                 <Typography variant="h5" gutterBottom>
-                  {user?.FirstName} {user?.LastName}
+                  {professionalData?.firstName || user?.FirstName} {professionalData?.lastName || user?.LastName}
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  {professionalUser?.CompanyName || "Company Name Not Set"}
+                <Typography variant="body1" color="text.secondary" gutterBottom>
+                  {professionalData?.companyName || "Company Name Not Set"}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  ABN: {professionalUser?.ABN || "Not Set"} | License: {professionalUser?.LicenseNumber || "Not Set"}
+                <Typography variant="body2" color="primary" sx={{ fontWeight: 'medium', mb: 1 }}>
+                  {isLoadingProfile ? "Loading..." : getProfessionalTypeDisplay()}
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  ABN: {professionalData?.abn || "Not Set"} | License: {professionalData?.licenseNumber || "Not Set"}
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Button 
+                  variant="outlined" 
+                  onClick={() => navigate('/professional/profile/edit')}
+                  sx={{ minWidth: 120 }}
+                >
+                  Edit Profile
+                </Button>
               </Grid>
             </Grid>
           </Paper>

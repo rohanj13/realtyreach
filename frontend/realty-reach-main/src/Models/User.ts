@@ -19,14 +19,14 @@ export interface ProfessionalProfile extends UserProfile {
 
 export enum ProfessionalTypeEnum {
   Advocate = 1,
-  Conveyancer = 2,
-  BuildAndPest = 3,
-  Broker = 4
+  Broker = 2,
+  Conveyancer = 3,
+  BuildAndPest = 4
 }
 
-export const ProfessionalTypeEnumMapping = {
+export const ProfessionalTypeEnumMapping: Record<ProfessionalTypeEnum, string> = {
   [ProfessionalTypeEnum.Advocate]: "Buyer's Advocate",
+  [ProfessionalTypeEnum.Broker]: "Mortgage Broker",
   [ProfessionalTypeEnum.Conveyancer]: "Conveyancer",
   [ProfessionalTypeEnum.BuildAndPest]: "Building & Pest Inspector",
-  [ProfessionalTypeEnum.Broker]: "Mortgage Broker",
 };

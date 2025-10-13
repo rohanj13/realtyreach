@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { UserContext } from "../../Context/userContext";
 import { ProfessionalProfile, ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from "../../Models/User";
-import axios from "axios";
+import { backendApi } from "../../api/backendApi";
 import { useNavigate } from "react-router-dom";
 
 const ProfProfileCompletion: React.FC = () => {
@@ -111,33 +111,49 @@ const ProfProfileCompletion: React.FC = () => {
     setSubmitError("");
     
     try {
+      // Convert enum value to enum name string for backend
+      const typeEnumKey = Object.keys(ProfessionalTypeEnum).find(
+        key => ProfessionalTypeEnum[key as keyof typeof ProfessionalTypeEnum] === Number(formData.professionalType)
+      );
+      
+      if (!typeEnumKey) {
+        setSubmitError("Please select a valid professional type.");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Prepare data for backend (only fields that exist in Professional model)
       const professionalData = {
-        userId: professionalUser?.Id,
         firstName: formData.firstName,
         lastName: formData.lastName,
         companyName: formData.companyName,
         abn: formData.abn,
         licenseNumber: formData.licenseNumber,
-        professionalType: Number(formData.professionalType),
-        phone: formData.phone,
-        addressLine1: formData.addressLine1,
-        addressLine2: formData.addressLine2,
-        suburb: formData.suburb,
-        state: formData.state,
-        postcode: formData.postcode,
-        bio: formData.bio,
-        experience: formData.experience
+        professionalType: typeEnumKey, // Send enum name as string: "Advocate", "Broker", etc.
       };
       
-      await axios.post('/api/Professional/profile', professionalData);
+      // Use PUT /api/Professional endpoint (not POST /api/Professional/profile)
+      const response = await backendApi.put('/api/Professional', professionalData);
+      
+      console.log('Profile updated successfully:', response.data);
       
       setSubmitSuccess(true);
       setTimeout(() => {
         navigate('/professionaldashboard');
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting professional profile:', error);
-      setSubmitError("Failed to complete your profile. Please try again.");
+      
+      // Display specific error messages from backend
+      if (error.response?.data?.error) {
+        setSubmitError(error.response.data.error);
+      } else if (error.response?.status === 400) {
+        setSubmitError("Invalid professional type. Please select a valid option.");
+      } else if (error.response?.status === 404) {
+        setSubmitError("Professional profile not found. Please try logging in again.");
+      } else {
+        setSubmitError("Failed to complete your profile. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

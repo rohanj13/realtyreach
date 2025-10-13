@@ -158,3 +158,7 @@ node_modules/
 .yarn-integrity
 .pnp.js
 .pnp.cjs
+
+# Frontend build output (realty-reach-main)
+frontend/realty-reach-main/build/
+frontend/realty-reach-main/dist/

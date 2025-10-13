@@ -36,9 +36,53 @@ public class ProfessionalService : IProfessionalService
         return profDto;
     }
 
-    public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessional)
+    /// <summary>
+    /// Updates a professional's profile with partial data.
+    /// Follows DDD principles: Domain logic encapsulation, aggregate boundaries.
+    /// Implements SOLID: Single Responsibility (update orchestration), Dependency Inversion (uses interfaces).
+    /// </summary>
+    /// <param name="id">Professional's unique identifier</param>
+    /// <param name="updateDto">DTO containing fields to update</param>
+    /// <exception cref="KeyNotFoundException">Thrown when professional is not found</exception>
+    /// <exception cref="ArgumentException">Thrown when professional type is invalid</exception>
+    public async Task UpdateProfessionalAsync(Guid id, UpdateProfessionalDto updateDto)
     {
-        throw new NotImplementedException();
+        // Retrieve existing professional entity (aggregate root)
+        var professional = await _repository.GetProfessionalByIdAsync(id);
+        
+        if (professional == null)
+        {
+            throw new KeyNotFoundException($"Professional with ID {id} not found");
+        }
+
+        // Apply partial updates using mapper (separation of concerns)
+        _mapper.ApplyUpdateToEntity(updateDto, professional);
+
+        // Handle professional type update with validation (domain rule enforcement)
+        if (!string.IsNullOrEmpty(updateDto.ProfessionalType))
+        {
+            if (Enum.TryParse<ProfessionalTypeEnum>(updateDto.ProfessionalType, out var typeEnum))
+            {
+                professional.ProfessionalTypeId = (int)typeEnum;
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"Invalid professional type: '{updateDto.ProfessionalType}'. " +
+                    "Valid types are: Advocate, Broker, Conveyancer, BuildAndPest");
+            }
+        }
+
+        // Mark profile as completed (domain event - first login complete)
+        professional.FirstLogin = false;
+
+        // Persist changes to repository
+        var success = await _repository.UpdateProfessionalAsync(professional);
+        
+        if (!success)
+        {
+            throw new InvalidOperationException("Failed to update professional profile");
+        }
     }
 
     public async Task DeleteProfessionalAsync(Guid id)
