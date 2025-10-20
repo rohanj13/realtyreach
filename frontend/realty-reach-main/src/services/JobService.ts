@@ -1,3 +1,14 @@
+import { FinalisedJob } from "../Models/FinalisedJob";
+// GET: Fetch finalised jobs for a professional (high quality leads)
+export const getFinalisedJobsForProfessional = async (): Promise<FinalisedJob[]> => {
+  try {
+    const response = await backendApi.get<FinalisedJob[]>(`/api/jobs/professional/finalised`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching finalised jobs:', error);
+    throw error;
+  }
+};
 import backendApi from "@/axiosConfig";
 import { CreateJobDto, Job, UpdateJobDto, MatchingJobDto } from "../Models/Job";
 import { MatchedProfessional, ProfessionalProfile } from "../Models/Professional";

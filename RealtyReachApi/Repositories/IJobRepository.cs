@@ -11,4 +11,5 @@ public interface IJobRepository
     Task<bool> UpdateJobAsync(Job? job);
     Task<bool> DeleteJobAsync(int jobId);
     Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink);
+    Task<List<JobProfessionalLink>> GetFinalisedJobsForProfessionalAsync(Guid professionalId);
 }
