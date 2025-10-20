@@ -13,7 +13,6 @@ import ProfProfileCompletionPage from "./Pages/RegisterPage/ProfProfileCompletio
 import ProfessionalProfileEdit from "./Pages/UserDashboard/ProfessionalProfileEdit";
 import UnauthorizedPage from "./Pages/ErrorPages/UnauthorizedPage";
 import MyJobs from "./Pages/UserDashboard/MyJobs";
-//import AvailableJobs from "./Pages/UserDashboard/AvailableJobs";
 import JobMatches from "./Pages/UserDashboard/JobMatches";
 
 const RoutesConfig: React.FC = () => {
@@ -69,14 +68,6 @@ const RoutesConfig: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      {/* <Route
-        path="/available-jobs"
-        element={
-          <ProtectedRoute allowedRoles={["Professional"]}>
-            <AvailableJobs />
-          </ProtectedRoute>
-        }
-      /> */}
       <Route
         path="/professionalregistration"
         element={

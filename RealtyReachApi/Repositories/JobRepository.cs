@@ -43,12 +43,14 @@ public class JobRepository : IJobRepository
 
     public async Task<bool> UpdateJobAsync(Job? job)
     {
-        if (job == null) {
+        if (job == null)
+        {
             return false;
         }
 
         var existingJob = await _context.Jobs.FindAsync(job.JobId);
-        if (existingJob == null) {
+        if (existingJob == null)
+        {
             return false;
         }
 
@@ -62,7 +64,8 @@ public class JobRepository : IJobRepository
         throw new NotImplementedException();
     }
 
-    public async Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink) {
+    public async Task<JobProfessionalLink> MatchJobAsync(JobProfessionalLink jobProfessionalLink)
+    {
         _context.JobProfessionalLink.Add(jobProfessionalLink);
         await _context.SaveChangesAsync();
         return jobProfessionalLink;
@@ -93,4 +96,14 @@ public class JobRepository : IJobRepository
     //
     //     return jobDetail;
     // }
+
+    public async Task<List<JobProfessionalLink>> GetFinalisedJobsForProfessionalAsync(Guid professionalId)
+    {
+        return await _context.JobProfessionalLink
+            .Include(jpl => jpl.JobDetail)
+                .ThenInclude(jd => jd.Job)
+            .Where(jpl => jpl.ProfessionalId == professionalId)
+            .OrderByDescending(jpl => jpl.AssignedDate)
+            .ToListAsync();
+    }
 }

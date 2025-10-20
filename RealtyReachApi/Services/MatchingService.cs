@@ -20,60 +20,60 @@ public class MatchingService : IMatchingService
 
     //TODO: Change to accept JobDto in the argument
     public async Task<List<Professional>> IdentifySuitableProfessionalsAsync(Job job)
-{
-    if (job.JobDetails == null) throw new InvalidDataException("Job details are empty");
-
-    List<int> professionalTypeIds = job.JobDetails.SelectedProfessionals
-        .Select(selectedProfessional =>
-            (ProfessionalType.ProfessionalTypeEnum)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum), selectedProfessional))
-        .Select(id => (int)id)
-        .ToList();
-
-    if (professionalTypeIds.Count == 0) throw new InvalidDataException("No suitable professionals found");
-
-    var suitableProfessionals =
-        await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(professionalTypeIds);
-
-    // Score each professional asynchronously
-    var scoredProfessionals = await Task.WhenAll(
-        suitableProfessionals.Select(async professional => new ScoredProfessionalDto
-        {
-            Professional = professional,
-            Score = CalculateScore(professional, job)
-        }));
-
-    // Group, sort, and take top 5 in each group
-    List<List<ScoredProfessionalDto>> groupedProfessionals = scoredProfessionals
-        .GroupBy(sp => sp.Professional.ProfessionalTypeId)
-        .Select(group => group.OrderByDescending(sp => sp.Score).Take(5).ToList())
-        .ToList();
-
-    // Debug logging (optional)
-    foreach (var spL in groupedProfessionals)
     {
-        Console.WriteLine(
-            $"\nGroup: {(ProfessionalType.ProfessionalTypeEnum)spL.First().Professional.ProfessionalTypeId}");
-        foreach (var sp in spL)
+        if (job.JobDetails == null) throw new InvalidDataException("Job details are empty");
+
+        List<int> professionalTypeIds = job.JobDetails.SelectedProfessionals
+            .Select(selectedProfessional =>
+                (ProfessionalType.ProfessionalTypeEnum)Enum.Parse(typeof(ProfessionalType.ProfessionalTypeEnum), selectedProfessional))
+            .Select(id => (int)id)
+            .ToList();
+
+        if (professionalTypeIds.Count == 0) throw new InvalidDataException("No suitable professionals found");
+
+        var suitableProfessionals =
+            await _professionalRepository.GetProfessionalsByProfessionalTypeIdsAsync(professionalTypeIds);
+
+        // Score each professional asynchronously
+        var scoredProfessionals = await Task.WhenAll(
+            suitableProfessionals.Select(async professional => new ScoredProfessionalDto
+            {
+                Professional = professional,
+                Score = CalculateScore(professional, job)
+            }));
+
+        // Group, sort, and take top 5 in each group
+        List<List<ScoredProfessionalDto>> groupedProfessionals = scoredProfessionals
+            .GroupBy(sp => sp.Professional.ProfessionalTypeId)
+            .Select(group => group.OrderByDescending(sp => sp.Score).Take(5).ToList())
+            .ToList();
+
+        // Debug logging (optional)
+        foreach (var spL in groupedProfessionals)
         {
             Console.WriteLine(
-                $"  - {sp.Professional.Email} | Verified: {sp.Professional.VerificationStatus} | Score: {sp.Score}");
+                $"\nGroup: {(ProfessionalType.ProfessionalTypeEnum)spL.First().Professional.ProfessionalTypeId}");
+            foreach (var sp in spL)
+            {
+                Console.WriteLine(
+                    $"  - {sp.Professional.Email} | Verified: {sp.Professional.VerificationStatus} | Score: {sp.Score}");
+            }
         }
+
+        var gp = groupedProfessionals.SelectMany(sp => sp)
+            .Select(p => p.Professional)
+            .ToList();
+
+        foreach (var p in gp)
+        {
+            Console.WriteLine(
+                $"\nProfessionalType: {(ProfessionalType.ProfessionalTypeEnum)p.ProfessionalTypeId}");
+            Console.WriteLine(
+                $"  - {p.Email}");
+        }
+
+        return gp;
     }
-
-    var gp = groupedProfessionals.SelectMany(sp => sp)
-        .Select(p => p.Professional)
-        .ToList();
-
-    foreach (var p in gp)
-    {
-        Console.WriteLine(
-            $"\nProfessionalType: {(ProfessionalType.ProfessionalTypeEnum)p.ProfessionalTypeId}");
-        Console.WriteLine(
-            $"  - {p.Email}");
-    }
-
-    return gp;
-}
 
 
     //Get MatchingJobDto that has job id and selected professional id
@@ -81,22 +81,24 @@ public class MatchingService : IMatchingService
     {
         Job? tempJob = await _jobRepository.GetJobByIdAsync(matchingJobDto.JobId);
         JobProfessionalLink jobProfessionalLink = new JobProfessionalLink();
-        if (tempJob != null) {
+        if (tempJob != null)
+        {
             jobProfessionalLink.JobDetailId = tempJob.JobDetails.JobDetailId;
             jobProfessionalLink.ProfessionalId = matchingJobDto.ProfessionalId;
             jobProfessionalLink.AssignedDate = DateTime.UtcNow;
             jobProfessionalLink.SelectionDate = DateTime.UtcNow;
-            
+
             //Run db transaction to store the matches to JobProfessionalLink table
             await _jobRepository.MatchJobAsync(jobProfessionalLink);
-            
+
             //Update the JobDetail SuggestedProfessionals attribute to remove matched professional id
             tempJob.JobDetails.SuggestedProfessionalIds = Array.FindAll
             (tempJob.JobDetails.SuggestedProfessionalIds, val => val != matchingJobDto.ProfessionalId);
             await _jobRepository.UpdateJobAsync(tempJob);
             return true;
         }
-        else {
+        else
+        {
             return false;
         }
     }
@@ -107,17 +109,17 @@ public class MatchingService : IMatchingService
     private int CalculateScore(Professional professional, Job job)
     {
         var score = 0;
-        
+
         score += _locationService.CalculateMatchingScore(job, professional); // Calculate the location score
-        
+
         if (professional.VerificationStatus) score += 10; // Verified Professionals get +10 points
-        
+
         if (!string.IsNullOrEmpty(professional.ABN)) score += 5; // ABN non-empty match gets +5 points
-        
+
         // 15 points for each specialisation match
         if (!professional.Specialisations.IsNullOrEmpty() && !job.JobDetails.Specialisations.IsNullOrEmpty())
         {
-            
+
             var matchingSpecialisations =
                 job.JobDetails.Specialisations.Intersect(professional.Specialisations).Count();
             score += 15 * matchingSpecialisations;

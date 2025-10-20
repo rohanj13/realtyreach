@@ -29,8 +29,8 @@ import {
 import Sidebar from "../../SharedComponents/Sidebar";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import { UserContext } from "../../Context/userContext";
-import { getAvailableJobsForProfessional } from "../../services/JobService";
-import { Job } from "../../Models/Job";
+import { getFinalisedJobsForProfessional } from "../../services/JobService";
+import { FinalisedJob } from "../../Models/FinalisedJob";
 import { ProfessionalProfile, ProfessionalTypeEnumMapping } from "../../Models/User";
 import { useNavigate } from "react-router-dom";
 import { backendApi } from "../../api/backendApi";
@@ -56,7 +56,7 @@ const ProfessionalDashboard: React.FC = () => {
   
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
+  const [finalisedJobs, setFinalisedJobs] = useState<FinalisedJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [professionalData, setProfessionalData] = useState<ProfessionalData | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -87,20 +87,15 @@ const ProfessionalDashboard: React.FC = () => {
   }, []);
   
   useEffect(() => {
-    const fetchAvailableJobs = async () => {
-      if (user?.Id) {
-        try {
-          const jobs = await getAvailableJobsForProfessional(user.Id);
-          setAvailableJobs(jobs);
-        } catch (error) {
-          console.error("Error fetching available jobs:", error);
-        } finally {
-          setIsLoading(false);
-        }
+    const fetchFinalisedJobs = async () => {
+      try {
+        const jobs = await getFinalisedJobsForProfessional();
+        setFinalisedJobs(jobs);
+      } catch (error) {
+        console.error("Error fetching finalised jobs:", error);
       }
     };
-    
-    fetchAvailableJobs();
+    fetchFinalisedJobs();
   }, [user]);
   
   const toggleMobileSidebar = () => {
@@ -109,27 +104,21 @@ const ProfessionalDashboard: React.FC = () => {
 
   const metrics = [
     { 
-      title: "Available Jobs", 
-      value: availableJobs.length, 
-      icon: <ArticleIcon fontSize="large" color="primary" />,
-      bgColor: theme.palette.primary.light
+      title: "High Quality Leads", 
+      value: finalisedJobs.length, 
+      icon: <CheckCircleIcon fontSize="large" sx={{ color: theme.palette.success.main }} />, 
+      bgColor: theme.palette.success.light
     },
     { 
       title: "Active Responses", 
       value: 0, 
-      icon: <BuildIcon fontSize="large" color="secondary" />,
+      icon: <BuildIcon fontSize="large" color="secondary" />, 
       bgColor: theme.palette.secondary.light
-    },
-    { 
-      title: "Completed Jobs", 
-      value: 0, 
-      icon: <CheckCircleIcon fontSize="large" sx={{ color: theme.palette.success.main }} />,
-      bgColor: theme.palette.success.light
     },
     { 
       title: "Response Rate", 
       value: "0%", 
-      icon: <TrendingUpIcon fontSize="large" sx={{ color: theme.palette.info.main }} />,
+      icon: <TrendingUpIcon fontSize="large" sx={{ color: theme.palette.info.main }} />, 
       bgColor: theme.palette.info.light
     }
   ];
@@ -265,35 +254,35 @@ const ProfessionalDashboard: React.FC = () => {
             ))}
           </Grid>
           
-          {/* Recent Available Jobs Preview */}
+          {/* High Quality Leads Preview */}
           <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-              Recent Available Jobs
+              High Quality Leads (Finalised Jobs)
             </Typography>
-            
-            {isLoading ? (
-              <Typography variant="body2">Loading available jobs...</Typography>
-            ) : availableJobs.length > 0 ? (
+            {finalisedJobs.length > 0 ? (
               <Grid container spacing={2}>
-                {availableJobs.slice(0, 3).map((job) => (
+                {finalisedJobs.slice(0, 3).map((job) => (
                   <Grid item xs={12} sm={6} md={4} key={job.jobId}>
                     <Card elevation={1} sx={{ height: '100%' }}>
-                      <CardActionArea 
-                        sx={{ height: '100%' }}
-                        onClick={() => {/* Navigate to job details */}}
-                      >
+                      <CardActionArea sx={{ height: '100%' }}>
                         <CardContent>
                           <Typography variant="h6" gutterBottom noWrap>
-                            {job.jobTitle}
+                            {job.title}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
                             Type: {job.jobType} • {job.propertyType}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Budget: ${job.budgetMin.toLocaleString()} - ${job.budgetMax.toLocaleString()}
+                            Region: {job.region} | State: {job.state}
                           </Typography>
                           <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Location: {job.regions}
+                            Specialisation: {job.specialisation}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            Customer: {job.customerEmail} | {job.customerPhone}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            Assigned: {new Date(job.assignedDate).toLocaleDateString()}
                           </Typography>
                         </CardContent>
                       </CardActionArea>
@@ -302,7 +291,7 @@ const ProfessionalDashboard: React.FC = () => {
                 ))}
               </Grid>
             ) : (
-              <Typography variant="body2">No available jobs found matching your profession.</Typography>
+              <Typography variant="body2">No high quality leads found yet.</Typography>
             )}
           </Paper>
         </Container>

@@ -10,18 +10,24 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using RealtyReachApi.Dtos;
 using RealtyReachApi.Repositories;
+using RealtyReachApi.Mappers;
 
 namespace RealtyReachApi.Services
 {
-    public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions options) : IProfJobService
+    public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions options, IJobMapper jobMapper) : IProfJobService
     {
         private readonly IJobRepository _jobRepository = jobRepository;
         private readonly JourneyProgressOptions _options = options;
-        
-        public async Task<List<JobDto>> GetApplicableJobsForProfessional(int professionalId)
+        private readonly IJobMapper _jobMapper = jobMapper;
+
+        public async Task<List<GetFinalisedJobDto>> GetFinalisedJobsForProfessionalAsync(Guid professionalId)
         {
-            //TODO: Retrieve from JobProfessionalLink table, to show matches
-            throw new NotImplementedException();
+            var links = await _jobRepository.GetFinalisedJobsForProfessionalAsync(professionalId);
+            var jobs = links
+                .Where(link => link.JobDetail?.Job != null)
+                .Select(link => _jobMapper.ToGetFinalisedJobDto(link))
+                .ToList();
+            return jobs;
         }
     }
 }
