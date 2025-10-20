@@ -5,11 +5,11 @@ export enum JobStatus {
 }
 
 export enum AustralianState {
-    NSW = 1,
+    NSW = 0,
     VIC,
     QLD,
-    SA,
     WA,
+    SA,
     TAS,
     NT,
     ACT
@@ -25,11 +25,11 @@ export enum AustralianState {
 //     Retirees = "Retirement Specialists"
 // }
 export enum Specialisation {
-    FirstHomeBuyers = 1,
-    Investors,
+    FirstHomeBuyers = 0,
     LuxuryHomes,
-    ForeignInvestors,
     RuralHomes,
+    Investors,
+    ForeignInvestors,
     Downsizers,
     Retirees
 }
