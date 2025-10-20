@@ -24,28 +24,6 @@ export const getAllJobsForCustomer = async (userId: string): Promise<Job[]> => {
   }
 };
 
-// GET: Fetch all available jobs for a professional
-export const getAvailableJobsForProfessional = async (professionalId: string): Promise<Job[]> => {
-  try {
-    const response = await backendApi.get<Job[]>(`/api/jobs/professional/${professionalId}/availablejobs`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching professional jobs:', error);
-    throw error;
-  }
-};
-
-// GET: Fetch jobs a professional has responded to
-export const getRespondedJobsForProfessional = async (professionalId: string): Promise<Job[]> => {
-  try {
-    const response = await backendApi.get<Job[]>(`/api/jobs/professional/${professionalId}/respondedjobs`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching responded jobs:', error);
-    throw error;
-  }
-};
-
 // GET: Fetch a job by its JobId
 export const getJobById = async (jobId: number): Promise<Job> => {
   try {

@@ -129,30 +129,113 @@ public enum JobStatus
 
 ## 2. Professional Discovery & Job Viewing
 
-### 2.1 Get Applicable Jobs for Professionals ⚠️ **Stub Only**
-**Status**: Endpoint exists but throws `NotImplementedException`
+## 2. Professional Discovery & Job Viewing
 
-**Evidence**:
+### 2.1 Get Applicable Jobs for Professionals 🟢 **PARTIALLY REFACTORED & REMOVED**
+**Status**: Available jobs feature scope removed; finalised jobs implementation refactored to use mapper pattern
+
+**Completed Refactoring** (October 20, 2025):
+- ✅ Removed `GetApplicableJobsForProfessional()` method from backend
+- ✅ Removed "available jobs" frontend service methods
+- ✅ Deleted `AvailableJobs.tsx` component
+- ✅ **Refactored finalised jobs to use mapper pattern** (DDD compliance)
+
+**Finalised Jobs Implementation** (Now Architecturally Sound):
+
+**Backend Service** (`ProfJobService.cs`):
 ```csharp
-// ProfJobService.cs
-public async Task<List<JobDto>> GetApplicableJobsForProfessional(int professionalId)
+public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions options, IJobMapper jobMapper) : IProfJobService
 {
-    //TODO: Retrieve from JobProfessionalLink table, to show matches
-    throw new NotImplementedException();
+    public async Task<List<GetFinalisedJobDto>> GetFinalisedJobsForProfessionalAsync(Guid professionalId)
+    {
+        var links = await _jobRepository.GetFinalisedJobsForProfessionalAsync(professionalId);
+        var jobs = links
+            .Where(link => link.JobDetail?.Job != null)
+            .Select(link => _jobMapper.ToGetFinalisedJobDto(link))  // ✅ Uses mapper
+            .ToList();
+        return jobs;
+    }
 }
 ```
 
+**Mapper Implementation** (`JobMapper.cs`):
+- ✅ Added `ToGetFinalisedJobDto(JobProfessionalLink)` method to `IJobMapper` interface
+- ✅ Implemented mapping logic encapsulating all DTO transformation
+- ✅ Handles null-safe property access with sensible defaults
+- ✅ Separates concerns: Service orchestrates, Mapper transforms
+
+**Architecture Benefits**:
+- ✅ **Single Responsibility**: Service focuses on business logic, mapper on transformation
+- ✅ **DDD Compliance**: Follows SOLID principles and mapper pattern used throughout codebase
+- ✅ **Testability**: Mapper can be unit tested independently
+- ✅ **Maintainability**: All DTO mapping logic centralized
+- ✅ **Consistency**: Aligns with `ToJobDto()`, `ToJobDetailDto()` patterns
+
+**Removed Artifacts**:
+- ❌ Backend: `ProfJobService.GetApplicableJobsForProfessional()` - **DELETED**
+- ❌ Backend: `IProfJobService` available jobs method - **DELETED**
+- ❌ Frontend: `JobService.getAvailableJobsForProfessional()` - **DELETED**
+- ❌ Frontend: `JobService.getRespondedJobsForProfessional()` - **DELETED**
+- ❌ Frontend: `AvailableJobs.tsx` component - **DELETED**
+- ❌ Frontend: `ProfessionalDashboard` available jobs references - **CLEANED UP**
+- ❌ Frontend: `RoutesConfig.tsx` available jobs route - **DELETED**
+
+**Working Implementation**:
+- ✅ `GetFinalisedJobsForProfessionalAsync()` - Refactored to use mapper
+- ✅ Endpoint: `GET /api/jobs/professional/finalised` - Fully functional
+- ✅ Backend builds successfully with no compilation errors
+- ✅ Professional dashboard displays finalised jobs only
+
+**Next Steps** (If Enhancement Needed):
+- Implement feature 2.2: Professional Response to Job Invitations (accept/decline workflow)
+- Add notification system for job assignments
+- Build response UI in professional dashboard
+
+---
+
+### 2.2 Professional Response to Job Invitations 🔴 **Not Started**
+**Status**: No implementation found
+
 **User Stories**:
-- ❌ As a professional, I want to see all jobs I'm matched to
-- ❌ As a professional, I want to filter jobs by status (pending response, accepted, etc.)
-- ❌ As a professional, I want to see jobs in my service area
+- ❌ As a professional, I want to accept a job match invitation
+- ❌ As a professional, I want to decline a job match with a reason
+- ❌ As a professional, I want to request more information before accepting
+- ❌ As a customer, I want to be notified when a professional accepts/declines
 
 **Implementation Needed**:
-1. Query `JobProfessionalLink` table for professional's matches
-2. Join with `JobDetail` and `Job` for complete data
-3. Filter by job status and professional's regions
-4. Order by match score or creation date
-5. Implement frontend `AvailableJobs.tsx` (currently commented out)
+1. Create `JobProfessionalResponse` entity (status: Pending, Accepted, Declined)
+2. Add `ResponseDate`, `ResponseMessage`, `DeclineReason` fields to `JobProfessionalLink`
+3. Create endpoints: `POST /api/jobs/professional/{jobId}/respond`
+4. Add notification service
+5. Build response UI in professional dashboard
+
+---
+
+### 2.3 Professional Availability Management 🔴 **Not Started**
+**Status**: No calendar or availability tracking
+
+**User Stories**:
+- ❌ As a professional, I want to mark myself as unavailable for certain dates
+- ❌ As a professional, I want to set my maximum concurrent jobs
+- ❌ As the system, I want to exclude unavailable professionals from matching
+- ❌ As a professional, I want to pause my profile temporarily
+
+**Implementation Needed**:
+1. Create `ProfessionalAvailability` entity
+2. Add `MaxConcurrentJobs`, `IsAcceptingJobs` to `Professional`
+3. Update matching algorithm to check availability
+4. Create availability management endpoints
+5. Build calendar UI for availability management
+
+---
+
+## 3. Communication & Messaging
+
+### 3.1 In-App Messaging System 🔴 **Not Started**
+**Status**: No messaging infrastructure
+
+**User Stories**:
+````
 
 ---
 
@@ -781,25 +864,30 @@ public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessio
 ## Summary Statistics
 
 ### By Status
-- 🔴 **Not Started**: 42 features
+- 🔴 **Not Started**: 41 features
 - 🟡 **Partially Implemented**: 10 features
-- ⚠️ **Stub Only**: 4 features
-- 🟢 **Implemented**: 9 core features (see PROJECT_CHARTER.md)
+- ⚠️ **Stub Only**: 3 features
+- 🟢 **Implemented**: 10 features (including 2.1 finalised jobs refactored)
+
+**Recent Updates** (October 20, 2025):
+- Feature 2.1 "Get Applicable Jobs" scope removed in favor of finalised jobs only
+- Finalised jobs implementation refactored to use mapper pattern (DDD compliance)
+- All available/applicable jobs references cleaned from codebase
+- Backend builds successfully with no errors
 
 ### By Priority (Suggested)
 
 **P0 - Critical (Security & Core Functionality)**:
 1. Production security hardening
 2. Update job endpoint activation
-3. Professional job discovery implementation
+3. Professional response to jobs (feature 2.2) - next priority
 4. Notification service implementation
 
 **P1 - High (User Experience)**:
 1. Job progression workflow
 2. Messaging system
-3. Professional response to jobs
-4. Rating and review system
-5. Email service integration
+3. Rating and review system
+4. Email service integration
 
 **P2 - Medium (Enhanced Features)**:
 1. Professional profile updates
@@ -822,7 +910,7 @@ public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessio
 ### Immediate Actions (Next Sprint)
 1. **Security**: Move secrets to environment variables/vault
 2. **Core Features**: Uncomment and test `UpdateJob` endpoint
-3. **Professional Experience**: Implement `GetApplicableJobsForProfessional()`
+3. **Professional Experience**: Build professional job response workflow (feature 2.2)
 4. **Testing**: Set up test projects and write first tests
 5. **Notifications**: Build basic notification service
 
@@ -849,8 +937,9 @@ public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessio
 
 ---
 
-**Document Version**: 1.1  
-**Last Updated**: October 13, 2025  
+**Document Version**: 1.2  
+**Last Updated**: October 20, 2025  
 **Change Log**: 
+- v1.2 (Oct 20, 2025): Feature 2.1 implementation status updated with mapper pattern refactoring
 - v1.1 (Oct 13, 2025): Marked Feature 4.5 (Professional Type Management) as complete
 - v1.0 (Oct 10, 2025): Initial document creation

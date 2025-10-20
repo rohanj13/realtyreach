@@ -142,5 +142,29 @@ namespace RealtyReachApi.Mappers
                     .Select(id => new ProfessionalType { ProfessionalTypeId = id }).ToList()
             };
         }
+
+        // JobProfessionalLink to GetFinalisedJobDto
+        public GetFinalisedJobDto ToGetFinalisedJobDto(JobProfessionalLink jobProfessionalLink)
+        {
+            return new GetFinalisedJobDto
+            {
+                JobId = jobProfessionalLink.JobDetail?.Job?.JobId ?? 0,
+                Title = jobProfessionalLink.JobDetail?.Job?.JobTitle ?? string.Empty,
+                JobType = jobProfessionalLink.JobDetail?.Job?.JobType ?? string.Empty,
+                Status = jobProfessionalLink.JobDetail?.Job?.Status.ToString() ?? string.Empty,
+                Region = jobProfessionalLink.JobDetail?.Regions?.FirstOrDefault() ?? string.Empty,
+                State = jobProfessionalLink.JobDetail?.States != null && jobProfessionalLink.JobDetail.States.Count > 0 
+                    ? jobProfessionalLink.JobDetail.States[0].ToString() 
+                    : string.Empty,
+                Specialisation = jobProfessionalLink.JobDetail?.Specialisations != null && jobProfessionalLink.JobDetail.Specialisations.Count > 0 
+                    ? jobProfessionalLink.JobDetail.Specialisations[0].ToString() 
+                    : string.Empty,
+                PurchaseType = jobProfessionalLink.JobDetail?.PurchaseType ?? string.Empty,
+                PropertyType = jobProfessionalLink.JobDetail?.PropertyType ?? string.Empty,
+                CustomerEmail = jobProfessionalLink.JobDetail?.ContactEmail ?? string.Empty,
+                CustomerPhone = jobProfessionalLink.JobDetail?.ContactPhone ?? string.Empty,
+                AssignedDate = jobProfessionalLink.AssignedDate
+            };
+        }
     }
 }

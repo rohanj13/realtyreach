@@ -29,8 +29,7 @@ import {
 import Sidebar from "../../SharedComponents/Sidebar";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import { UserContext } from "../../Context/userContext";
-import { getAvailableJobsForProfessional, getFinalisedJobsForProfessional } from "../../services/JobService";
-import { Job } from "../../Models/Job";
+import { getFinalisedJobsForProfessional } from "../../services/JobService";
 import { FinalisedJob } from "../../Models/FinalisedJob";
 import { ProfessionalProfile, ProfessionalTypeEnumMapping } from "../../Models/User";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +56,6 @@ const ProfessionalDashboard: React.FC = () => {
   
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [availableJobs, setAvailableJobs] = useState<Job[]>([]);
   const [finalisedJobs, setFinalisedJobs] = useState<FinalisedJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [professionalData, setProfessionalData] = useState<ProfessionalData | null>(null);
@@ -89,18 +87,6 @@ const ProfessionalDashboard: React.FC = () => {
   }, []);
   
   useEffect(() => {
-    // const fetchAvailableJobs = async () => {
-    //   if (user?.Id) {
-    //     try {
-    //       const jobs = await getAvailableJobsForProfessional(user.Id);
-    //       setAvailableJobs(jobs);
-    //     } catch (error) {
-    //       console.error("Error fetching available jobs:", error);
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   }
-    // };
     const fetchFinalisedJobs = async () => {
       try {
         const jobs = await getFinalisedJobsForProfessional();
@@ -109,7 +95,6 @@ const ProfessionalDashboard: React.FC = () => {
         console.error("Error fetching finalised jobs:", error);
       }
     };
-    //fetchAvailableJobs();
     fetchFinalisedJobs();
   }, [user]);
   
@@ -118,12 +103,6 @@ const ProfessionalDashboard: React.FC = () => {
   };
 
   const metrics = [
-    { 
-      title: "Available Jobs", 
-      value: availableJobs.length, 
-      icon: <ArticleIcon fontSize="large" color="primary" />, 
-      bgColor: theme.palette.primary.light
-    },
     { 
       title: "High Quality Leads", 
       value: finalisedJobs.length, 

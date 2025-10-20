@@ -10,4 +10,5 @@ public interface IJobMapper
     Job ToJobEntity(CreateJobDto createJobDto, Guid customerId);
     JobDetailDto ToJobDetailDto(JobDetail jobDetail);
     JobDetail ToJobDetailEntity(JobDetailDto jobDetailDto);
+    GetFinalisedJobDto ToGetFinalisedJobDto(JobProfessionalLink jobProfessionalLink);
 }
