@@ -1,4 +1,9 @@
 import { FinalisedJob } from "../Models/FinalisedJob";
+import backendApi from "@/axiosConfig";
+import { CreateJobDto, Job, UpdateJobDto, MatchingJobDto } from "../Models/Job";
+import { JobMatches } from "../Models/Job";
+
+
 // GET: Fetch finalised jobs for a professional (high quality leads)
 export const getFinalisedJobsForProfessional = async (): Promise<FinalisedJob[]> => {
   try {
@@ -9,14 +14,11 @@ export const getFinalisedJobsForProfessional = async (): Promise<FinalisedJob[]>
     throw error;
   }
 };
-import backendApi from "@/axiosConfig";
-import { CreateJobDto, Job, UpdateJobDto, MatchingJobDto } from "../Models/Job";
-import { MatchedProfessional, ProfessionalProfile } from "../Models/Professional";
 
 // GET: Fetch all jobs for a customer by userId
 export const getAllJobsForCustomer = async (userId: string): Promise<Job[]> => {
   try {
-    const response = await backendApi.get<Job[]>(`/api/jobs/customer/user/${userId}`);
+    const response = await backendApi.get<Job[]>(`/api/jobs/customer/${userId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching customer jobs:', error);
@@ -66,27 +68,10 @@ export const deleteJob = async (jobId: number): Promise<void> => {
   }
 };
 
-// POST: Professional response to a job
-export interface JobResponseDto {
-  jobId: number;
-  professionalId: number;
-  message: string;
-  price?: number;
-}
-
-export const respondToJob = async (responseData: JobResponseDto): Promise<void> => {
-  try {
-    await backendApi.post(`/api/jobs/professional/respond`, responseData);
-  } catch (error) {
-    console.error('Error responding to job:', error);
-    throw error;
-  }
-};
-
 // GET: Get matched professionals for a job
-export const getMatchedProfessionals = async (jobId: number): Promise<MatchedProfessional[]> => {
+export const getMatchedProfessionals = async (jobId: number): Promise<JobMatches> => {
   try {
-    const response = await backendApi.get<MatchedProfessional[]>(`/api/jobs/customer/${jobId}/matches`);
+    const response = await backendApi.get<JobMatches>(`/api/jobs/customer/${jobId}/matches`);
     return response.data;
   } catch (error) {
     console.error('Error fetching matched professionals:', error);
@@ -95,15 +80,15 @@ export const getMatchedProfessionals = async (jobId: number): Promise<MatchedPro
 };
 
 // GET: Get professional profile
-export const getProfessionalProfile = async (professionalId: string): Promise<ProfessionalProfile> => {
-  try {
-    const response = await backendApi.get<ProfessionalProfile>(`/api/professional/${professionalId}/profile`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching professional profile:', error);
-    throw error;
-  }
-};
+// export const getProfessionalProfile = async (professionalId: string): Promise<ProfessionalProfile> => {
+//   try {
+//     const response = await backendApi.get<ProfessionalProfile>(`/api/professional/${professionalId}/profile`);
+//     return response.data;
+//   } catch (error) {
+//     console.error('Error fetching professional profile:', error);
+//     throw error;
+//   }
+// };
 
 // POST: Finalize match between customer and professional
 export const finalizeMatch = async (matchingData: MatchingJobDto): Promise<void> => {

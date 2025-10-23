@@ -28,7 +28,7 @@ namespace RealtyReachApi.Controllers
         }
 
         // GET: api/jobs/customer/{jobId}/matches
-        [HttpGet("job/{jobId:int}/matches")]
+        [HttpGet("{jobId:int}/matches")]
         public async Task<ActionResult<JobMatchesDto>> GetJobMatches(int jobId)
         {
             var jobMatches = await _customerJobService.GetJobMatchesAsync(jobId);
@@ -39,8 +39,8 @@ namespace RealtyReachApi.Controllers
             return Ok(jobMatches);
         }
 
-        // GET: api/jobs/user/{userId}
-        [HttpGet("user/{userId:guid}")]
+        // GET: api/jobs/customer/{userId}
+        [HttpGet("{userId:guid}")]
         public async Task<ActionResult<List<JobDto>>> GetAllJobsForCustomer(string userId)
         {
             var jobs = await _customerJobService.GetAllJobsForCustomerAsync(new Guid(userId));
@@ -53,8 +53,8 @@ namespace RealtyReachApi.Controllers
             return NotFound();
         }
 
-        // GET: api/Jobs/{JobId}
-        [HttpGet("job/{jobId:int}")]
+        // GET: api/jobs/customer/{JobId}
+        [HttpGet("{jobId:int}")]
         public async Task<ActionResult<JobDto>> GetJobById(int jobId)
         {
             var job = await _customerJobService.GetJobByIdAsync(jobId);
@@ -74,7 +74,7 @@ namespace RealtyReachApi.Controllers
             return Ok();
         }
 
-        [HttpPost("job/finalise")]
+        [HttpPost("finalise")]
         public async Task<ActionResult<MatchingJobDto>> FinalizeMatch(MatchingJobDto matchingJobDto)
         {
             var jobDto = await _matchingService.FinalizeMatchAsync(matchingJobDto);
@@ -82,7 +82,7 @@ namespace RealtyReachApi.Controllers
         }
 
         // PUT: api/Jobs/{JobId}
-        [HttpPut("job/{JobId:int}")]
+        [HttpPut("{JobId:int}")]
         /* public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
             {
                 var success = await _customerJobService.UpdateJob(updateJobDto);
@@ -95,7 +95,7 @@ namespace RealtyReachApi.Controllers
             }
             */
         // DELETE: api/Jobs/{JobId}
-        [HttpDelete("job/{JobId:int}")]
+        [HttpDelete("{JobId:int}")]
         public async Task<IActionResult> DeleteJob(int JobId)
         {
             var success = await _customerJobService.DeleteJob(JobId);

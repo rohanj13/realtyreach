@@ -105,6 +105,7 @@ namespace RealtyReachApi.Services
                     await _matchingService.IdentifySuitableProfessionalsAsync(job);
                 if (professionals.Any())
                 {
+                    job.JobDetails!.SuggestedProfessionalIds = professionals.Select(p => p.Id).ToArray();
                     await _jobRepository.CreateJobAsync(job);
                 }
                 else

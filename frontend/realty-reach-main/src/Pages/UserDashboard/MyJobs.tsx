@@ -34,6 +34,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import Sidebar from '../../SharedComponents/Sidebar';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
 import { AustralianState, Job } from '../../Models/Job';
@@ -141,8 +142,7 @@ const MyJobs: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  // Remove job view dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -177,9 +177,9 @@ const MyJobs: React.FC = () => {
     setPage(0);
   };
   
+  const navigate = useNavigate();
   const handleViewJob = (job: Job) => {
-    setSelectedJob(job);
-    setViewDialogOpen(true);
+    navigate(`/job/${job.jobId}/matches`);
   };
   
   const handleDeleteClick = (jobId: string) => {
@@ -370,12 +370,7 @@ const MyJobs: React.FC = () => {
         </Box>
       </Box>
       
-      {/* View Job Dialog */}
-      <JobViewDialog
-        open={viewDialogOpen}
-        job={selectedJob}
-        onClose={() => setViewDialogOpen(false)}
-      />
+      {/* View Job Dialog removed, navigation now handled by handleViewJob */}
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
