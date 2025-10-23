@@ -27,8 +27,20 @@ namespace RealtyReachApi.Controllers
             _matchingService = matchingService;
         }
 
+        // GET: api/jobs/customer/{jobId}/matches
+        [HttpGet("job/{jobId:int}/matches")]
+        public async Task<ActionResult<JobMatchesDto>> GetJobMatches(int jobId)
+        {
+            var jobMatches = await _customerJobService.GetJobMatchesAsync(jobId);
+            if (jobMatches == null)
+            {
+                return NotFound();
+            }
+            return Ok(jobMatches);
+        }
+
         // GET: api/jobs/user/{userId}
-        [HttpGet("user/{userId}")]
+        [HttpGet("user/{userId:guid}")]
         public async Task<ActionResult<List<JobDto>>> GetAllJobsForCustomer(string userId)
         {
             var jobs = await _customerJobService.GetAllJobsForCustomerAsync(new Guid(userId));
@@ -42,7 +54,7 @@ namespace RealtyReachApi.Controllers
         }
 
         // GET: api/Jobs/{JobId}
-        [HttpGet("{jobId}")]
+        [HttpGet("job/{jobId:int}")]
         public async Task<ActionResult<JobDto>> GetJobById(int jobId)
         {
             var job = await _customerJobService.GetJobByIdAsync(jobId);
@@ -62,7 +74,7 @@ namespace RealtyReachApi.Controllers
             return Ok();
         }
 
-        [HttpPost("finalise")]
+        [HttpPost("job/finalise")]
         public async Task<ActionResult<MatchingJobDto>> FinalizeMatch(MatchingJobDto matchingJobDto)
         {
             var jobDto = await _matchingService.FinalizeMatchAsync(matchingJobDto);
@@ -70,34 +82,20 @@ namespace RealtyReachApi.Controllers
         }
 
         // PUT: api/Jobs/{JobId}
-        [HttpPut("{JobId}")]
+        [HttpPut("job/{JobId:int}")]
         /* public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
-        {
-            var success = await _customerJobService.UpdateJob(updateJobDto);
-            if (!success)
             {
-                return NotFound();
+                var success = await _customerJobService.UpdateJob(updateJobDto);
+                if (!success)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
             }
-
-            return NoContent();
-        }
-        */
-
-        // // PUT: api/Jobs/{JobId}/NextStage
-        // [HttpPut("{JobId}/nextstage")]
-        // public async Task<IActionResult> ProgressJob(int JobId, UpdateJobDto updateJobDto, string newJourneyProgress)
-        // {
-        //     var success = await _userJobService.ProgressJob(JobId, updateJobDto, newJourneyProgress);
-        //     if (!success)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     return NoContent();
-        // }
-
+            */
         // DELETE: api/Jobs/{JobId}
-        [HttpDelete("{JobId}")]
+        [HttpDelete("job/{JobId:int}")]
         public async Task<IActionResult> DeleteJob(int JobId)
         {
             var success = await _customerJobService.DeleteJob(JobId);

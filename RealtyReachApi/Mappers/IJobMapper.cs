@@ -11,4 +11,8 @@ public interface IJobMapper
     JobDetailDto ToJobDetailDto(JobDetail jobDetail);
     JobDetail ToJobDetailEntity(JobDetailDto jobDetailDto);
     GetFinalisedJobDto ToGetFinalisedJobDto(JobProfessionalLink jobProfessionalLink);
+    // Map Job -> JobInfoDto (lightweight job summary for dashboards)
+    JobInfoDto ToJobInfoDto(Job job);
+    // Map JobInfoDto -> Job entity (requires customerId for ownership)
+    Job ToJobEntity(JobInfoDto jobInfoDto, Guid customerId);
 }
