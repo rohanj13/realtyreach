@@ -101,10 +101,26 @@ namespace RealtyReachApi.Services
             }
         }
 
-        public async Task<bool> UpdateJob(JobDto updateJobDto)
+        public async Task<bool> UpdateJob(UpdateJobDto updateJobDto)
         {
-            Job job = _jobMapper.ToJobEntity(updateJobDto);
-            return await _jobRepository.UpdateJobAsync(job);
+            // Validate input
+            if (updateJobDto == null || updateJobDto.JobId <= 0)
+            {
+                return false;
+            }
+
+            // Retrieve existing job
+            var existingJob = await _jobRepository.GetJobByIdAsync(updateJobDto.JobId);
+            if (existingJob == null)
+            {
+                return false;
+            }
+
+            // Apply partial updates using mapper
+            _jobMapper.ApplyUpdateToEntity(updateJobDto, existingJob);
+
+            // Save updated job
+            return await _jobRepository.UpdateJobAsync(existingJob);
         }
 
         public async Task<bool> DeleteJob(int jobId)

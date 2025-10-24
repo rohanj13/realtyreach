@@ -37,6 +37,7 @@ import Sidebar from '../../SharedComponents/Sidebar';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
 import { AustralianState, Job } from '../../Models/Job';
+import EditJobForm from '../../Components/EditJobForm';
 
 interface JobViewDialogProps {
   open: boolean;
@@ -143,6 +144,8 @@ const MyJobs: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [jobToEdit, setJobToEdit] = useState<Job | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -180,6 +183,25 @@ const MyJobs: React.FC = () => {
   const handleViewJob = (job: Job) => {
     setSelectedJob(job);
     setViewDialogOpen(true);
+  };
+  
+  const handleEditJob = (job: Job) => {
+    setJobToEdit(job);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditDialogOpen(false);
+    setJobToEdit(null);
+  };
+
+  const handleEditSuccess = () => {
+    // Refresh the jobs list
+    if (user?.Id) {
+      getAllJobsForCustomer(user.Id).then((fetchedJobs) => {
+        setJobs(fetchedJobs);
+      });
+    }
   };
   
   const handleDeleteClick = (jobId: string) => {
@@ -336,8 +358,8 @@ const MyJobs: React.FC = () => {
                                 </IconButton>
                                 <IconButton
                                   size="small"
+                                  onClick={() => handleEditJob(job)}
                                   title="Edit Job"
-                                  disabled
                                 >
                                   <EditIcon fontSize="small" />
                                 </IconButton>
@@ -376,6 +398,24 @@ const MyJobs: React.FC = () => {
         job={selectedJob}
         onClose={() => setViewDialogOpen(false)}
       />
+
+      {/* Edit Job Dialog */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleEditClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent>
+          {jobToEdit && (
+            <EditJobForm
+              job={jobToEdit}
+              onClose={handleEditClose}
+              onSuccess={handleEditSuccess}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

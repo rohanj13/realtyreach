@@ -166,5 +166,60 @@ namespace RealtyReachApi.Mappers
                 AssignedDate = jobProfessionalLink.AssignedDate
             };
         }
+
+        /// <summary>
+        /// Applies partial updates from UpdateJobDto to Job entity.
+        /// Only updates fields that are non-null in the DTO.
+        /// Follows SOLID principles: Single Responsibility (mapping only), Open/Closed (extensible).
+        /// </summary>
+        public void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job)
+        {
+            if (updateDto == null || job == null)
+                return;
+
+            // Update Job-level properties if provided
+            if (!string.IsNullOrEmpty(updateDto.JobTitle))
+                job.JobTitle = updateDto.JobTitle;
+
+            if (!string.IsNullOrEmpty(updateDto.JobType))
+                job.JobType = updateDto.JobType;
+
+            if (!string.IsNullOrEmpty(updateDto.AdditionalDetails))
+                job.AdditionalDetails = updateDto.AdditionalDetails;
+
+            // Update timestamp for audit trail
+            job.UpdatedAt = DateTime.UtcNow;
+
+            // Update JobDetail properties if provided (JobDetail should always exist)
+            if (job.JobDetails != null)
+            {
+                if (updateDto.Regions != null)
+                    job.JobDetails.Regions = updateDto.Regions;
+
+                if (updateDto.States != null)
+                    job.JobDetails.States = updateDto.States;
+
+                if (updateDto.Specialisations != null)
+                    job.JobDetails.Specialisations = updateDto.Specialisations;
+
+                if (!string.IsNullOrEmpty(updateDto.PurchaseType))
+                    job.JobDetails.PurchaseType = updateDto.PurchaseType;
+
+                if (!string.IsNullOrEmpty(updateDto.PropertyType))
+                    job.JobDetails.PropertyType = updateDto.PropertyType;
+
+                if (updateDto.BudgetMin.HasValue)
+                    job.JobDetails.BudgetMin = updateDto.BudgetMin.Value;
+
+                if (updateDto.BudgetMax.HasValue)
+                    job.JobDetails.BudgetMax = updateDto.BudgetMax.Value;
+
+                if (!string.IsNullOrEmpty(updateDto.ContactEmail))
+                    job.JobDetails.ContactEmail = updateDto.ContactEmail;
+
+                if (!string.IsNullOrEmpty(updateDto.ContactPhone))
+                    job.JobDetails.ContactPhone = updateDto.ContactPhone;
+            }
+        }
     }
 }

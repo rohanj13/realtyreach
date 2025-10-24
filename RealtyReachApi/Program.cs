@@ -116,8 +116,8 @@ if (app.Environment.IsDevelopment())
     {
         var services = scope.ServiceProvider;
         var dbContext = services.GetRequiredService<SharedDbContext>();
-        SuburbSeeder.SeedDatabase(dbContext);
         dbContext.Database.Migrate();
+        SuburbSeeder.SeedDatabase(dbContext);
     }
     app.UseSwagger().UseAuthentication().UseAuthorization();
     app.UseSwaggerUI().UseAuthentication().UseAuthorization();
