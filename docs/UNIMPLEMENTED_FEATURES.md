@@ -474,26 +474,70 @@ public async Task UpdateProfessionalAsync(Guid id, Professional updatedProfessio
 ---
 
 ### 4.3 Professional Verification Workflow 🟡 **Partially Implemented**
-**Status**: `VerificationStatus` field exists but no workflow
+**Status**: `VerificationStatus` field exists but no workflow or admin controls
 
 **Current State**:
-- `Professional.VerificationStatus` is a boolean
-- No admin verification process
-- No document upload for verification
-- No verification history
+- `Professional.VerificationStatus` is a boolean field (default: `false`)
+- ✅ Field exists in database and is used by matching algorithm (+10 points if verified)
+- ❌ **Professionals CANNOT self-verify** (by design - `UpdateProfessionalDto` excludes this field)
+- ❌ No admin verification process or endpoint
+- ❌ No ABN validation against external sources
+- ❌ No document upload for verification
+- ❌ No verification history or audit trail
+
+**Architecture Note**:
+The current implementation correctly prevents professionals from setting their own verification status. Verification should be:
+1. **Admin-controlled** - Only admins should mark professionals as verified
+2. **ABN-validated** - Should integrate with Australian Business Register (ABR) API
+3. **Document-based** - Should require license/insurance document uploads
+4. **Workflow-driven** - Should follow Pending → Under Review → Verified/Rejected states
 
 **User Stories**:
 - ❌ As a professional, I want to upload verification documents (license, insurance)
+- ❌ As a professional, I want to submit my ABN for automatic verification
 - ❌ As an admin, I want to review and approve professional verifications
+- ❌ As an admin, I want to verify ABN against Australian Business Register (ABR)
 - ❌ As a customer, I want to see what documents are verified
 - ❌ As a professional, I want to know my verification status and pending items
+- ❌ As an admin, I want to manually verify professionals via admin endpoint
 
 **Implementation Needed**:
-1. Expand verification to enum (Pending, Verified, Rejected, Expired)
-2. Create `VerificationDocument` entity
-3. Build document upload endpoints
-4. Create admin verification dashboard
-5. Add expiry tracking and renewal reminders
+1. **ABN Verification Integration** ⚠️ **CRITICAL**:
+   - Integrate with [Australian Business Register (ABR) API](https://abr.business.gov.au/)
+   - Validate ABN format and existence
+   - Verify ABN is active and not cancelled
+   - Match professional name to ABN entity name
+   - Automated verification on profile creation/update
+   
+2. **Admin Verification Endpoint**:
+   - `PUT /api/admin/professionals/{id}/verify` (admin-only)
+   - `POST /api/admin/professionals/{id}/reject` with rejection reason
+   - Add verification notes/comments
+   
+3. **Verification Workflow**:
+   - Expand verification to enum (Pending, UnderReview, Verified, Rejected, Expired)
+   - Create `VerificationDocument` entity (license scans, insurance certificates)
+   - Add document upload endpoints with file validation
+   - Create verification history tracking
+   
+4. **Admin Dashboard**:
+   - Build admin verification queue UI
+   - Show pending verifications with professional details
+   - Display uploaded documents for review
+   - Add ABN verification status indicator
+   
+5. **Expiry & Renewal**:
+   - Add `VerificationExpiryDate` field
+   - Implement automated expiry checks
+   - Send renewal reminder notifications
+   - Auto-downgrade expired verifications to Pending
+
+**External Integration Requirements**:
+- **ABR Web Services**: Register for ABR GUID at https://abr.business.gov.au/
+- **API Endpoint**: `https://abr.business.gov.au/abrxmlsearch/ABRXMLSearch.asmx`
+- **Verification Data**: Entity name, ABN status, GST registration, business location
+- **Rate Limits**: Free tier available, monitor usage
+- **Fallback**: Manual admin verification if API unavailable
 
 ---
 
