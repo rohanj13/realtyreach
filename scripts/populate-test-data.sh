@@ -238,27 +238,31 @@ create_sample_jobs() {
     local count=$2
     
     # Define job templates with all required fields
-    # Format: Title:JobType:JourneyProgress:Professionals:PropertyType:StatesNumeric:SpecialisationsNumeric
+    # Format: Title:JobType:JourneyProgress:Professionals:PropertyType:Regions:StatesNumeric:SpecialisationsNumeric
     # Professional Types: Advocate, Broker, Conveyancer, BuildAndPest
     # States: NSW=0, VIC=1, QLD=2, WA=3, SA=4, TAS=5, NT=6, ACT=7
     # Specialisations: FirstHomeBuyers=0, LuxuryHomes=1, RuralHomes=2, Investors=3, ForeignInvestors=4, Downsizers=5, Retirees=6
+    # Regions: Use actual region names from Suburbs table for proper matching (+80 points for region-to-region match)
     declare -a job_templates=(
-        "Buy with Advocate:Buy:Just Started:Advocate:Residential:1,2:0,3"
-        "Buy with Broker:Buy:Pre-Approval:Broker:Residential:1,2:0"
-        "Sell with Advocate and Conveyancer:Sell:Just Started:Advocate,Conveyancer:Residential:1:0,3"
-        "Investment Property:Buy:Post Purchase:Advocate,BuildAndPest:Investment:1,2,3:0,3"
-        "Premium Purchase:Buy:Pre-Approval:Advocate,Broker:Residential:1,2:1,3"
+        "Buy with Advocate:Buy:Just Started:Advocate:Residential:Melbourne - Inner,Melbourne - Inner East:1:0,3"
+        "Buy with Broker:Buy:Pre-Approval:Broker:Residential:Sydney - City and Inner South,Sydney - Eastern Suburbs:0:0"
+        "Sell with Advocate and Conveyancer:Sell:Just Started:Advocate,Conveyancer:Residential:Brisbane Inner City,Brisbane - North:2:0,3"
+        "Investment Property:Buy:Post Purchase:Advocate,BuildAndPest:Investment:Melbourne - North West,Melbourne - West:1:0,3"
+        "Premium Purchase:Buy:Pre-Approval:Advocate,Broker:Residential:Sydney - Northern Beaches,Sydney - North Sydney and Hornsby:0:1,3"
     )
     
     for i in $(seq 1 $count); do
         local template_index=$(( (i - 1) % ${#job_templates[@]} ))
         local template="${job_templates[$template_index]}"
         
-        # Parse template
-        IFS=':' read -r title job_type journey_progress professionals property_type states_numeric specialisations_numeric <<< "$template"
+        # Parse template - now includes regions field
+        IFS=':' read -r title job_type journey_progress professionals property_type regions states_numeric specialisations_numeric <<< "$template"
         
         # Convert professional names to JSON array
         local prof_array=$(echo "$professionals" | sed 's/,/","/g' | sed 's/^/["/;s/$/"]/g')
+        
+        # Convert regions to JSON array (e.g., "Melbourne - Inner,Sydney - City" becomes ["Melbourne - Inner","Sydney - City"])
+        local regions_array=$(echo "$regions" | sed 's/,/","/g' | sed 's/^/["/;s/$/"]/g')
         
         # Convert state numbers to JSON array (e.g., "1,2" becomes "[1,2]")
         local states_array="[$states_numeric]"
@@ -276,7 +280,7 @@ create_sample_jobs() {
                 \"propertyType\":\"$property_type\",
                 \"journeyProgress\":\"$journey_progress\",
                 \"selectedProfessionals\":$prof_array,
-                \"regions\":[\"Melbourne\",\"Sydney\",\"Brisbane\"],
+                \"regions\":$regions_array,
                 \"states\":$states_array,
                 \"specialisations\":$specs_array,
                 \"budgetMin\":500000,
@@ -306,17 +310,19 @@ update_professional() {
     
     # States: NSW=0, VIC=1, QLD=2, WA=3, SA=4, TAS=5, NT=6, ACT=7
     # Specialisations: FirstHomeBuyers=0, LuxuryHomes=1, RuralHomes=2, Investors=3, ForeignInvestors=4, Downsizers=5, Retirees=6
+    # Regions: Use actual region names from Suburbs table for proper matching (+80 points for region match)
+    # NOTE: verificationStatus is NOT included - professionals cannot self-verify (admin-only via future endpoint)
     local prof_response=$(curl -s -w "\n%{http_code}" -X PUT "$REALTY_REACH_API_URL/api/professional" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $token" \
         -d "{
             \"firstName\":\"$first_name\",
             \"lastName\":\"$last_name\",
-            \"abn\":\"ABN-${first_name:0:3}${RANDOM}\",
             \"professionalType\":\"$prof_type\",
-            \"regions\":[\"Melbourne\",\"Sydney\",\"Brisbane\"],
+            \"regions\":[\"Melbourne - Inner\",\"Sydney - City and Inner South\",\"Brisbane Inner City\"],
             \"states\":[1,0,2],
-            \"specialisations\":[0,3,1],
+            \"specialisations\":[0,3],
+            \"abn\":\"12345678901\",
             \"firstLogin\":false
         }" 2>/dev/null)
     
