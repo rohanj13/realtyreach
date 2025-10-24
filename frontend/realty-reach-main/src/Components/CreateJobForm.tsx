@@ -10,7 +10,6 @@ import {
   RadioGroup,
   Radio,
   FormControlLabel,
-  Typography,
   Stepper,
   Step,
   StepLabel,
@@ -32,6 +31,7 @@ import { AustralianState, CreateJobDto, Specialisation } from '../Models/Job';
 import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '../Models/User';
 import { UserContext} from '../Context/userContext';
 import { LocationService, Region, State } from '../services/LocationService';
+import { PROPERTY_TYPES, PURCHASE_TYPES } from '../Constants/JobConstants';
 
 interface FormData {
   jobType: "Buy" | "Sell";
@@ -390,9 +390,11 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
                 size="small"
               >
                 <MenuItem value="" disabled>Select purchase type</MenuItem>
-                <MenuItem value="firstHome">First Home</MenuItem>
-                <MenuItem value="investment">Investment Property</MenuItem>
-                <MenuItem value="upgrade">Upgrade/Downsize</MenuItem>
+                {PURCHASE_TYPES.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </Select>
               {errors.purchaseType && <FormHelperText>{errors.purchaseType}</FormHelperText>}
             </FormControl>
@@ -413,11 +415,11 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
                 size="small"
               >
                 <MenuItem value="" disabled>Select property type</MenuItem>
-                <MenuItem value="house">House</MenuItem>
-                <MenuItem value="apartment">Apartment</MenuItem>
-                <MenuItem value="townhouse">Townhouse</MenuItem>
-                <MenuItem value="land">Land</MenuItem>
-                <MenuItem value="blockOfUnits">Block of Units</MenuItem>
+                {PROPERTY_TYPES.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </Select>
               {errors.propertyType && <FormHelperText>{errors.propertyType}</FormHelperText>}
             </FormControl>

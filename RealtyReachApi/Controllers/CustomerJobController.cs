@@ -69,10 +69,16 @@ namespace RealtyReachApi.Controllers
             return Ok(jobDto);
         }
 
-        // PUT: api/Jobs/{JobId}
-        [HttpPut("{JobId}")]
-        /* public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
+        // PUT: api/jobs/customer/{jobId}
+        [HttpPut("{jobId}")]
+        public async Task<IActionResult> UpdateJob(int jobId, [FromBody] UpdateJobDto updateJobDto)
         {
+            // Ensure the job ID in the route matches the DTO
+            if (jobId != updateJobDto.JobId)
+            {
+                return BadRequest("Job ID mismatch between route and request body");
+            }
+
             var success = await _customerJobService.UpdateJob(updateJobDto);
             if (!success)
             {
@@ -81,7 +87,6 @@ namespace RealtyReachApi.Controllers
 
             return NoContent();
         }
-        */
 
         // // PUT: api/Jobs/{JobId}/NextStage
         // [HttpPut("{JobId}/nextstage")]
