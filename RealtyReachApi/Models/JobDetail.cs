@@ -28,7 +28,7 @@ public class JobDetail
 
     public required string[] SelectedProfessionals { get; set; }
 
-    public Guid[]? SuggestedProfessionalIds { get; set; }
+    public Guid[] SuggestedProfessionalIds { get; set; }
 
     [Required] public int BudgetMin { get; set; }
 
