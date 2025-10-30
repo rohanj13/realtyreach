@@ -153,11 +153,11 @@ namespace RealtyReachApi.Mappers
                 JobType = jobProfessionalLink.JobDetail?.Job?.JobType ?? string.Empty,
                 Status = jobProfessionalLink.JobDetail?.Job?.Status.ToString() ?? string.Empty,
                 Region = jobProfessionalLink.JobDetail?.Regions?.FirstOrDefault() ?? string.Empty,
-                State = jobProfessionalLink.JobDetail?.States != null && jobProfessionalLink.JobDetail.States.Count > 0 
-                    ? jobProfessionalLink.JobDetail.States[0].ToString() 
+                State = jobProfessionalLink.JobDetail?.States != null && jobProfessionalLink.JobDetail.States.Count > 0
+                    ? jobProfessionalLink.JobDetail.States[0].ToString()
                     : string.Empty,
-                Specialisation = jobProfessionalLink.JobDetail?.Specialisations != null && jobProfessionalLink.JobDetail.Specialisations.Count > 0 
-                    ? jobProfessionalLink.JobDetail.Specialisations[0].ToString() 
+                Specialisation = jobProfessionalLink.JobDetail?.Specialisations != null && jobProfessionalLink.JobDetail.Specialisations.Count > 0
+                    ? jobProfessionalLink.JobDetail.Specialisations[0].ToString()
                     : string.Empty,
                 PurchaseType = jobProfessionalLink.JobDetail?.PurchaseType ?? string.Empty,
                 PropertyType = jobProfessionalLink.JobDetail?.PropertyType ?? string.Empty,
@@ -220,6 +220,64 @@ namespace RealtyReachApi.Mappers
                 if (!string.IsNullOrEmpty(updateDto.ContactPhone))
                     job.JobDetails.ContactPhone = updateDto.ContactPhone;
             }
+        }
+
+        // Job -> JobInfoDto (lightweight summary used in listings)
+        public JobInfoDto ToJobInfoDto(Job job)
+        {
+            if (job == null) return null!; // caller should guard, but keep for safety
+
+            return new JobInfoDto
+            {
+                JobId = job.JobId,
+                JobType = job.JobType,
+                JobTitle = job.JobTitle,
+                Regions = job.JobDetails?.Regions,
+                States = job.JobDetails?.States,
+                Specialisations = job.JobDetails?.Specialisations,
+                PurchaseType = job.JobDetails?.PurchaseType ?? string.Empty,
+                PropertyType = job.JobDetails?.PropertyType ?? string.Empty,
+                JourneyProgress = job.JobDetails?.JourneyProgress ?? string.Empty,
+                Status = job.Status.ToString(),
+                BudgetMin = job.JobDetails?.BudgetMin ?? 0,
+                BudgetMax = job.JobDetails?.BudgetMax ?? 0,
+                ContactEmail = job.JobDetails?.ContactEmail ?? string.Empty,
+                ContactPhone = job.JobDetails?.ContactPhone ?? string.Empty,
+                AdditionalDetails = job.AdditionalDetails ?? string.Empty,
+                CreatedAt = job.CreatedAt
+            };
+        }
+
+        // JobInfoDto -> Job entity. Note: requires customerId to set ownership.
+        public Job ToJobEntity(JobInfoDto jobInfoDto, Guid customerId)
+        {
+            if (jobInfoDto == null) return null!;
+
+            return new Job
+            {
+                JobId = jobInfoDto.JobId,
+                CustomerId = customerId,
+                JobTitle = jobInfoDto.JobTitle,
+                JobType = jobInfoDto.JobType,
+                AdditionalDetails = jobInfoDto.AdditionalDetails ?? string.Empty,
+                Status = Enum.TryParse<JobStatus>(jobInfoDto.Status, out var parsedStatus) ? parsedStatus : JobStatus.Open,
+                CreatedAt = jobInfoDto.CreatedAt,
+                JobDetails = new JobDetail
+                {
+                    Regions = jobInfoDto.Regions,
+                    States = jobInfoDto.States,
+                    Specialisations = jobInfoDto.Specialisations,
+                    PurchaseType = jobInfoDto.PurchaseType ?? string.Empty,
+                    PropertyType = jobInfoDto.PropertyType ?? string.Empty,
+                    JourneyProgress = jobInfoDto.JourneyProgress ?? string.Empty,
+                    SelectedProfessionals = Array.Empty<string>(),
+                    BudgetMin = jobInfoDto.BudgetMin,
+                    BudgetMax = jobInfoDto.BudgetMax,
+                    ContactEmail = jobInfoDto.ContactEmail ?? string.Empty,
+                    ContactPhone = jobInfoDto.ContactPhone ?? string.Empty,
+                    SuggestedProfessionalIds = Array.Empty<Guid>()
+                }
+            };
         }
     }
 }

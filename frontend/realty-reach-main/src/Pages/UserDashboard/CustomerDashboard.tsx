@@ -20,21 +20,43 @@ import {
 import Sidebar from "../../SharedComponents/Sidebar";
 import Metrics from "../../Components/Metrics";
 import ActiveJobsSection from "../../SharedComponents/ActiveJobsSection";
+import { getAllJobsForCustomer } from "../../services/JobService";
+import { Job } from "../../Models/Job";
+import { useNavigate } from "react-router-dom";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import CreateJobModal from "../../SharedComponents/CreateJobModal";
 import { UserContext} from "../../Context/userContext";
 
 const CustomerDashboard: React.FC = () => {
-  const { user } = useContext(UserContext)
+  const { user } = useContext(UserContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isCreateJobModalOpen, setIsCreateJobModalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      if (!user?.Id) return;
+      try {
+        const fetchedJobs = await getAllJobsForCustomer(user.Id);
+        setJobs(fetchedJobs);
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchJobs();
+  }, [user]);
+
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const handleViewDetails = (jobId: number) => {
+    navigate(`/job/${jobId}/matches`);
   };
 
   return (
@@ -112,7 +134,7 @@ const CustomerDashboard: React.FC = () => {
           </Box>
 
           <Metrics />
-          <ActiveJobsSection />
+          <ActiveJobsSection jobs={jobs} onViewDetails={handleViewDetails} />
         </Container>
       </Box>
 
