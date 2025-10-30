@@ -38,6 +38,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
 import { AustralianState, Job } from '../../Models/Job';
+import EditJobForm from '../../Components/EditJobForm';
 
 interface JobViewDialogProps {
   open: boolean;
@@ -336,8 +337,8 @@ const MyJobs: React.FC = () => {
                                 </IconButton>
                                 <IconButton
                                   size="small"
+                                  onClick={() => handleEditJob(job)}
                                   title="Edit Job"
-                                  disabled
                                 >
                                   <EditIcon fontSize="small" />
                                 </IconButton>

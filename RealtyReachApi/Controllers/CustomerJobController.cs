@@ -81,19 +81,38 @@ namespace RealtyReachApi.Controllers
             return Ok(jobDto);
         }
 
-        // PUT: api/Jobs/{JobId}
-        [HttpPut("{JobId:int}")]
-        /* public async Task<IActionResult> UpdateJob(UpdateJobDto updateJobDto)
+        // PUT: api/jobs/customer/{jobId}
+        [HttpPut("{jobId}")]
+        public async Task<IActionResult> UpdateJob(int jobId, [FromBody] UpdateJobDto updateJobDto)
+        {
+            // Ensure the job ID in the route matches the DTO
+            if (jobId != updateJobDto.JobId)
             {
-                var success = await _customerJobService.UpdateJob(updateJobDto);
-                if (!success)
-                {
-                    return NotFound();
-                }
-
-                return NoContent();
+                return BadRequest("Job ID mismatch between route and request body");
             }
-            */
+
+            var success = await _customerJobService.UpdateJob(updateJobDto);
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        // // PUT: api/Jobs/{JobId}/NextStage
+        // [HttpPut("{JobId}/nextstage")]
+        // public async Task<IActionResult> ProgressJob(int JobId, UpdateJobDto updateJobDto, string newJourneyProgress)
+        // {
+        //     var success = await _userJobService.ProgressJob(JobId, updateJobDto, newJourneyProgress);
+        //     if (!success)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     return NoContent();
+        // }
+
         // DELETE: api/Jobs/{JobId}
         [HttpDelete("{JobId:int}")]
         public async Task<IActionResult> DeleteJob(int JobId)

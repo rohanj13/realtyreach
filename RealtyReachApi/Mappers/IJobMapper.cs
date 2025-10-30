@@ -15,4 +15,11 @@ public interface IJobMapper
     JobInfoDto ToJobInfoDto(Job job);
     // Map JobInfoDto -> Job entity (requires customerId for ownership)
     Job ToJobEntity(JobInfoDto jobInfoDto, Guid customerId);
+
+    /// <summary>
+    /// Applies partial updates from UpdateJobDto to Job entity.
+    /// Only updates fields that are non-null in the DTO.
+    /// Follows SOLID principles: Single Responsibility (mapping only), Open/Closed (extensible).
+    /// </summary>
+    void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job);
 }

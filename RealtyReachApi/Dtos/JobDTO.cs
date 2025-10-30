@@ -73,6 +73,74 @@ public class CreateJobDto
     public string? AdditionalDetails { get; set; }
 }
 
+public class UpdateJobDto
+{
+    /// <summary>
+    /// Job ID being updated (required for identification)
+    /// </summary>
+    public required int JobId { get; set; }
+
+    /// <summary>
+    /// Job title - optional for partial updates
+    /// </summary>
+    public string? JobTitle { get; set; }
+
+    /// <summary>
+    /// Job type (Buy/Sell) - optional for partial updates
+    /// </summary>
+    public string? JobType { get; set; }
+
+    /// <summary>
+    /// Service regions - optional for partial updates
+    /// </summary>
+    public List<string>? Regions { get; set; } = null;
+
+    /// <summary>
+    /// Service states - optional for partial updates
+    /// </summary>
+    public List<AustralianState>? States { get; set; } = null;
+
+    /// <summary>
+    /// Specialisations - optional for partial updates
+    /// </summary>
+    public List<Specialisation>? Specialisations { get; set; } = null;
+
+    /// <summary>
+    /// Purchase type - optional for partial updates
+    /// </summary>
+    public string? PurchaseType { get; set; }
+
+    /// <summary>
+    /// Property type - optional for partial updates
+    /// </summary>
+    public string? PropertyType { get; set; }
+
+    /// <summary>
+    /// Budget minimum - optional for partial updates
+    /// </summary>
+    public int? BudgetMin { get; set; }
+
+    /// <summary>
+    /// Budget maximum - optional for partial updates
+    /// </summary>
+    public int? BudgetMax { get; set; }
+
+    /// <summary>
+    /// Contact email - optional for partial updates
+    /// </summary>
+    public string? ContactEmail { get; set; }
+
+    /// <summary>
+    /// Contact phone - optional for partial updates
+    /// </summary>
+    public string? ContactPhone { get; set; }
+
+    /// <summary>
+    /// Additional details about the job - optional for partial updates
+    /// </summary>
+    public string? AdditionalDetails { get; set; }
+}
+
 public class MatchingJobDto
 {
     public required int JobId { get; set; }
