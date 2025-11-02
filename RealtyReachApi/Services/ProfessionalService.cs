@@ -108,7 +108,7 @@ public class ProfessionalService : IProfessionalService
         return profile;
     }
 
-    public async Task VerifyProfessionalAsync(Guid professionalId, string? notes = null)
+    public async Task VerifyProfessionalAsync(Guid professionalId)
     {
         var professional = await _repository.GetProfessionalByIdAsync(professionalId);
         if (professional == null)
@@ -125,7 +125,7 @@ public class ProfessionalService : IProfessionalService
         }
     }
 
-    public async Task UnverifyProfessionalAsync(Guid professionalId, string? reason = null)
+    public async Task UnverifyProfessionalAsync(Guid professionalId)
     {
         var professional = await _repository.GetProfessionalByIdAsync(professionalId);
         if (professional == null)

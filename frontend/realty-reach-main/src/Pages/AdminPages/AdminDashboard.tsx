@@ -28,8 +28,6 @@ import { getAllCustomers, getAllJobs, getAllProfessionals, verifyProfessional, r
 import { Job } from '@/Models/Job';
 import { Professional } from '@/Models/Professional';
 import { UserProfile } from '@/Models/User';
-import AdminJobDetailsPanel from '@/Components/AdminJobDetailsPanel';
-import ProfessionalDetailsPanel from '@/Components/ProfessionalDetailsPanel';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -39,8 +37,6 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<Record<string, string | null>>({});
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -93,28 +89,12 @@ const AdminDashboard = () => {
           prof.id === userId ? { ...prof, verificationStatus: false } : prof
         )
       );
-      // Update selected professional if it's the one being rejected
-      if (selectedProfessional?.id === userId) {
-        setSelectedProfessional({ ...selectedProfessional, verificationStatus: false });
-      }
     } catch (err) {
       setError('Failed to reject professional.');
       console.error('Error rejecting professional:', err);
     } finally {
       setActionLoading(prev => ({ ...prev, [userId]: null }));
     }
-  };
-
-  const handleVerifyInPanel = async (userId: string) => {
-    await handleVerify(userId);
-    // Update selected professional if it's the one being verified
-    if (selectedProfessional?.id === userId) {
-      setSelectedProfessional({ ...selectedProfessional, verificationStatus: true });
-    }
-  };
-
-  const handleRejectInPanel = async (userId: string) => {
-    await handleReject(userId);
   };
 
   const formatDate = (dateString: string) => {
@@ -189,12 +169,7 @@ const AdminDashboard = () => {
                 </TableHead>
                 <TableBody>
                   {jobs.map((job) => (
-                    <TableRow 
-                      key={job.jobId} 
-                      hover
-                      onClick={() => setSelectedJob(job)}
-                      sx={{ cursor: 'pointer' }}
-                    >
+                    <TableRow key={job.jobId} hover>
                       <TableCell>{job.jobId}</TableCell>
                       <TableCell>
                         <Typography variant="body2" fontWeight="medium">
@@ -206,7 +181,7 @@ const AdminDashboard = () => {
                         {formatCurrency(job.budgetMin)} -{' '}
                         {formatCurrency(job.budgetMax)}
                       </TableCell>
-                      <TableCell>{job.regions?.join(', ') || 'N/A'}</TableCell>
+                      <TableCell>{job.regions.join(', ')}</TableCell>
                       <TableCell>{formatDate(job.createdAt)}</TableCell>
                     </TableRow>
                   ))}
@@ -264,25 +239,14 @@ const AdminDashboard = () => {
                 </TableHead>
                 <TableBody>
                   {professionals.map((professional) => (
-                    <TableRow 
-                      key={professional.id} 
-                      hover
-                      onClick={(e) => {
-                        // Don't open panel if clicking on action buttons
-                        if ((e.target as HTMLElement).closest('button')) {
-                          return;
-                        }
-                        setSelectedProfessional(professional);
-                      }}
-                      sx={{ cursor: 'pointer' }}
-                    >
+                    <TableRow key={professional.id} hover>
                       <TableCell>{professional.id}</TableCell>
                       <TableCell>
                         {professional.firstName} {professional.lastName}
                       </TableCell>
                       <TableCell>{professional.email}</TableCell>
-                      <TableCell>{professional.companyName || 'N/A'}</TableCell>
-                      <TableCell>{professional.licenseNumber || 'N/A'}</TableCell>
+                      <TableCell>{professional.companyName}</TableCell>
+                      <TableCell>{professional.licenseNumber}</TableCell>
                       <TableCell>
                         <Chip
                           label={professional.verificationStatus ? 'Verified' : 'Unverified'}
@@ -291,7 +255,7 @@ const AdminDashboard = () => {
                           icon={professional.verificationStatus ? <CheckCircle /> : <Cancel />}
                         />
                       </TableCell>
-                      <TableCell onClick={(e) => e.stopPropagation()}>
+                      <TableCell>
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           {!professional.verificationStatus && (
                             <Button
@@ -335,25 +299,6 @@ const AdminDashboard = () => {
           )}
         </Box>
       </Paper>
-
-      {/* Job Details Panel */}
-      {selectedJob && (
-        <AdminJobDetailsPanel
-          job={selectedJob}
-          onClose={() => setSelectedJob(null)}
-        />
-      )}
-
-      {/* Professional Details Panel */}
-      {selectedProfessional && (
-        <ProfessionalDetailsPanel
-          professional={selectedProfessional}
-          onClose={() => setSelectedProfessional(null)}
-          onVerify={handleVerifyInPanel}
-          onReject={handleRejectInPanel}
-          actionLoading={actionLoading}
-        />
-      )}
     </Container>
   );
 };

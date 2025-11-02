@@ -29,7 +29,7 @@ namespace RealtyReachApi.Controllers
             _customerService = customerService;
             _professionalService = professionalService;
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> CreateUser()
         {
@@ -38,9 +38,8 @@ namespace RealtyReachApi.Controllers
             var email = User.GetUserEmail();
             if (role == "Admin")
             {
-                Admin admin = new Admin(); //update this to use DTO
+                var admin = new Admin(); //update this to use DTO
                 admin.Id = userId;
-                admin.userId = userId.ToString(); // Set userId string field
                 admin.Email = email;
                 await _adminService.CreateAdminAsync(admin);
                 return Ok("Success"); //return a dto object on success
@@ -103,7 +102,7 @@ namespace RealtyReachApi.Controllers
                 return BadRequest("Invalid role.");
             }
         }
-
+        
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {
@@ -139,7 +138,7 @@ namespace RealtyReachApi.Controllers
         {
             var role = User.GetUserRole();
             var userId = Guid.Parse(User.GetUserId());
-
+            
             // if (role == "Admin")
             // {
             //     var admin = userDto as Admin;

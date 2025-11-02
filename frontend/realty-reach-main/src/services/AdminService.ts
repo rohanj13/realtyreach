@@ -6,7 +6,7 @@ import { UserProfile } from "@/Models/User";
 // PUT: verify professional
 export const verifyProfessional = async (userId: string): Promise<{ ProfessionalId: string; VerificationStatus: boolean }> => {
   try {
-    const response = await backendApi.put(`/api/admin/professionals/${userId}/verify`);
+    const response = await backendApi.put(`/api/admin/${userId}/verify`);
     return response.data;
   } catch (error) {
     console.error('Error verifying professional:', error);
@@ -16,10 +16,10 @@ export const verifyProfessional = async (userId: string): Promise<{ Professional
 
 export const rejectProfessional = async (userId: string): Promise<{ ProfessionalId: string; VerificationStatus: boolean }> => {
     try {
-      const response = await backendApi.put(`/api/admin/professionals/${userId}/reject`);
+      const response = await backendApi.put(`/api/admin/${userId}/reject`);
       return response.data;
     } catch (error) {
-      console.error('Error rejecting professional:', error);
+      console.error('Error verifying professional:', error);
       throw error;
     }
 };
