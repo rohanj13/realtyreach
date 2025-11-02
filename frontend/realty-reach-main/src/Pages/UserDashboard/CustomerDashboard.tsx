@@ -92,7 +92,7 @@ const CustomerDashboard: React.FC = () => {
             </IconButton>
             
             <Typography variant="subtitle2" sx={{ ml: 1, display: { xs: 'none', sm: 'block' } }}>
-              Welcome, {user?.FirstName}
+              Welcome, {user?.firstName}
             </Typography>
           </Toolbar>
         </AppBar>

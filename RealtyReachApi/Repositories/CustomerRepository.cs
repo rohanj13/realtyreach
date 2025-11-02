@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using RealtyReachApi.Data;
 using RealtyReachApi.Models;
 
@@ -11,12 +12,15 @@ public class CustomerRepository(SharedDbContext context) : ICustomerRepository
         await context.SaveChangesAsync();
         Console.WriteLine("added to db");
     }
-    
+    public async Task<List<Customer>> GetAllCustomersAsync()
+    {
+        return await context.Customers.ToListAsync();
+    }
     public async Task<Customer?> GetCustomerByIdAsync(Guid id)
     {
         return await context.Customers.FindAsync(id);
     }
-    
+
     public async Task UpdateCustomerAsync(Customer updatedCustomer)
     {
         // Fetch the customer from the database
@@ -38,7 +42,7 @@ public class CustomerRepository(SharedDbContext context) : ICustomerRepository
         await context.SaveChangesAsync();
     }
 
-    
+
     public async Task<bool> DeleteCustomerAsync(Guid id)
     {
         var customer = await context.Customers.FindAsync(id);

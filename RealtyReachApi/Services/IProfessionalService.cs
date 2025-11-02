@@ -11,4 +11,6 @@ public interface IProfessionalService
     Task DeleteProfessionalAsync(Guid id);
     Task<IEnumerable<ProfessionalDto>> GetProfessionalsByTypeAsync(int professionalTypeId);
     Task<ProfessionalProfileDto?> GetProfessionalProfileAsync(Guid professionalId);
+    Task VerifyProfessionalAsync(Guid professionalId, string? notes = null);
+    Task UnverifyProfessionalAsync(Guid professionalId, string? reason = null);
 }

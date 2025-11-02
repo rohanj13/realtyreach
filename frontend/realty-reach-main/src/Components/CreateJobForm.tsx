@@ -102,7 +102,7 @@ const CreateJobForm: React.FC<JobFormProps> = ({ onClose }) => {
     journeyProgress: '',
     selectedProfessionals: [],
     additionalDetails: '',
-    contactEmail: user?.Email || '',
+    contactEmail: user?.email || '',
     contactPhone: '',
   });
   

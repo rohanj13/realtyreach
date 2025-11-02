@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { Phone as PhoneIcon, Email as EmailIcon } from '@mui/icons-material';
 import { updateJob } from '../services/JobService';
-import { AustralianState, Job, UpdateJobDto, Specialisation } from '../Models/Job';
+import { AustralianState, JobDto, UpdateJobDto, Specialisation } from '../Models/Job';
 import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '../Models/User';
 import { UserContext } from '../Context/userContext';
 import { LocationService, Region, State } from '../services/LocationService';
@@ -47,7 +47,7 @@ interface FormData {
 }
 
 interface EditJobFormProps {
-  job: Job;
+  job: JobDto;
   onClose: () => void;
   onSuccess: () => void;
 }

@@ -36,12 +36,12 @@ import {
 import Sidebar from '../../SharedComponents/Sidebar';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
-import { AustralianState, Job } from '../../Models/Job';
+import { AustralianState, JobDto } from '../../Models/Job';
 import EditJobForm from '../../Components/EditJobForm';
 
 interface JobViewDialogProps {
   open: boolean;
-  job: Job | null;
+  job: JobDto | null;
   onClose: () => void;
 }
 
@@ -136,16 +136,16 @@ const MyJobs: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobDto | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [jobToEdit, setJobToEdit] = useState<Job | null>(null);
+  const [jobToEdit, setJobToEdit] = useState<JobDto | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -153,11 +153,11 @@ const MyJobs: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       console.log('Fetching jobs for user:', user);
-      if (!user?.Id) return;
+      if (!user?.id) return;
       
       try {
         setLoading(true);
-        const fetchedJobs = await getAllJobsForCustomer(user.Id);
+        const fetchedJobs = await getAllJobsForCustomer(user.id);
         setJobs(fetchedJobs);
         setError(null);
       } catch (err) {
@@ -180,12 +180,12 @@ const MyJobs: React.FC = () => {
     setPage(0);
   };
   
-  const handleViewJob = (job: Job) => {
+  const handleViewJob = (job: JobDto) => {
     setSelectedJob(job);
     setViewDialogOpen(true);
   };
   
-  const handleEditJob = (job: Job) => {
+  const handleEditJob = (job: JobDto) => {
     setJobToEdit(job);
     setEditDialogOpen(true);
   };
@@ -197,8 +197,8 @@ const MyJobs: React.FC = () => {
 
   const handleEditSuccess = () => {
     // Refresh the jobs list
-    if (user?.Id) {
-      getAllJobsForCustomer(user.Id).then((fetchedJobs) => {
+    if (user?.id) {
+      getAllJobsForCustomer(user.id).then((fetchedJobs) => {
         setJobs(fetchedJobs);
       });
     }

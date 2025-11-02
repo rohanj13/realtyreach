@@ -18,7 +18,6 @@ namespace RealtyReachApi.Services
         private readonly IJobRepository _jobRepository;
         private readonly IMatchingService _matchingService;
         private readonly IJobMapper _jobMapper;
-        private readonly SharedDbContext _context;
 
         public CustomerJobService(
             IProfessionalTypeRepository professionalTypeRepository, IJobMapper jobMapper,

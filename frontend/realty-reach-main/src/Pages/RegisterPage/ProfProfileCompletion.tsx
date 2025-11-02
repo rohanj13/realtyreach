@@ -29,8 +29,8 @@ const ProfProfileCompletion: React.FC = () => {
   
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
-    firstName: professionalUser?.FirstName || "",
-    lastName: professionalUser?.LastName || "",
+    firstName: professionalUser?.firstName || "",
+    lastName: professionalUser?.lastName || "",
     companyName: professionalUser?.CompanyName || "",
     abn: professionalUser?.ABN || "",
     licenseNumber: professionalUser?.LicenseNumber || "",

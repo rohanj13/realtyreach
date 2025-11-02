@@ -12,7 +12,7 @@ public class ProfessionalService : IProfessionalService
     private readonly IProfessionalRepository _repository;
     private readonly IProfessionalMapper _mapper;
     private readonly IProfessionalTypeRepository _professionalTypeRepository;
-    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper, 
+    public ProfessionalService(IProfessionalRepository professionalRepository, IProfessionalMapper mapper,
         IProfessionalTypeRepository professionalTypeRepository)
     {
         _repository = professionalRepository;
@@ -22,10 +22,10 @@ public class ProfessionalService : IProfessionalService
 
     public async Task CreateProfessionalAsync(ProfessionalDto professional)
     {
-        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum) 
+        ProfessionalTypeEnum professionalTypeId = (ProfessionalTypeEnum)
             Enum.Parse(typeof(ProfessionalTypeEnum), professional.ProfessionalType);
         Professional p = _mapper.ToProfessionalEntity(professional);
-        p.ProfessionalTypeId = (int) professionalTypeId;
+        p.ProfessionalTypeId = (int)professionalTypeId;
         await _repository.CreateProfessionalAsync(p);
     }
 
@@ -49,7 +49,7 @@ public class ProfessionalService : IProfessionalService
     {
         // Retrieve existing professional entity (aggregate root)
         var professional = await _repository.GetProfessionalByIdAsync(id);
-        
+
         if (professional == null)
         {
             throw new KeyNotFoundException($"Professional with ID {id} not found");
@@ -78,7 +78,7 @@ public class ProfessionalService : IProfessionalService
 
         // Persist changes to repository
         var success = await _repository.UpdateProfessionalAsync(professional);
-        
+
         if (!success)
         {
             throw new InvalidOperationException("Failed to update professional profile");
@@ -98,13 +98,47 @@ public class ProfessionalService : IProfessionalService
             professionalDtos.Add(_mapper.ToProfessionalDto(professional));
         return professionalDtos;
     }
-    
+
     public async Task<ProfessionalProfileDto?> GetProfessionalProfileAsync(Guid professionalId)
     {
         var professional = await _repository.GetProfessionalByIdAsync(professionalId);
         var professionalType = await _professionalTypeRepository.GetProfessionalTypeByIdAsync(professional.ProfessionalTypeId);
         //if (professional == null) return null;
-        ProfessionalProfileDto profile =  _mapper.ToProfileDto(professional, professionalType);
+        ProfessionalProfileDto profile = _mapper.ToProfileDto(professional, professionalType);
         return profile;
+    }
+
+    public async Task VerifyProfessionalAsync(Guid professionalId, string? notes = null)
+    {
+        var professional = await _repository.GetProfessionalByIdAsync(professionalId);
+        if (professional == null)
+        {
+            throw new KeyNotFoundException($"Professional with ID {professionalId} not found");
+        }
+
+        professional.VerificationStatus = true;
+
+        var success = await _repository.UpdateProfessionalAsync(professional);
+        if (!success)
+        {
+            throw new InvalidOperationException("Failed to verify professional");
+        }
+    }
+
+    public async Task UnverifyProfessionalAsync(Guid professionalId, string? reason = null)
+    {
+        var professional = await _repository.GetProfessionalByIdAsync(professionalId);
+        if (professional == null)
+        {
+            throw new KeyNotFoundException($"Professional with ID {professionalId} not found");
+        }
+
+        professional.VerificationStatus = false;
+
+        var success = await _repository.UpdateProfessionalAsync(professional);
+        if (!success)
+        {
+            throw new InvalidOperationException("Failed to unverify professional");
+        }
     }
 }

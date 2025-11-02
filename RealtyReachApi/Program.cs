@@ -20,11 +20,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<SharedDbContext>(options => options.UseNpgsql(connectionString));
 
 // Register Repositories
-builder.Services.AddScoped<IJobRepository,JobRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IProfessionalRepository, ProfessionalRepository>();
 builder.Services.AddScoped<IProfessionalTypeRepository, ProfessionalTypeRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 builder.Services.AddCors(options =>
 {

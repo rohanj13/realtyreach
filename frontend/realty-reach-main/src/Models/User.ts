@@ -1,9 +1,9 @@
 export interface UserProfile {
-  Id: string;
-  Email: string;
-  FirstName: string;
-  LastName: string;
-  FirstLogin: boolean;
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  firstLogin: boolean;
 }
 
 export interface CustomerProfile extends UserProfile {

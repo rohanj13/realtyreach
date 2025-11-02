@@ -106,4 +106,11 @@ public class JobRepository : IJobRepository
             .OrderByDescending(jpl => jpl.AssignedDate)
             .ToListAsync();
     }
+
+    public async Task<List<Job>> GetAllJobsAsync()
+    {
+        return await _context.Jobs
+            .Include(r => r.JobDetails)
+            .ToListAsync();
+    }
 }

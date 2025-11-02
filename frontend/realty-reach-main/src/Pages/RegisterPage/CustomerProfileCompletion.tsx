@@ -21,8 +21,8 @@ const CustomerProfileCompletion: React.FC = () => {
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
-    firstName: user?.FirstName || "",
-    lastName: user?.LastName || "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
   });
   
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -64,11 +64,11 @@ const CustomerProfileCompletion: React.FC = () => {
     
     try {
       const customerData = {
-        Id: user?.Id,
-        Email: user?.Email,
-        FirstName: formData.firstName,
-        LastName: formData.lastName,
-        FirstLogin: false,
+        id: user?.id,
+        email: user?.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        firstLogin: false,
       };
       
       await backendApi.put('/api/User', customerData);
