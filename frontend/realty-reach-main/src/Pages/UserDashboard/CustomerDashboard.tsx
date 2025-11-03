@@ -40,9 +40,9 @@ const CustomerDashboard: React.FC = () => {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      if (!user?.Id) return;
+      if (!user?.id) return;
       try {
-        const fetchedJobs = await getAllJobsForCustomer(user.Id);
+        const fetchedJobs = await getAllJobsForCustomer(user.id);
         setJobs(fetchedJobs);
       } catch (err) {
         // Optionally handle error

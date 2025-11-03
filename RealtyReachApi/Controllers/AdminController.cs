@@ -26,7 +26,7 @@ public class AdminController : ControllerBase
     {
         try
         {
-            await _professionalService.VerifyProfessionalAsync(id, null);
+            await _professionalService.VerifyProfessionalAsync(id);
             return Ok(new { ProfessionalId = id, VerificationStatus = true });
         }
         catch (KeyNotFoundException ex)
@@ -47,7 +47,7 @@ public class AdminController : ControllerBase
     {
         try
         {
-            await _professionalService.UnverifyProfessionalAsync(id, null);
+            await _professionalService.UnverifyProfessionalAsync(id);
             return Ok(new { ProfessionalId = id, VerificationStatus = false });
         }
         catch (KeyNotFoundException ex)
