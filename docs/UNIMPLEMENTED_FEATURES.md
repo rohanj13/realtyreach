@@ -6,6 +6,7 @@
 ---
 
 ## Status Legend
+
 - 🔴 **Not Started** - No code implementation found
 - 🟡 **Partially Implemented** - Code exists but incomplete/commented out
 - 🟢 **Implemented** - Fully functional
@@ -16,9 +17,11 @@
 ## 1. Job Management Features
 
 ### 1.1 Update Job � **Implemented**
+
 **Status**: Fully implemented and tested (October 24, 2025)
 
 **What's Implemented**:
+
 - ✅ `PUT /api/jobs/customer/{jobId}` endpoint active and functional
 - ✅ `UpdateJobDto` class with optional fields for partial updates
 - ✅ Service method `UpdateJob(UpdateJobDto)` with validation
@@ -29,6 +32,7 @@
 - ✅ Audit trail: `UpdatedAt` timestamp automatically set
 
 **Completed Implementation**:
+
 ```csharp
 // ✅ Controller endpoint active
 [HttpPut("{jobId}")]
@@ -36,7 +40,7 @@ public async Task<IActionResult> UpdateJob(int jobId, [FromBody] UpdateJobDto up
 {
     if (jobId != updateJobDto.JobId)
         return BadRequest("Job ID mismatch between route and request body");
-    
+
     var success = await _customerJobService.UpdateJob(updateJobDto);
     return success ? NoContent() : NotFound();
 }
@@ -63,6 +67,7 @@ public void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job)
 ```
 
 **Frontend Implementation**:
+
 - ✅ `EditJobForm` component with full form UI
 - ✅ Pre-populated form data from existing job
 - ✅ Comprehensive validation (email, phone, budget ranges)
@@ -71,11 +76,13 @@ public void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job)
 - ✅ Integrated into `MyJobs` dashboard
 
 **User Stories** - All Completed:
+
 - ✅ As a customer, I want to edit my job details after creation
 - ✅ As a customer, I want to update budget, property type, or location
 - ✅ As a customer, I want changes to persist and list to refresh
 
 **Code Quality & Architecture**:
+
 - ✅ DDD principles: Clean separation of concerns
 - ✅ SOLID principles: Mapper pattern, single responsibility
 - ✅ Partial updates: Only non-null fields updated
@@ -84,6 +91,7 @@ public void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job)
 - ✅ Error handling: Comprehensive try-catch with user feedback
 
 **Testing & Build Status**:
+
 - ✅ Backend build: Success (no errors)
 - ✅ Frontend build: Success (11,609 modules)
 - ✅ TypeScript: No compilation errors
@@ -91,6 +99,7 @@ public void ApplyUpdateToEntity(UpdateJobDto updateDto, Job job)
 - ✅ Form validation: Tested with edge cases
 
 **API Endpoint**:
+
 ```
 PUT /api/jobs/customer/{jobId}
 
@@ -102,6 +111,7 @@ Response: 204 No Content
 ```
 
 **Related Constants**:
+
 - ✅ `JobConstants.ts`: Centralized property and purchase type options
 - ✅ `PROPERTY_TYPES`: 7 options (House, Apartment, Townhouse, Land, Block of Units, Commercial, Other)
 - ✅ `PURCHASE_TYPES`: 4 options (First Home, Investment, Downsizing, Other)
@@ -112,15 +122,18 @@ Response: 204 No Content
 ---
 
 ### 1.2 Job Progression / Stage Management 🟡 **Partially Implemented**
+
 **Status**: Journey stages defined but no progression workflow
 
 **What's Missing**:
+
 - `PUT /api/jobs/customer/{jobId}/nextstage` endpoint commented out
 - `ProgressJob()` service method referenced but not implemented
 - No automatic professional type updates based on stage
 - No notifications when stage changes
 
 **Evidence**:
+
 ```csharp
 // CustomerJobController.cs lines 88-96
 // public async Task<IActionResult> ProgressJob(int JobId, UpdateJobDto updateJobDto, string newJourneyProgress)
@@ -131,12 +144,14 @@ Response: 204 No Content
 ```
 
 **User Stories**:
+
 - ❌ As a customer, I want to progress my job from "Just Started" to "Pre-Approval"
 - ❌ As a customer, I want the system to suggest new professional types when I change stages
 - ❌ As a customer, I want to see what professionals I need at each stage
 - ❌ As a professional, I want to be notified when a job I'm matched with changes stage
 
 **Implementation Needed**:
+
 1. Implement `ProgressJob()` service method
 2. Add stage validation (can't skip stages)
 3. Update suggested professionals based on new stage
@@ -146,14 +161,17 @@ Response: 204 No Content
 ---
 
 ### 1.3 Job History & Audit Trail 🔴 **Not Started**
+
 **Status**: No implementation found
 
 **User Stories**:
+
 - ❌ As a customer, I want to see a timeline of all changes to my job
 - ❌ As an admin, I want to audit job modifications for compliance
 - ❌ As a customer, I want to see when professionals were added/removed
 
 **Implementation Needed**:
+
 1. Create `JobAuditLog` entity
 2. Implement audit logging middleware
 3. Store changes with timestamp, user, and change details
@@ -163,9 +181,11 @@ Response: 204 No Content
 ---
 
 ### 1.4 Job Status Workflow 🟡 **Partially Implemented**
+
 **Status**: Only Open/Closed status exists, no workflow
 
 **Current Implementation**:
+
 ```csharp
 public enum JobStatus
 {
@@ -175,12 +195,14 @@ public enum JobStatus
 ```
 
 **User Stories**:
+
 - ❌ As a customer, I want to mark a job as "In Progress"
 - ❌ As a customer, I want to mark a job as "Completed"
 - ❌ As a customer, I want to pause/reopen a closed job
 - ❌ As a system, I want to auto-close jobs after 90 days of inactivity
 
 **Implementation Needed**:
+
 1. Expand `JobStatus` enum (InProgress, Paused, Completed, Cancelled)
 2. Add status transition validation
 3. Implement status change endpoints
@@ -189,14 +211,47 @@ public enum JobStatus
 
 ---
 
-## 2. Professional Discovery & Job Viewing
+### 1.5 Customer Job Matching & Finalisation 🟢 **Implemented**
+
+**Status**: End-to-end workflow for customers to view job details, suggested professionals, and finalise matches is fully implemented
+
+**Completed Implementation** (October 24, 2025):
+
+- ✅ Backend: Added `JobMatchesDto` to encapsulate job details, suggested professionals, and finalised professionals
+- ✅ Backend: Refactored service, repository, and mapper layers to support matching and finalisation logic
+- ✅ Backend: Endpoint `GET /api/jobs/customer/{jobId}/matches` returns all required data for job matching UI
+- ✅ Frontend: `JobMatches.tsx` fetches and displays job details, suggested professionals, and finalised professionals
+- ✅ Frontend: Navigation from dashboard and jobs list routes to job matches page
+- ✅ Frontend: UI supports viewing professional details, finalising matches, and displaying finalised professionals
+- ✅ Enum mapping: States and specialisations are displayed as string values, not integers
+- ✅ All business logic and DTO mapping follows DDD and SOLID principles
+
+**User Stories**:
+
+- ✅ As a customer, I want to view my job details and see suggested professionals ranked by match score
+- ✅ As a customer, I want to view key details about each professional (type, specialisation, location, verification)
+- ✅ As a customer, I want to finalise a match and see my selected professionals
+- ✅ As a customer, I want to navigate easily between my jobs and job matches
+
+**Implementation Details**:
+
+1. Backend: Added DTOs, mappers, and service logic for job matching and finalisation
+2. Backend: Endpoint returns job info, suggested professionals, and finalised professionals in one response
+3. Frontend: Refactored job matches page to consume new DTO and display all required data
+4. Frontend: Improved navigation and removed modal dialog in jobs list
+5. Frontend: UI displays enums as readable strings
+6. All code follows project architecture and DDD guidelines
+
+---
 
 ## 2. Professional Discovery & Job Viewing
 
 ### 2.1 Get Applicable Jobs for Professionals 🟢 **PARTIALLY REFACTORED & REMOVED**
+
 **Status**: Available jobs feature scope removed; finalised jobs implementation refactored to use mapper pattern
 
 **Completed Refactoring** (October 20, 2025):
+
 - ✅ Removed `GetApplicableJobsForProfessional()` method from backend
 - ✅ Removed "available jobs" frontend service methods
 - ✅ Deleted `AvailableJobs.tsx` component
@@ -205,6 +260,7 @@ public enum JobStatus
 **Finalised Jobs Implementation** (Now Architecturally Sound):
 
 **Backend Service** (`ProfJobService.cs`):
+
 ```csharp
 public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions options, IJobMapper jobMapper) : IProfJobService
 {
@@ -221,12 +277,14 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 ```
 
 **Mapper Implementation** (`JobMapper.cs`):
+
 - ✅ Added `ToGetFinalisedJobDto(JobProfessionalLink)` method to `IJobMapper` interface
 - ✅ Implemented mapping logic encapsulating all DTO transformation
 - ✅ Handles null-safe property access with sensible defaults
 - ✅ Separates concerns: Service orchestrates, Mapper transforms
 
 **Architecture Benefits**:
+
 - ✅ **Single Responsibility**: Service focuses on business logic, mapper on transformation
 - ✅ **DDD Compliance**: Follows SOLID principles and mapper pattern used throughout codebase
 - ✅ **Testability**: Mapper can be unit tested independently
@@ -234,6 +292,7 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 - ✅ **Consistency**: Aligns with `ToJobDto()`, `ToJobDetailDto()` patterns
 
 **Removed Artifacts**:
+
 - ❌ Backend: `ProfJobService.GetApplicableJobsForProfessional()` - **DELETED**
 - ❌ Backend: `IProfJobService` available jobs method - **DELETED**
 - ❌ Frontend: `JobService.getAvailableJobsForProfessional()` - **DELETED**
@@ -243,12 +302,14 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 - ❌ Frontend: `RoutesConfig.tsx` available jobs route - **DELETED**
 
 **Working Implementation**:
+
 - ✅ `GetFinalisedJobsForProfessionalAsync()` - Refactored to use mapper
 - ✅ Endpoint: `GET /api/jobs/professional/finalised` - Fully functional
 - ✅ Backend builds successfully with no compilation errors
 - ✅ Professional dashboard displays finalised jobs only
 
 **Next Steps** (If Enhancement Needed):
+
 - Implement feature 2.2: Professional Response to Job Invitations (accept/decline workflow)
 - Add notification system for job assignments
 - Build response UI in professional dashboard
@@ -256,15 +317,18 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 ---
 
 ### 2.2 Professional Response to Job Invitations 🔴 **Not Started**
+
 **Status**: No implementation found
 
 **User Stories**:
+
 - ❌ As a professional, I want to accept a job match invitation
 - ❌ As a professional, I want to decline a job match with a reason
 - ❌ As a professional, I want to request more information before accepting
 - ❌ As a customer, I want to be notified when a professional accepts/declines
 
 **Implementation Needed**:
+
 1. Create `JobProfessionalResponse` entity (status: Pending, Accepted, Declined)
 2. Add `ResponseDate`, `ResponseMessage`, `DeclineReason` fields to `JobProfessionalLink`
 3. Create endpoints: `POST /api/jobs/professional/{jobId}/respond`
@@ -274,15 +338,18 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 ---
 
 ### 2.3 Professional Availability Management 🔴 **Not Started**
+
 **Status**: No calendar or availability tracking
 
 **User Stories**:
+
 - ❌ As a professional, I want to mark myself as unavailable for certain dates
 - ❌ As a professional, I want to set my maximum concurrent jobs
 - ❌ As the system, I want to exclude unavailable professionals from matching
 - ❌ As a professional, I want to pause my profile temporarily
 
 **Implementation Needed**:
+
 1. Create `ProfessionalAvailability` entity
 2. Add `MaxConcurrentJobs`, `IsAcceptingJobs` to `Professional`
 3. Update matching algorithm to check availability
@@ -294,9 +361,11 @@ public class ProfJobService(IJobRepository jobRepository, JourneyProgressOptions
 ## 3. Communication & Messaging
 
 ### 3.1 In-App Messaging System 🔴 **Not Started**
+
 **Status**: No messaging infrastructure
 
 **User Stories**:
+
 ````
 
 ---
@@ -508,24 +577,24 @@ The current implementation correctly prevents professionals from setting their o
    - Verify ABN is active and not cancelled
    - Match professional name to ABN entity name
    - Automated verification on profile creation/update
-   
+
 2. **Admin Verification Endpoint**:
    - `PUT /api/admin/professionals/{id}/verify` (admin-only)
    - `POST /api/admin/professionals/{id}/reject` with rejection reason
    - Add verification notes/comments
-   
+
 3. **Verification Workflow**:
    - Expand verification to enum (Pending, UnderReview, Verified, Rejected, Expired)
    - Create `VerificationDocument` entity (license scans, insurance certificates)
    - Add document upload endpoints with file validation
    - Create verification history tracking
-   
+
 4. **Admin Dashboard**:
    - Build admin verification queue UI
    - Show pending verifications with professional details
    - Display uploaded documents for review
    - Add ABN verification status indicator
-   
+
 5. **Expiry & Renewal**:
    - Add `VerificationExpiryDate` field
    - Implement automated expiry checks
@@ -1050,10 +1119,11 @@ The current implementation correctly prevents professionals from setting their o
 
 ---
 
-**Document Version**: 1.3  
-**Last Updated**: October 24, 2025  
-**Change Log**: 
+**Document Version**: 1.3
+**Last Updated**: October 24, 2025
+**Change Log**:
 - v1.3 (Oct 24, 2025): Feature 1.1 (Update Job) marked as complete with full implementation details
 - v1.2 (Oct 20, 2025): Feature 2.1 implementation status updated with mapper pattern refactoring
 - v1.1 (Oct 13, 2025): Marked Feature 4.5 (Professional Type Management) as complete
 - v1.0 (Oct 10, 2025): Initial document creation
+````

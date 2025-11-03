@@ -106,4 +106,13 @@ public class JobRepository : IJobRepository
             .OrderByDescending(jpl => jpl.AssignedDate)
             .ToListAsync();
     }
+
+    public async Task<List<Guid>> GetFinalisedProfessionalLinksByJobDetailIdAsync(int jobDetailId)
+    {
+        return await _context.JobProfessionalLink
+            .Where(jpl => jpl.JobDetailId == jobDetailId)
+            .Select(jpl => jpl.ProfessionalId)
+            .Distinct()
+            .ToListAsync();
+    }
 }

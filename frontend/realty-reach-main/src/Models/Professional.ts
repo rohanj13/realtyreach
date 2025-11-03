@@ -24,9 +24,3 @@ export interface ProfessionalProfile extends Professional {
     responseRate?: number;
     averageResponseTime?: number;
 }
-
-export interface MatchedProfessional {
-    professional: ProfessionalProfile;
-    matchScore: number;
-    matchReasons: string[];
-} 

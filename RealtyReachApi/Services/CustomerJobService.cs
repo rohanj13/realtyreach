@@ -18,17 +18,22 @@ namespace RealtyReachApi.Services
         private readonly IJobRepository _jobRepository;
         private readonly IMatchingService _matchingService;
         private readonly IJobMapper _jobMapper;
-        private readonly SharedDbContext _context;
+        private readonly IProfessionalMapper _professionalMapper;
+        private readonly IProfessionalRepository _professionalRepository;
 
-        public CustomerJobService(
+        public CustomerJobService
+        (
             IProfessionalTypeRepository professionalTypeRepository, IJobMapper jobMapper,
-            IMatchingService matchingService, IJobRepository jobRepository)
+            IMatchingService matchingService, IJobRepository jobRepository, IProfessionalMapper professionalMapper,
+            IProfessionalRepository professionalRepository)
         {
             //_professionalTypeRepository = professionalTypeRepository;
             _jobRepository = jobRepository;
             _matchingService = matchingService;
             _jobMapper = jobMapper;
             _jobRepository = jobRepository;
+            _professionalMapper = professionalMapper;
+            _professionalRepository = professionalRepository;
         }
 
         public async Task<List<JobDto>> GetAllJobsForCustomerAsync(Guid userId)
@@ -41,6 +46,45 @@ namespace RealtyReachApi.Services
                 jobDtos.Add(_jobMapper.ToJobDto(j));
             }
             return jobDtos;
+        }
+
+        public async Task<JobMatchesDto> GetJobMatchesAsync(int jobId)
+        {
+            var job = await _jobRepository.GetJobByIdAsync(jobId);
+            if (job == null || job.JobDetails == null) return null;
+
+            var jobInfoDto = _jobMapper.ToJobInfoDto(job);
+
+            // Get suggested professionals (by ID) using repository
+            var suggestedIds = job.JobDetails.SuggestedProfessionalIds ?? Array.Empty<Guid>();
+            var suggestedProfessionals = new List<ProfessionalDto>();
+            if (suggestedIds.Length > 0)
+            {
+                foreach (var suggestedId in suggestedIds)
+                {
+                    var professional = await _professionalRepository.GetProfessionalByIdAsync(suggestedId);
+                    suggestedProfessionals.Add(_professionalMapper.ToProfessionalDto(professional));
+                }
+            }
+
+            // Get finalised professionals from JobProfessionalLink using repository
+            var finalisedProfessionals = new List<ProfessionalDto>();
+            var finalisedIds = await _jobRepository.GetFinalisedProfessionalLinksByJobDetailIdAsync(job.JobDetails.JobDetailId);
+            if (finalisedIds.Count > 0)
+            {
+                foreach (Guid id in finalisedIds)
+                {
+                    var professional = await _professionalRepository.GetProfessionalByIdAsync(id);
+                    finalisedProfessionals.Add(_professionalMapper.ToProfessionalDto(professional));
+                }
+            }
+
+            return new JobMatchesDto
+            {
+                Job = jobInfoDto,
+                SuggestedProfessionals = suggestedProfessionals,
+                FinalisedProfessionals = finalisedProfessionals
+            };
         }
 
         public async Task<JobDto> GetJobByIdAsync(int jobId)
@@ -61,33 +105,8 @@ namespace RealtyReachApi.Services
                     await _matchingService.IdentifySuitableProfessionalsAsync(job);
                 if (professionals.Any())
                 {
-                    Job jb = new Job
-                    {
-                        CustomerId = customerId,
-                        JobTitle = createJobDto.JobTitle,
-                        JobType = createJobDto.JobType,
-                        AdditionalDetails = createJobDto.AdditionalDetails ?? string.Empty,
-                        CreatedAt = DateTime.UtcNow,
-                        Status = JobStatus.Open,
-                        JobDetails = new JobDetail
-                        {
-                            //SuburbIds = createJobDto.SuburbIds,
-                            Regions = createJobDto.Regions,
-                            States = createJobDto.States,
-                            Specialisations = createJobDto.Specialisations,
-                            PurchaseType = createJobDto.PurchaseType ?? string.Empty,
-                            PropertyType = createJobDto.PropertyType,
-                            JourneyProgress = createJobDto.JourneyProgress,
-                            SelectedProfessionals = createJobDto.SelectedProfessionals,
-                            SuggestedProfessionalIds = professionals.Select(p => p.Id).ToArray(),
-                            BudgetMin = createJobDto.BudgetMin,
-                            BudgetMax = createJobDto.BudgetMax,
-                            ContactEmail = createJobDto.ContactEmail,
-                            ContactPhone = createJobDto.ContactPhone
-                        }
-
-                    };
-                    await _jobRepository.CreateJobAsync(jb);
+                    job.JobDetails!.SuggestedProfessionalIds = professionals.Select(p => p.Id).ToArray();
+                    await _jobRepository.CreateJobAsync(job);
                 }
                 else
                 {

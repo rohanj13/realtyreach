@@ -27,8 +27,20 @@ namespace RealtyReachApi.Controllers
             _matchingService = matchingService;
         }
 
-        // GET: api/jobs/user/{userId}
-        [HttpGet("user/{userId}")]
+        // GET: api/jobs/customer/{jobId}/matches
+        [HttpGet("{jobId:int}/matches")]
+        public async Task<ActionResult<JobMatchesDto>> GetJobMatches(int jobId)
+        {
+            var jobMatches = await _customerJobService.GetJobMatchesAsync(jobId);
+            if (jobMatches == null)
+            {
+                return NotFound();
+            }
+            return Ok(jobMatches);
+        }
+
+        // GET: api/jobs/customer/{userId}
+        [HttpGet("{userId:guid}")]
         public async Task<ActionResult<List<JobDto>>> GetAllJobsForCustomer(string userId)
         {
             var jobs = await _customerJobService.GetAllJobsForCustomerAsync(new Guid(userId));
@@ -41,8 +53,8 @@ namespace RealtyReachApi.Controllers
             return NotFound();
         }
 
-        // GET: api/Jobs/{JobId}
-        [HttpGet("{jobId}")]
+        // GET: api/jobs/customer/{JobId}
+        [HttpGet("{jobId:int}")]
         public async Task<ActionResult<JobDto>> GetJobById(int jobId)
         {
             var job = await _customerJobService.GetJobByIdAsync(jobId);
@@ -102,7 +114,7 @@ namespace RealtyReachApi.Controllers
         // }
 
         // DELETE: api/Jobs/{JobId}
-        [HttpDelete("{JobId}")]
+        [HttpDelete("{JobId:int}")]
         public async Task<IActionResult> DeleteJob(int JobId)
         {
             var success = await _customerJobService.DeleteJob(JobId);
