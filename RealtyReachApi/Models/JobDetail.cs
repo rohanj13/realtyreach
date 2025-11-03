@@ -27,14 +27,14 @@ public class JobDetail
     [Required] public required string JourneyProgress { get; set; } // Just Started, Have Pre-approval, Post Purchase
 
     public required string[] SelectedProfessionals { get; set; }
-    
+
     public Guid[] SuggestedProfessionalIds { get; set; }
 
     [Required] public int BudgetMin { get; set; }
 
     [Required] public int BudgetMax { get; set; }
 
-    [Required] [EmailAddress] public required string ContactEmail { get; set; }
+    [Required][EmailAddress] public required string ContactEmail { get; set; }
 
-    [Required] [Phone] public required string ContactPhone { get; set; }
+    [Required][Phone] public required string ContactPhone { get; set; }
 }

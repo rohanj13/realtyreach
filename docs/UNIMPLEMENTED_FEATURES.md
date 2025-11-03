@@ -41,6 +41,7 @@ public async Task<IActionResult> UpdateJob(int jobId, [FromBody] UpdateJobDto up
     if (jobId != updateJobDto.JobId)
         return BadRequest("Job ID mismatch between route and request body");
 
+
     var success = await _customerJobService.UpdateJob(updateJobDto);
     return success ? NoContent() : NotFound();
 }
@@ -211,7 +212,38 @@ public enum JobStatus
 
 ---
 
-## 2. Professional Discovery & Job Viewing
+### 1.5 Customer Job Matching & Finalisation 🟢 **Implemented**
+
+**Status**: End-to-end workflow for customers to view job details, suggested professionals, and finalise matches is fully implemented
+
+**Completed Implementation** (October 24, 2025):
+
+- ✅ Backend: Added `JobMatchesDto` to encapsulate job details, suggested professionals, and finalised professionals
+- ✅ Backend: Refactored service, repository, and mapper layers to support matching and finalisation logic
+- ✅ Backend: Endpoint `GET /api/jobs/customer/{jobId}/matches` returns all required data for job matching UI
+- ✅ Frontend: `JobMatches.tsx` fetches and displays job details, suggested professionals, and finalised professionals
+- ✅ Frontend: Navigation from dashboard and jobs list routes to job matches page
+- ✅ Frontend: UI supports viewing professional details, finalising matches, and displaying finalised professionals
+- ✅ Enum mapping: States and specialisations are displayed as string values, not integers
+- ✅ All business logic and DTO mapping follows DDD and SOLID principles
+
+**User Stories**:
+
+- ✅ As a customer, I want to view my job details and see suggested professionals ranked by match score
+- ✅ As a customer, I want to view key details about each professional (type, specialisation, location, verification)
+- ✅ As a customer, I want to finalise a match and see my selected professionals
+- ✅ As a customer, I want to navigate easily between my jobs and job matches
+
+**Implementation Details**:
+
+1. Backend: Added DTOs, mappers, and service logic for job matching and finalisation
+2. Backend: Endpoint returns job info, suggested professionals, and finalised professionals in one response
+3. Frontend: Refactored job matches page to consume new DTO and display all required data
+4. Frontend: Improved navigation and removed modal dialog in jobs list
+5. Frontend: UI displays enums as readable strings
+6. All code follows project architecture and DDD guidelines
+
+---
 
 ## 2. Professional Discovery & Job Viewing
 
@@ -1216,3 +1248,7 @@ The dashboard is organized into three main navigational tabs:
 - v1.2 (Oct 20, 2025): Feature 2.1 implementation status updated with mapper pattern refactoring
 - v1.1 (Oct 13, 2025): Marked Feature 4.5 (Professional Type Management) as complete
 - v1.0 (Oct 10, 2025): Initial document creation
+
+```
+
+```

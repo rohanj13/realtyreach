@@ -107,6 +107,15 @@ public class JobRepository : IJobRepository
             .ToListAsync();
     }
 
+    public async Task<List<Guid>> GetFinalisedProfessionalLinksByJobDetailIdAsync(int jobDetailId)
+    {
+        return await _context.JobProfessionalLink
+            .Where(jpl => jpl.JobDetailId == jobDetailId)
+            .Select(jpl => jpl.ProfessionalId)
+            .Distinct()
+            .ToListAsync();
+    }
+
     public async Task<List<Job>> GetAllJobsAsync()
     {
         return await _context.Jobs

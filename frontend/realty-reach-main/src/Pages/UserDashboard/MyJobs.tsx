@@ -34,6 +34,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import Sidebar from '../../SharedComponents/Sidebar';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
 import { AustralianState, JobDto } from '../../Models/Job';
@@ -142,10 +143,7 @@ const MyJobs: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<JobDto | null>(null);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [jobToEdit, setJobToEdit] = useState<JobDto | null>(null);
+  // Remove job view dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -180,28 +178,9 @@ const MyJobs: React.FC = () => {
     setPage(0);
   };
   
-  const handleViewJob = (job: JobDto) => {
-    setSelectedJob(job);
-    setViewDialogOpen(true);
-  };
-  
-  const handleEditJob = (job: JobDto) => {
-    setJobToEdit(job);
-    setEditDialogOpen(true);
-  };
-
-  const handleEditClose = () => {
-    setEditDialogOpen(false);
-    setJobToEdit(null);
-  };
-
-  const handleEditSuccess = () => {
-    // Refresh the jobs list
-    if (user?.id) {
-      getAllJobsForCustomer(user.id).then((fetchedJobs) => {
-        setJobs(fetchedJobs);
-      });
-    }
+  const navigate = useNavigate();
+  const handleViewJob = (job: Job) => {
+    navigate(`/job/${job.jobId}/matches`);
   };
   
   const handleDeleteClick = (jobId: string) => {
@@ -392,30 +371,7 @@ const MyJobs: React.FC = () => {
         </Box>
       </Box>
       
-      {/* View Job Dialog */}
-      <JobViewDialog
-        open={viewDialogOpen}
-        job={selectedJob}
-        onClose={() => setViewDialogOpen(false)}
-      />
-
-      {/* Edit Job Dialog */}
-      <Dialog
-        open={editDialogOpen}
-        onClose={handleEditClose}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent>
-          {jobToEdit && (
-            <EditJobForm
-              job={jobToEdit}
-              onClose={handleEditClose}
-              onSuccess={handleEditSuccess}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* View Job Dialog removed, navigation now handled by handleViewJob */}
       
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

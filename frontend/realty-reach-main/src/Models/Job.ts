@@ -1,3 +1,5 @@
+import { Professional } from "./Professional";
+
 export enum JobStatus {
     Open = "Open",
     Closed = "Closed",
@@ -70,6 +72,25 @@ export interface CreateJobDto {
     additionalDetails?: string;
 }
 
+export interface JobInfo {
+    jobId: number;
+    status: string;
+    jobTitle: string;
+    jobType: string;
+    regions: string[];
+    states: number[];
+    specialisations: number[];
+    purchaseType?: string;
+    propertyType: string;
+    budgetMin: number;
+    budgetMax: number;
+    contactEmail: string;
+    contactPhone: string;
+    journeyProgress: string;
+    additionalDetails?: string;
+    createdAt: string;
+}
+
 export interface MatchingJobDto {
     jobId: number;
     professionalId: string;
@@ -100,3 +121,9 @@ export interface Job {
     contactEmail: string;
     contactPhone: string;
   }
+
+export interface JobMatches {
+    job: JobInfo;
+    suggestedProfessionals: Professional[];
+    finalisedProfessionals: Professional[];
+}
