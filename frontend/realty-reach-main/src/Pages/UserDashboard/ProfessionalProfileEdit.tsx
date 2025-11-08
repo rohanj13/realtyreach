@@ -19,21 +19,9 @@ import {
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { UserContext } from "../../Context/userContext";
 import { ProfessionalProfile, ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from "../../Models/User";
+import { Professional } from "../../Models/Professional";
 import { backendApi } from "../../api/backendApi";
 import { useNavigate } from "react-router-dom";
-
-interface ProfessionalData {
-  id: string;
-  firstName: string;
-  lastName: string;
-  companyName: string;
-  abn: string;
-  licenseNumber: string;
-  professionalTypeId: number;
-  professionalType: string;
-  verificationStatus: boolean;
-  firstLogin: boolean;
-}
 
 const ProfessionalProfileEdit: React.FC = () => {
   const { user, setUser } = useContext(UserContext);
@@ -60,7 +48,7 @@ const ProfessionalProfileEdit: React.FC = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await backendApi.get<ProfessionalData>('/api/Professional');
+        const response = await backendApi.get<Professional>('/api/Professional');
         const data = response.data;
         
         setFormData({
@@ -166,9 +154,9 @@ const ProfessionalProfileEdit: React.FC = () => {
       
       setSubmitSuccess(true);
       
-      // Navigate back to dashboard after 2 seconds
+      // Navigate back to profile page after 2 seconds
       setTimeout(() => {
-        navigate('/professionaldashboard');
+        navigate('/professional/profile');
       }, 2000);
     } catch (error: any) {
       console.error('Error updating professional profile:', error);
@@ -204,7 +192,7 @@ const ProfessionalProfileEdit: React.FC = () => {
           <IconButton
             edge="start"
             color="inherit"
-            onClick={() => navigate('/professionaldashboard')}
+            onClick={() => navigate('/professional/profile')}
             sx={{ mr: 2 }}
           >
             <ArrowBackIcon />
@@ -347,7 +335,7 @@ const ProfessionalProfileEdit: React.FC = () => {
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                   <Button
                     variant="outlined"
-                    onClick={() => navigate('/professionaldashboard')}
+                    onClick={() => navigate('/professional/profile')}
                     disabled={isSubmitting}
                   >
                     Cancel
