@@ -31,6 +31,7 @@ import {
   Person,
 } from '@mui/icons-material';
 import MatchedProfessionals from '../../Components/MatchedProfessionals';
+import ProfessionalProfileModal from '../../Components/ProfessionalProfileModal';
 import { getMatchedProfessionals, finalizeMatch } from '../../services/JobService';
 import { getJobById } from '../../services/JobService';
 import { Job } from '../../Models/Job';
@@ -55,6 +56,8 @@ const JobProfMatches: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [selectedProfessionalId, setSelectedProfessionalId] = useState<string | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -101,7 +104,13 @@ const JobProfMatches: React.FC = () => {
   };
 
   const handleViewProfile = (professionalId: string) => {
-    navigate(`/professional/${professionalId}`);
+    setSelectedProfessionalId(professionalId);
+    setIsProfileModalOpen(true);
+  };
+
+  const handleCloseProfileModal = () => {
+    setIsProfileModalOpen(false);
+    setSelectedProfessionalId(null);
   };
 
   const InfoRow = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | React.ReactNode }) => (
@@ -565,6 +574,13 @@ const JobProfMatches: React.FC = () => {
             {successMessage}
           </Alert>
         </Snackbar>
+
+        {/* Professional Profile Modal */}
+        <ProfessionalProfileModal
+          open={isProfileModalOpen}
+          onClose={handleCloseProfileModal}
+          professionalId={selectedProfessionalId}
+        />
       </Container>
     </Box>
   );

@@ -31,18 +31,24 @@ import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '@/Models/User
 interface MatchedProfessionalsProps {
   professionals: Professional[];
   onFinalizeMatch: (professionalId: string) => void;
+  onViewProfile?: (professionalId: string) => void;
   isLoading?: boolean;
 }
 
 const MatchedProfessionals: React.FC<MatchedProfessionalsProps> = ({
   professionals = [],
   onFinalizeMatch,
+  onViewProfile,
   isLoading = false,
 }) => {
   const navigate = useNavigate();
 
   const handleViewProfile = (professionalId: string) => {
-    navigate(`/professional/${professionalId}`);
+    if (onViewProfile) {
+      onViewProfile(professionalId);
+    } else {
+      navigate(`/professional/${professionalId}`);
+    }
   };
 
   if (isLoading) {

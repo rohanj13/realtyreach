@@ -214,15 +214,6 @@ const ProfessionalDashboard: React.FC = () => {
                   ABN: {professionalData?.abn || "Not Set"} | License: {professionalData?.licenseNumber || "Not Set"}
                 </Typography>
               </Grid>
-              <Grid item>
-                <Button 
-                  variant="outlined" 
-                  onClick={() => navigate('/professional/profile/edit')}
-                  sx={{ minWidth: 120 }}
-                >
-                  Edit Profile
-                </Button>
-              </Grid>
             </Grid>
           </Paper>
           

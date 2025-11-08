@@ -1,6 +1,6 @@
 import React, {useContext} from "react";
 import { Box, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography, Button, Divider } from "@mui/material";
-import { Home, Business, Email, Settings, Logout } from "@mui/icons-material";
+import { Home, Business, Email, Settings, Logout, Person } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { UserContext } from "../Context/userContext";
 
@@ -35,6 +35,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       icon: <Business />,
       path: "/my-jobs",
       roles: ["Customer"],
+    },
+    {
+      text: "Profile",
+      icon: <Person />,
+      path: "/professional/profile",
+      roles: ["Professional"],
     },
     {
       text: "Available Jobs",

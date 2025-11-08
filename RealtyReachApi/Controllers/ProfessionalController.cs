@@ -105,5 +105,77 @@ namespace RealtyReachApi.Controllers
                     new { Error = "An error occurred while updating the professional profile.", Details = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Gets the authenticated professional's full profile data including professional type details.
+        /// Used for comprehensive profile display page (Feature 4.2.5).
+        /// </summary>
+        /// <returns>Full professional profile DTO with type information</returns>
+        /// <response code="200">Full profile retrieved successfully</response>
+        /// <response code="404">Professional not found</response>
+        /// <response code="500">Internal server error</response>
+        [HttpGet("profile")]
+        [ProducesResponseType(typeof(ProfessionalProfileDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProfessionalProfile()
+        {
+            var userId = Guid.Parse(GetUserIdFromToken());
+            
+            try
+            {
+                var professionalProfile = await _professionalService.GetProfessionalProfileAsync(userId);
+                
+                if (professionalProfile == null)
+                {
+                    return NotFound(new { Error = "Professional profile not found." });
+                }
+                
+                return Ok(professionalProfile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, 
+                    new { Error = "An error occurred while retrieving the professional profile.", Details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Gets a professional's profile by ID.
+        /// Used by customers to view professional profiles when matching jobs.
+        /// Requires authentication - accessible to customers, professionals, and admins.
+        /// </summary>
+        /// <param name="id">The professional's unique identifier</param>
+        /// <returns>Full professional profile DTO with type information</returns>
+        /// <response code="200">Profile retrieved successfully</response>
+        /// <response code="401">Unauthorized - user must be authenticated</response>
+        /// <response code="404">Professional not found</response>
+        /// <response code="500">Internal server error</response>
+        [HttpGet("{id}")]
+        [AllowAnonymous]
+        [Authorize(Roles = "Customer,Professional,Admin")]
+        [ProducesResponseType(typeof(ProfessionalProfileDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetProfessionalById(Guid id)
+        {
+            try
+            {
+                var professionalProfile = await _professionalService.GetProfessionalProfileAsync(id);
+                
+                if (professionalProfile == null)
+                {
+                    return NotFound(new { Error = "Professional profile not found." });
+                }
+                
+                return Ok(professionalProfile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, 
+                    new { Error = "An error occurred while retrieving the professional profile.", Details = ex.Message });
+            }
+        }
     }
 }
