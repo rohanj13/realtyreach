@@ -13,6 +13,11 @@ public class ProfessionalRepository(SharedDbContext context) : IProfessionalRepo
         await context.SaveChangesAsync();
     }
 
+    public async Task<List<Professional?>> GetAllProfessionalsAsync()
+    {
+        return await context.Professionals.ToListAsync();
+    }
+
     public async Task<List<Professional>> GetProfessionalsByProfessionalTypeIdsAsync(List<int> professionalTypeIds)
     {
         return await context.Professionals

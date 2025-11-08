@@ -2,9 +2,9 @@ import { createContext, useEffect, useState } from "react";
 import { CustomerProfile, ProfessionalProfile, UserProfile } from "../Models/User";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import React from "react";
 import { Alert, Snackbar } from "@mui/material";
+import jwtDecode from "jwt-decode";
 
 type UserContextType = {
   user: UserProfile | null;
@@ -90,28 +90,28 @@ export const UserProvider = ({ children }: Props) => {
   
         if (role === "Customer") {
           userObj = {
-            Id: res.data.userId,
-            Email: res.data.email,
-            FirstName: res.data.firstName || "",
-            LastName: res.data.lastName || "",
-            FirstLogin: res.data.firstLogin || false,
+            id: res.data.userId,
+            email: res.data.email,
+            firstName: res.data.firstName || "",
+            lastName: res.data.lastName || "",
+            firstLogin: res.data.firstLogin || false,
           } as CustomerProfile;
   
           localStorage.setItem("user", JSON.stringify(userObj));
           setUser(userObj);
   
-          if (userObj.FirstLogin) {
+          if (userObj.firstLogin) {
             navigate("/customerregistration");
           } else {
             navigate("/customerdashboard");
           }
         } else if (role === "Professional") {
           userObj = {
-            Id: res.data.userId,
-            Email: res.data.email,
-            FirstName: res.data.firstName || "",
-            LastName: res.data.lastName || "",
-            FirstLogin: res.data.firstLogin || false,
+            id: res.data.userId,
+            email: res.data.email,
+            firstName: res.data.firstName || "",
+            lastName: res.data.lastName || "",
+            firstLogin: res.data.firstLogin || false,
             ABN: res.data.ABN || "",
             LicenseNumber: res.data.LicenseNumber || "",
             CompanyName: res.data.CompanyName || "",
@@ -120,7 +120,7 @@ export const UserProvider = ({ children }: Props) => {
           localStorage.setItem("user", JSON.stringify(userObj));
           setUser(userObj);
   
-          if (userObj.FirstLogin) {
+          if (userObj.firstLogin) {
             navigate("/professionalregistration");
           } else {
             navigate("/professionaldashboard");

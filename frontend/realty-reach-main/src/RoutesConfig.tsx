@@ -14,6 +14,7 @@ import ProfessionalProfileEdit from "./Pages/UserDashboard/ProfessionalProfileEd
 import UnauthorizedPage from "./Pages/ErrorPages/UnauthorizedPage";
 import MyJobs from "./Pages/UserDashboard/MyJobs";
 import JobMatches from "./Pages/UserDashboard/JobMatches";
+import AdminDashboard from "./Pages/AdminPages/AdminDashboard";
 
 const RoutesConfig: React.FC = () => {
   return (
@@ -29,7 +30,7 @@ const RoutesConfig: React.FC = () => {
       <Route
         path="/customerdashboard"
         element={
-          <ProtectedRoute allowedRoles={["Customer"]}>
+          <ProtectedRoute allowedRoles={["Customer", "Admin"]}>
             <CustomerDashboard />
           </ProtectedRoute>
         }
@@ -63,7 +64,7 @@ const RoutesConfig: React.FC = () => {
       <Route
         path="/professionaldashboard"
         element={
-          <ProtectedRoute allowedRoles={["Professional"]}>
+          <ProtectedRoute allowedRoles={["Professional", "Admin"]}>
             <ProfessionalDashboard />
           </ProtectedRoute>
         }
@@ -81,6 +82,14 @@ const RoutesConfig: React.FC = () => {
         element={
           <ProtectedRoute allowedRoles={["Professional"]}>
             <ProfessionalProfileEdit />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />

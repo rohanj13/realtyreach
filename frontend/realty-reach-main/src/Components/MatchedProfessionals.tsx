@@ -26,6 +26,7 @@ import { Professional } from '../Models/Professional';
 import { useNavigate } from 'react-router-dom';
 import { getStateName } from '@/helpers/getStateName';
 import { getSpecialisationName } from '@/helpers/getSpecialisationName';
+import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '@/Models/User';
 
 interface MatchedProfessionalsProps {
   professionals: Professional[];
@@ -133,7 +134,7 @@ const MatchedProfessionals: React.FC<MatchedProfessionalsProps> = ({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Badge sx={{ color: 'text.secondary', fontSize: 18 }} />
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {prof.professionalTypeId}
+                    {ProfessionalTypeEnumMapping[prof.professionalTypeId as ProfessionalTypeEnum]}
                   </Typography>
                 </Box>
 

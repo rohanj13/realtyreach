@@ -16,7 +16,7 @@ export const getFinalisedJobsForProfessional = async (): Promise<FinalisedJob[]>
 };
 
 // GET: Fetch all jobs for a customer by userId
-export const getAllJobsForCustomer = async (userId: string): Promise<Job[]> => {
+export const getAllJobsForCustomer = async (userId: string): Promise<JobDto[]> => {
   try {
     const response = await backendApi.get<Job[]>(`/api/jobs/customer/${userId}`);
     return response.data;
@@ -27,9 +27,9 @@ export const getAllJobsForCustomer = async (userId: string): Promise<Job[]> => {
 };
 
 // GET: Fetch a job by its JobId
-export const getJobById = async (jobId: number): Promise<Job> => {
+export const getJobById = async (jobId: number): Promise<JobDto> => {
   try {
-    const response = await backendApi.get<Job>(`/api/jobs/customer/${jobId}`);
+    const response = await backendApi.get<JobDto>(`/api/jobs/customer/${jobId}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching job by id:', error);
@@ -38,9 +38,9 @@ export const getJobById = async (jobId: number): Promise<Job> => {
 };
 
 // POST: Create a new job
-export const createJob = async (jobData: CreateJobDto): Promise<Job> => {
+export const createJob = async (jobData: CreateJobDto): Promise<JobDto> => {
   try {
-    const response = await backendApi.post<Job>('/api/jobs/customer', jobData);
+    const response = await backendApi.post<JobDto>('/api/jobs/customer', jobData);
     return response.data;
   } catch (error) {
     console.error('Error creating job:', error);

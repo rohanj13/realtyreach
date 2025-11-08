@@ -36,7 +36,7 @@ export enum Specialisation {
     Retirees
 }
 
-export interface Job {
+export interface JobDto {
     jobId: number;
     status: string;
     jobTitle: string;
@@ -100,6 +100,27 @@ export interface UpdateJobDto extends Partial<CreateJobDto> {
     jobId: number;
     status?: JobStatus;
 }
+
+export interface Job {
+    jobId: number;
+    customerId: string;
+    jobTitle: string;
+    jobType: string;
+    additionalDetails: string;
+    createdAt: string;
+    regions: string[];
+    states: number[];
+    specialisations: number[];
+    purchaseType: string;
+    propertyType: string;
+    journeyProgress: string;
+    selectedProfessionals: string[];
+    suggestedProfessionalIds: string[];
+    budgetMin: number;
+    budgetMax: number;
+    contactEmail: string;
+    contactPhone: string;
+  }
 
 export interface JobMatches {
     job: JobInfo;

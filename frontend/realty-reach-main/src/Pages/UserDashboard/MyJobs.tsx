@@ -37,12 +37,12 @@ import Sidebar from '../../SharedComponents/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../Context/userContext';
 import { getAllJobsForCustomer, deleteJob } from '../../services/JobService';
-import { AustralianState, Job } from '../../Models/Job';
+import { AustralianState, JobDto } from '../../Models/Job';
 import EditJobForm from '../../Components/EditJobForm';
 
 interface JobViewDialogProps {
   open: boolean;
-  job: Job | null;
+  job: JobDto | null;
   onClose: () => void;
 }
 
@@ -137,7 +137,7 @@ const MyJobs: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -151,11 +151,11 @@ const MyJobs: React.FC = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       console.log('Fetching jobs for user:', user);
-      if (!user?.Id) return;
+      if (!user?.id) return;
       
       try {
         setLoading(true);
-        const fetchedJobs = await getAllJobsForCustomer(user.Id);
+        const fetchedJobs = await getAllJobsForCustomer(user.id);
         setJobs(fetchedJobs);
         setError(null);
       } catch (err) {

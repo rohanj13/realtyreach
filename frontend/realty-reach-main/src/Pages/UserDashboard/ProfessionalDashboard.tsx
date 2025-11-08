@@ -178,7 +178,7 @@ const ProfessionalDashboard: React.FC = () => {
             </IconButton>
             
             <Typography variant="subtitle2" sx={{ ml: 1, display: { xs: 'none', sm: 'block' } }}>
-              Welcome, {user?.FirstName || "Professional"}
+              Welcome, {user?.firstName || "Professional"}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -196,13 +196,13 @@ const ProfessionalDashboard: React.FC = () => {
                     bgcolor: theme.palette.primary.main 
                   }}
                 >
-                  {(professionalData?.firstName || user?.FirstName)?.charAt(0)}
-                  {(professionalData?.lastName || user?.LastName)?.charAt(0)}
+                  {(professionalData?.firstName || user?.firstName)?.charAt(0)}
+                  {(professionalData?.lastName || user?.lastName)?.charAt(0)}
                 </Avatar>
               </Grid>
               <Grid item xs>
                 <Typography variant="h5" gutterBottom>
-                  {professionalData?.firstName || user?.FirstName} {professionalData?.lastName || user?.LastName}
+                  {professionalData?.firstName || user?.firstName} {professionalData?.lastName || user?.lastName}
                 </Typography>
                 <Typography variant="body1" color="text.secondary" gutterBottom>
                   {professionalData?.companyName || "Company Name Not Set"}

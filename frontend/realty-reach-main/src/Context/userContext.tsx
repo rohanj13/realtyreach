@@ -79,9 +79,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         const role = getUserRoleFromToken(token);
         console.log("User role:", role); // Debug log
         
-        if (role === "admin") {
+        if (role === "Admin") {
           showAlert("Login successful!", "success");
-          navigate("/admindashboard");
+          navigate("/admin");
         } else {
           // Fetch user data first, then navigate
           await handleUserDataFetch(role);
@@ -116,25 +116,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (role === "Customer") {
         userObj = { 
-          Id: id, 
-          Email: email, 
-          FirstName: firstName || "", 
-          LastName: lastName || "", 
-          FirstLogin: firstLogin || false 
+          id: id, 
+          email: email, 
+          firstName: firstName || "", 
+          lastName: lastName || "", 
+          firstLogin: firstLogin || false 
         };
-        redirectPath = userObj.FirstLogin ? "/customerregistration" : "/customerdashboard";
+        redirectPath = userObj.firstLogin ? "/customerregistration" : "/customerdashboard";
       } else {
         userObj = {
-          Id: id,
-          Email: email,
-          FirstName: firstName || "",
-          LastName: lastName || "",
-          FirstLogin: firstLogin || false,
+          id: id,
+          email: email,
+          firstName: firstName || "",
+          lastName: lastName || "",
+          firstLogin: firstLogin || false,
           ABN: ABN || "",
           LicenseNumber: LicenseNumber || "",
           CompanyName: CompanyName || "",
         } as ProfessionalProfile;
-        redirectPath = userObj.FirstLogin ? "/professionalregistration" : "/professionaldashboard";
+        redirectPath = userObj.firstLogin ? "/professionalregistration" : "/professionaldashboard";
       }
       
       // Set user data in localStorage and state
