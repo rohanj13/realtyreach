@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
-  Container,
   Typography,
-  CircularProgress,
-  Alert,
   Snackbar,
   Paper,
   Chip,
@@ -16,6 +13,7 @@ import {
   Avatar,
   Divider,
   Button,
+  useTheme,
 } from '@mui/material';
 import {
   BusinessCenter,
@@ -28,7 +26,7 @@ import {
   Badge,
   Verified,
   Business,
-  Person,
+  ArrowBack,
 } from '@mui/icons-material';
 import MatchedProfessionals from '../../Components/MatchedProfessionals';
 import ProfessionalProfileModal from '../../Components/ProfessionalProfileModal';
@@ -43,6 +41,7 @@ import { Professional } from '@/Models/Professional';
 import { getStateName } from '@/helpers/getStateName';
 import { getSpecialisationName } from '@/helpers/getSpecialisationName';
 import { ProfessionalTypeEnum, ProfessionalTypeEnumMapping } from '@/Models/User';
+import { PageContainer, LoadingSpinner, ErrorAlert, SuccessAlert } from '../../SharedComponents/UIComponents';
 
 const JobProfMatches: React.FC = () => {
   const handleBack = () => {
@@ -327,34 +326,58 @@ const JobProfMatches: React.FC = () => {
   );
 
   return (
-    <Box sx={{ bgcolor: '#f8f9fa', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="xl">
-        <Box sx={{ mb: 2 }}>
-          <Button variant="outlined" onClick={handleBack} sx={{ mb: 2 }}>
-            ← Back to Dashboard
-          </Button>
-        </Box>
-        {/* Job Details Section */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            mb: 4, 
-            borderRadius: 3,
-            overflow: 'hidden',
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Box sx={{ 
-            bgcolor: 'primary.main', 
-            color: 'white', 
-            p: 3,
-            background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
-          }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-              {jobDetails ? jobDetails.jobTitle : 'Job Details'}
-            </Typography>
-            {jobDetails && (
+    <PageContainer>
+      {/* Back Button */}
+      <Button 
+        startIcon={<ArrowBack />} 
+        onClick={handleBack}
+        sx={{ mb: 3, textTransform: 'none' }}
+      >
+        Back to Dashboard
+      </Button>
+
+      {/* Error Alert */}
+      {error && (
+        <ErrorAlert 
+          message={error}
+          onClose={() => setError(null)}
+          onRetry={() => window.location.reload()}
+        />
+      )}
+
+      {/* Success Alert */}
+      {successMessage && (
+        <SuccessAlert 
+          message={successMessage}
+          onClose={() => setSuccessMessage(null)}
+        />
+      )}
+
+      {/* Loading State */}
+      {isLoading ? (
+        <LoadingSpinner message="Loading job details and matches..." />
+      ) : jobDetails ? (
+        <>
+          {/* Job Details Section */}
+          <Paper 
+            elevation={0} 
+            sx={{ 
+              mb: 4, 
+              borderRadius: 3,
+              overflow: 'hidden',
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ 
+              bgcolor: 'primary.main', 
+              color: 'white', 
+              p: 3,
+              background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+            }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                {jobDetails.jobTitle}
+              </Typography>
               <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
                 <Chip 
                   label={jobDetails.jobType} 
@@ -367,10 +390,8 @@ const JobProfMatches: React.FC = () => {
                   sx={{ bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 600 }}
                 />
               </Stack>
-            )}
-          </Box>
+            </Box>
 
-          {jobDetails ? (
             <Grid container>
               <Grid item xs={12} lg={8}>
                 <Box sx={{ p: 3, borderRight: { lg: '1px solid' }, borderColor: { lg: 'divider' } }}>
@@ -450,11 +471,6 @@ const JobProfMatches: React.FC = () => {
                 </Box>
               </Grid>
             </Grid>
-          ) : (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-              <CircularProgress />
-            </Box>
-          )}
         </Paper>
 
         {/* Two Column Layout for Professionals */}
@@ -470,11 +486,7 @@ const JobProfMatches: React.FC = () => {
               </Typography>
             </Box>
             
-            {(isLoading && matchedProfessionals.length === 0) ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                <CircularProgress />
-              </Box>
-            ) : matchedProfessionals.length === 0 ? (
+            {matchedProfessionals.length === 0 ? (
               <Box 
                 sx={{ 
                   p: 6, 
@@ -485,7 +497,7 @@ const JobProfMatches: React.FC = () => {
                   borderColor: 'divider',
                 }}
               >
-                <Person sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+                <BusinessCenter sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
                 <Typography variant="h6" sx={{ color: 'text.secondary', mb: 1 }}>
                   No Professionals Found
                 </Typography>
@@ -545,44 +557,20 @@ const JobProfMatches: React.FC = () => {
           </Grid>
         </Grid>
 
-        <Snackbar
-          open={!!error}
-          autoHideDuration={6000}
-          onClose={() => setError(null)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert 
-            severity="error" 
-            onClose={() => setError(null)}
-            sx={{ boxShadow: 4 }}
-          >
-            {error}
-          </Alert>
-        </Snackbar>
-
-        <Snackbar
-          open={!!successMessage}
-          autoHideDuration={6000}
-          onClose={() => setSuccessMessage(null)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert 
-            severity="success" 
-            onClose={() => setSuccessMessage(null)}
-            sx={{ boxShadow: 4 }}
-          >
-            {successMessage}
-          </Alert>
-        </Snackbar>
-
         {/* Professional Profile Modal */}
         <ProfessionalProfileModal
           open={isProfileModalOpen}
           onClose={handleCloseProfileModal}
           professionalId={selectedProfessionalId}
         />
-      </Container>
-    </Box>
+      </>
+      ) : (
+        <ErrorAlert 
+          message="Failed to load job details"
+          onClose={() => window.location.reload()}
+        />
+      )}
+    </PageContainer>
   );
 };
 
