@@ -14,26 +14,31 @@ import {
   useTheme,
   useMediaQuery
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { 
   Home as HomeIcon, 
   Assignment as AssignmentIcon, 
   Build as BuildIcon, 
   Star as StarIcon 
 } from '@mui/icons-material';
+import Logo from '../../SharedComponents/Logo';
 
 const LandingPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
   
   return (
     <Box>
       {/* Navigation */}
-      <AppBar position="static" color="transparent" elevation={0}>
+      <AppBar position="static" color="transparent" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-            RealtyReach
-          </Typography>
+          <Box 
+            onClick={() => navigate('/')}
+            sx={{ flexGrow: 1, cursor: 'pointer' }}
+          >
+            <Logo variant="compact" size="medium" color="inherit" />
+          </Box>
           <Stack direction="row" spacing={2}>
             <Button component={RouterLink} to="/professionals" color="inherit">
               For Professionals
