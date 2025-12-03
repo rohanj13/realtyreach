@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import {
-  Avatar,
   Button,
   TextField,
   Link,
@@ -19,8 +18,9 @@ import {
   Alert,
   FormHelperText
 } from '@mui/material';
-import { PersonAddOutlined as PersonAddIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Logo from '../../SharedComponents/Logo';
 import { UserContext } from '../../Context/userContext';
 import * as yup from 'yup';
 
@@ -148,9 +148,7 @@ const RegisterPage: React.FC = () => {
             width: '100%',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-            <PersonAddIcon />
-          </Avatar>
+          <Logo variant="compact" size="medium" color="inherit" sx={{ mb: 3 }} />
           <Typography component="h1" variant="h5">
             Create Your Account
           </Typography>

@@ -1,17 +1,15 @@
 import React from 'react';
 import './App.css';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import theme from './theme';
 import RoutesConfig from './RoutesConfig';
+import RealtyReachThemeProvider from './theme/ThemeProvider';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <RealtyReachThemeProvider>
       <div className="App">
         <RoutesConfig />
       </div>
-    </ThemeProvider>
+    </RealtyReachThemeProvider>
   );
 }
 

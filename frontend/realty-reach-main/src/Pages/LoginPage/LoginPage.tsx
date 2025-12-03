@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { LockOutlined as LockOutlinedIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Logo from '../../SharedComponents/Logo';
 import { UserContext } from '../../Context/userContext';
 
 const LoginPage: React.FC = () => {
@@ -85,9 +86,7 @@ const LoginPage: React.FC = () => {
             width: '100%',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
+          <Logo variant="compact" size="medium" color="inherit" sx={{ mb: 3 }} />
           <Typography component="h1" variant="h5">
             Sign in to RealtyReach
           </Typography>

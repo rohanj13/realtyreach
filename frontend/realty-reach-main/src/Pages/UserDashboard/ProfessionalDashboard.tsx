@@ -27,6 +27,7 @@ import {
   TrendingUp as TrendingUpIcon
 } from "@mui/icons-material";
 import Sidebar from "../../SharedComponents/Sidebar";
+import Logo from "../../SharedComponents/Logo";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import { UserContext } from "../../Context/userContext";
 import { getFinalisedJobsForProfessional } from "../../services/JobService";
@@ -163,9 +164,13 @@ const ProfessionalDashboard: React.FC = () => {
               </IconButton>
             )}
             
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Professional Dashboard
-            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
+              <Logo variant="compact" size="small" color="inherit" />
+            </Box>
+            
+            <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexGrow: 1 }}>
+              <Logo variant="icon-only" size="small" color="inherit" />
+            </Box>
             
             <IconButton 
               color="inherit"
@@ -220,7 +225,7 @@ const ProfessionalDashboard: React.FC = () => {
           {/* Metrics Cards */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
             {metrics.map((metric, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
+              <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card elevation={2} sx={{ borderRadius: 2 }}>
                   <CardContent sx={{ textAlign: 'center', pb: 3 }}>
                     <Box sx={{ 
@@ -229,7 +234,6 @@ const ProfessionalDashboard: React.FC = () => {
                       mb: 2,
                       p: 1.5,
                       borderRadius: '50%',
-                      backgroundColor: metric.bgColor
                     }}>
                       {metric.icon}
                     </Box>

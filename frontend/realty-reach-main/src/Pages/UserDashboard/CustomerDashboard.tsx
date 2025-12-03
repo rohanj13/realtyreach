@@ -10,7 +10,6 @@ import {
   Drawer,
   useMediaQuery,
   useTheme,
-  Container
 } from "@mui/material";
 import { 
   Menu as MenuIcon, 
@@ -18,6 +17,7 @@ import {
   Add as AddIcon 
 } from "@mui/icons-material";
 import Sidebar from "../../SharedComponents/Sidebar";
+import Logo from "../../SharedComponents/Logo";
 import Metrics from "../../Components/Metrics";
 import ActiveJobsSection from "../../SharedComponents/ActiveJobsSection";
 import { getAllJobsForCustomer } from "../../services/JobService";
@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import NotificationsDrawer from "../../Components/NotificationsDrawer";
 import CreateJobModal from "../../SharedComponents/CreateJobModal";
 import { UserContext} from "../../Context/userContext";
+import { PageContainer, PageHeader, ActionButton } from "../../SharedComponents/UIComponents";
 
 const CustomerDashboard: React.FC = () => {
   const { user } = useContext(UserContext);
@@ -99,9 +100,13 @@ const CustomerDashboard: React.FC = () => {
               </IconButton>
             )}
             
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Dashboard
-            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', sm: 'flex' } }}>
+              <Logo variant="compact" size="small" color="inherit" />
+            </Box>
+            
+            <Box sx={{ display: { xs: 'flex', sm: 'none' }, flexGrow: 1 }}>
+              <Logo variant="icon-only" size="small" color="inherit" />
+            </Box>
             
             <IconButton 
               color="inherit"
@@ -120,22 +125,23 @@ const CustomerDashboard: React.FC = () => {
         </AppBar>
 
         {/* Dashboard Content */}
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => setIsCreateJobModalOpen(true)}
-              size="large"
-            >
-              Create New Job
-            </Button>
-          </Box>
+        <PageContainer>
+          <PageHeader 
+            title="Dashboard"
+            subtitle={`Welcome back, ${user?.firstName}`}
+            actions={
+              <ActionButton
+                label="Create New Job"
+                icon={<AddIcon />}
+                onClick={() => setIsCreateJobModalOpen(true)}
+                size="large"
+              />
+            }
+          />
 
           <Metrics />
           <ActiveJobsSection jobs={jobs} onViewDetails={handleViewDetails} />
-        </Container>
+        </PageContainer>
       </Box>
 
       {/* Notifications Drawer */}
